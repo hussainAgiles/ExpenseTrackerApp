@@ -1,0 +1,40 @@
+{
+  "project_info": {
+    "project_number": "283183467855",
+    "firebase_url": "https://expense-tracker-9f1b5-default-rtdb.asia-southeast1.firebasedatabase.app",
+    "project_id": "expense-tracker-9f1b5",
+    "storage_bucket": "expense-tracker-9f1b5.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:283183467855:android:d71456949cc171cb4f893a",
+        "android_client_info": {
+          "package_name": "com.expensetracker"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "283183467855-04vf4ua1earndm7l1kqme18336oospe7.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyD_xtTLftSQ85Oat29PbpToCSxqfsHJpIc"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "283183467855-04vf4ua1earndm7l1kqme18336oospe7.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
