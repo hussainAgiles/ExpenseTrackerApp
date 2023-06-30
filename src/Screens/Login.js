@@ -14,22 +14,44 @@ export default function Login() {
   const [errMsg, setErrMsg] = useState(''); 
   const [data,setData] = useState({})
 
-  useEffect(() => {
-    const firebaseData = fireStore().collection('Users').doc('Tca1k4Fm9nESkQa7W6yV')
-    console.log("Dtata fetched == ",firebaseData)
-  }, [])
+  // useEffect(() => {
+  //   getData()
+  // }, [])
   
+  // const getData =async() =>{
+  //   const firebaseData = await fireStore().collection('Users').doc('Tca1k4Fm9nESkQa7W6yV').get()
+  //   // console.log("Data fetched == ",firebaseData)
+  // }
 
-  const handleTextChange = (key,value) =>{
-    setData({...data,[key]:value})
+  const handleTextChange = async(key,value) =>{
+    setData({...data,[key]:value}) 
   }
 
 
-  const handleSubmit = ()=>{
-    // setLoading(true)
-   
-    
+  const handleSubmit = async()=>{
+    // const usersCollection =  await fireStore().collection('Users')
+    const usersCollection = fireStore().collection('Users').get()
+    .then(collectionSnapshot => {
+        collectionSnapshot.forEach(documentSnapshot => {
+                console.log(documentSnapshot.data().email +' '+documentSnapshot.data().password);
+            });
+    });
+
+
+
+    // test()
+    // if(response.email === data.email && response.password === data.password){
+    //   console.log("inside")
+    //   setLoading(false)
+    //   navigation.navigate(screenNames.Home)
+     
+    // }
   }
+
+  const test =  async() => {
+    const snapshot = await firebase.firestore().collection('Users')
+    return snapshot.docs.map(doc => doc.data());
+}
 
   return (
     <>
