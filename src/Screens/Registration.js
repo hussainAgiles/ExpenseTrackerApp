@@ -14,27 +14,66 @@ import AntDesign from 'react-native-vector-icons/AntDesign';
 import {useNavigation} from '@react-navigation/native';
 import fireStore from '@react-native-firebase/firestore';
 import Loading from '../Components/Loader';
+import { globalStyle, screenNames } from '../Constants/constant';
 
 export default function Registration() {
+  
   const navigation = useNavigation();
-  const [data, setData] = useState({});
+  let initialState = {firstname:'',lastname:'',email: '', password: '',confirm_password:''};
+  const [data, setData] = useState(initialState);
   const [isLoading, setIsLoading] = useState(false);
+  const [errMsg,setErrMsg] = useState('');
 
   const handleTextChange = async (key, value) => {
     await setData({...data, [key]: value});
   };
 
+
+  const checkValidation = () =>{
+    if (
+      data.firstname.length === 0 ||
+      data.lastname.length === 0 ||
+      data.email.length === 0
+    ) {
+      setErrMsg('All the fields are mandatory');
+      return false;
+    }
+
+    let reg = /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w\w+)+$/;
+    if (reg.test(data.email) === false) {
+      setErrMsg('Incorrect email address');
+      return false;
+    }
+
+    if (data.password.length < 6) {
+      setErrMsg('Password must be of atleast 6 characters');
+      return false;
+    }
+    if (data.password !== data.confirm_password) {
+      setErrMsg('Passwords must match');
+      return false;
+    }
+
+    return true;
+
+  }
+
   const handleRegister = async () => {
-    setIsLoading(true);
-    const response = await fireStore().collection('Users').add(data).then(()=>{
-      Alert.alert('success','You are Registered successfully',[{
-        text:'ok',onPress:()=>{
-          navigation.navigate('Login')
-        }
-      }])
-    })
-    setIsLoading(false);
+    setIsLoading(true)
+
+    if(checkValidation() === true){
+      const response = await fireStore().collection('Users').add(data).then(()=>{
+        Alert.alert('success','You are Registered successfully',[{
+          text:'ok',onPress:()=>{
+            navigation.navigate(screenNames.DashBoard)
+          }
+        }])
+      })
+      setIsLoading(false);
+    }
   };
+
+
   return (
     <>
       {isLoading ? (
@@ -54,6 +93,9 @@ export default function Registration() {
             autoCorrect={false}
             onChangeText={text => handleTextChange('firstname',text)}
           />
+          {errMsg.trim().length !== 0 && (
+            <Text style={globalStyle.errorRegisteration}>{errMsg}</Text>
+          )}
           <CustTextInput
             placeholderText="Last Name"
             iconType="form"
@@ -61,6 +103,9 @@ export default function Registration() {
             autoCorrect={false}
             onChangeText={text => handleTextChange('lastname',text)}
           />
+          {errMsg.trim().length !== 0 && (
+            <Text style={globalStyle.errorRegisteration}>{errMsg}</Text>
+          )}
           <CustTextInput
             placeholderText="Email"
             iconType="mail"
@@ -69,6 +114,9 @@ export default function Registration() {
             keyboardType="email-address"
             onChangeText={text => handleTextChange('email',text)}
           />
+          {errMsg.trim().length !== 0 && (
+            <Text style={globalStyle.errorRegisteration}>{errMsg}</Text>
+          )}
           <CustTextInput
             placeholderText="Password"
             iconType="lock"
@@ -77,6 +125,9 @@ export default function Registration() {
             secureTextEntry={true}
             onChangeText={text => handleTextChange('password',text)}
           />
+          {errMsg.trim().length !== 0 && (
+            <Text style={globalStyle.errorRegisteration}>{errMsg}</Text>
+          )}
           <CustTextInput
             placeholderText="Confirm Password"
             iconType="lock"
@@ -85,6 +136,9 @@ export default function Registration() {
             secureTextEntry={true}
             onChangeText={text => handleTextChange('confirm_password',text)}
           />
+          {errMsg.trim().length !== 0 && (
+            <Text style={globalStyle.errorRegisteration}>{errMsg}</Text>
+          )}
           <CustButton title="Register" onPress={handleRegister} />
           <TouchableOpacity
             style={styles.navButton}

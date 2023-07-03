@@ -1,61 +1,71 @@
 import {Image, StyleSheet, Text, View, TouchableOpacity} from 'react-native';
-import React, {useState,useEffect} from 'react';
+import React, {useState, useEffect} from 'react';
 import CustTextInput from '../Components/CustTextInput';
 import CustButton from '../Components/CustButton';
 import {primaryColor} from '../Utils/CustomColors';
-import {screenNames,globalStyle} from '../Constants/constant';
+import {screenNames, globalStyle} from '../Constants/constant';
 import {useNavigation} from '@react-navigation/native';
 import Loading from '../Components/Loader';
-import fireStore from '@react-native-firebase/firestore'
+import fireStore from '@react-native-firebase/firestore';
 
 export default function Login() {
   const navigation = useNavigation();
+  let initialState = {email: '', password: ''};
   const [isLoading, setLoading] = useState(false);
-  const [errMsg, setErrMsg] = useState(''); 
-  const [data,setData] = useState({})
+  const [errMsg, setErrMsg] = useState('');
+  const [data, setData] = useState(initialState);
 
   // useEffect(() => {
   //   getData()
   // }, [])
-  
+
   // const getData =async() =>{
   //   const firebaseData = await fireStore().collection('Users').doc('Tca1k4Fm9nESkQa7W6yV').get()
   //   // console.log("Data fetched == ",firebaseData)
   // }
 
-  const handleTextChange = async(key,value) =>{
-    setData({...data,[key]:value}) 
-  }
+  const handleTextChange = async (key, value) => {
+    setData({...data, [key]: value});
+  };
 
+  const handleSubmit = async () => {
+    if (data.email == '' || data.password == '') {
+      setErrMsg('All the fields are mandatory');
+      setLoading(false);
+      return;
+    } else {
+      const usersCollection = await fireStore().collection('Users')
+      usersCollection.where('email','==',data.email).get().then((querySnapshot) => {
+        if (querySnapshot.empty) {
+          console.log('User not found');
+          return;
+        }
 
-  const handleSubmit = async()=>{
-    const usersCollection = await fireStore().collection('Users').get()
-    .then(documentSnapshot.data().email +' '+documentSnapshot.data().password)
+        querySnapshot.forEach((doc) => {
+          const user = doc.data();
+          console.log("User",user)
+          if (user.password === data.password) {
+            // Perform whatever you want after login
+            navigation.navigate(screenNames.DashBoard)
+          } else {
+            console.log('Invalid password');
+          }
+        });
+      })
 
+      .catch((error) => {
+        console.log('Error getting user:', error);
+      });
 
-
-
+    }
+    // navigation.navigate(screenNames.DashBoard)
+    // const usersCollection = await fireStore().collection('Users').get()
     // .then(collectionSnapshot => {
     //     collectionSnapshot.forEach(documentSnapshot => {
     //             console.log(documentSnapshot.data().email +' '+documentSnapshot.data().password);
     //         });
     // });
-
-
-
-    // test()
-    // if(response.email === data.email && response.password === data.password){
-    //   console.log("inside")
-    //   setLoading(false)
-    //   navigation.navigate(screenNames.Home)
-     
-    // }
-  }
-
-  const test =  async() => {
-    const snapshot = await firebase.firestore().collection('Users')
-    return snapshot.docs.map(doc => doc.data());
-}
+  };
 
   return (
     <>
@@ -70,12 +80,21 @@ export default function Login() {
             style={styles.logo}
           />
           <Text style={styles.text}>Expense Tracker</Text>
-          <CustTextInput placeholderText="Email" iconType="mail" onChangeText={text => handleTextChange('email',text)}/>
-          <CustTextInput placeholderText="Password" iconType="lock" onChangeText={text => handleTextChange('password',text)} secureTextEntry={true} />
+          <CustTextInput
+            placeholderText="Email"
+            iconType="mail"
+            onChangeText={text => handleTextChange('email', text)}
+          />
+          <CustTextInput
+            placeholderText="Password"
+            iconType="lock"
+            onChangeText={text => handleTextChange('password', text)}
+            secureTextEntry={true}
+          />
           {errMsg.trim().length !== 0 && (
             <Text style={globalStyle.error}>{errMsg}</Text>
           )}
-          <CustButton title="Sign In" onPress={handleSubmit}/>
+          <CustButton title="Sign In" onPress={() => handleSubmit()} />
           <TouchableOpacity
             onPress={() => navigation.navigate(screenNames.Register)}
             style={styles.forgotButton}>
