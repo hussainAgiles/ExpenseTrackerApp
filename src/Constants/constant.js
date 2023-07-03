@@ -3,7 +3,8 @@ import {StyleSheet} from 'react-native'
 export const screenNames = {
     Splash_Screen: `SplashScreen`,
     Login: `Login`,
-    Register :'Register'
+    Register :'Register',
+    Home:`Home`
     
 }
 

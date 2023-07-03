@@ -29,13 +29,17 @@ export default function Login() {
 
 
   const handleSubmit = async()=>{
-    // const usersCollection =  await fireStore().collection('Users')
-    const usersCollection = fireStore().collection('Users').get()
-    .then(collectionSnapshot => {
-        collectionSnapshot.forEach(documentSnapshot => {
-                console.log(documentSnapshot.data().email +' '+documentSnapshot.data().password);
-            });
-    });
+    const usersCollection = await fireStore().collection('Users').get()
+    .then(documentSnapshot.data().email +' '+documentSnapshot.data().password)
+
+
+
+
+    // .then(collectionSnapshot => {
+    //     collectionSnapshot.forEach(documentSnapshot => {
+    //             console.log(documentSnapshot.data().email +' '+documentSnapshot.data().password);
+    //         });
+    // });
 
 
 
