@@ -3,15 +3,20 @@ import React,{useEffect} from 'react'
 import Lottie from 'lottie-react-native'
 import { useNavigation } from '@react-navigation/native';
 import { screenNames } from '../Constants/constant';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 export default function SplashScreen() {
     
     const navigation = useNavigation()
     useEffect(() => {
-        setTimeout(() => {
-            navigation.navigate(screenNames.Login)
-
-        }, 2000);
+        setTimeout(async() => {
+         const fetchedToken = await AsyncStorage.getToken('User_Token')
+            if(fetchedToken){
+              navigation.navigate(screenNames.DashBoard)
+            }else{
+              navigation.navigate(screenNames.Login)
+            }
+        }, 4000);
     }, [])
 
     

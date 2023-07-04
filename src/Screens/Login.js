@@ -7,6 +7,7 @@ import {screenNames, globalStyle} from '../Constants/constant';
 import {useNavigation} from '@react-navigation/native';
 import Loading from '../Components/Loader';
 import fireStore from '@react-native-firebase/firestore';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 export default function Login() {
   const navigation = useNavigation();
@@ -14,6 +15,7 @@ export default function Login() {
   const [isLoading, setLoading] = useState(false);
   const [errMsg, setErrMsg] = useState('');
   const [data, setData] = useState(initialState);
+
 
   // useEffect(() => {
   //   getData()
@@ -46,6 +48,8 @@ export default function Login() {
           console.log("User",user)
           if (user.password === data.password) {
             // Perform whatever you want after login
+            const userToken = user.Uuid
+            AsyncStorage.setItem('User_Token', userToken);
             navigation.navigate(screenNames.DashBoard)
           } else {
             console.log('Invalid password');
@@ -58,13 +62,6 @@ export default function Login() {
       });
 
     }
-    // navigation.navigate(screenNames.DashBoard)
-    // const usersCollection = await fireStore().collection('Users').get()
-    // .then(collectionSnapshot => {
-    //     collectionSnapshot.forEach(documentSnapshot => {
-    //             console.log(documentSnapshot.data().email +' '+documentSnapshot.data().password);
-    //         });
-    // });
   };
 
   return (

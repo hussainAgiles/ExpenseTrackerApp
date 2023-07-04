@@ -7,6 +7,7 @@ import Registration from "../Screens/Registration";
 import DashBoard from '../Screens/DashBoard';
 import DrawerNavigation from "./DrawerNavigation";
 import BottomNavigation from './BottomNavigator'
+import AddTransaction from "../Screens/AddTransaction";
 
 
 
@@ -23,6 +24,7 @@ export const StackNavigation = ()=>{
             <Stack.Screen name={screenNames.Login} component={Login}/>
             <Stack.Screen name={screenNames.Register} component={Registration}/>
             <Stack.Screen name={screenNames.DashBoard} component={BottomNavigation}/>
+            <Stack.Screen name={screenNames.AddTransactions} component={AddTransaction}/>
         </Stack.Navigator>
     )
 }

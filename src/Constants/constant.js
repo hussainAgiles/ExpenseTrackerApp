@@ -9,6 +9,7 @@ export const screenNames = {
   Home: `Home`,
   Transaction: `Transaction History`,
   Categories: `Categories`,
+  AddTransactions :`Add Transactions`
 };
 
 export const globalStyle = StyleSheet.create({

@@ -16,9 +16,24 @@ import fireStore from '@react-native-firebase/firestore';
 import Loading from '../Components/Loader';
 import { globalStyle, screenNames } from '../Constants/constant';
 
+
 export default function Registration() {
   
   const navigation = useNavigation();
+  const generateUUID = () => {
+    let uuid = '';
+  
+    for (let i = 0; i < 16; i++) {
+      const randomHex = Math.floor(Math.random() * 8).toString(8);
+      uuid += randomHex;
+      if (i === 7 || i === 11 || i === 14) {
+        uuid += '-';
+      }
+    }
+    
+    return uuid;
+  }
+
   let initialState = {firstname:'',lastname:'',email: '', password: '',confirm_password:''};
   const [data, setData] = useState(initialState);
   const [isLoading, setIsLoading] = useState(false);
@@ -53,7 +68,7 @@ export default function Registration() {
       setErrMsg('Passwords must match');
       return false;
     }
-
+  
     return true;
 
   }
@@ -62,7 +77,9 @@ export default function Registration() {
     setIsLoading(true)
 
     if(checkValidation() === true){
-      const response = await fireStore().collection('Users').add(data).then(()=>{
+      const uid = generateUUID();
+      const response = await fireStore().collection('Users').add({Uuid :uid,
+        ...data}).then(()=>{
         Alert.alert('success','You are Registered successfully',[{
           text:'ok',onPress:()=>{
             navigation.navigate(screenNames.DashBoard)
