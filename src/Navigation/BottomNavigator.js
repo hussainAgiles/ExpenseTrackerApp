@@ -12,6 +12,10 @@ const Tab = createBottomTabNavigator();
 
 export default function BottomNavigation() {
 
+
+  // Adding Category
+
+
     const tabOffsetValue = useRef(new Animated.Value(0)).current;
     function getWidth() {
         let width = Dimensions.get('window').width;
@@ -130,7 +134,8 @@ export default function BottomNavigation() {
                 useNativeDriver: true,
               }).start();
             },
-          })}/>
+          })}
+          />
       <Tab.Screen name={screenNames.Transaction} component={Transaction} options={() => {
             return {
               unmountOnBlur: true,

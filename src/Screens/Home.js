@@ -1,4 +1,4 @@
-import {StyleSheet, Text, TouchableOpacity, View} from 'react-native';
+import {StyleSheet, Text, TouchableOpacity, View,FlatList} from 'react-native';
 import React, {useState} from 'react';
 import DateTypeSelection from '../Components/DateTypeSelection';
 import PieChart from '../Components/PieChart';
@@ -7,6 +7,7 @@ import {Button} from 'react-native-paper';
 import {screenNames} from '../Constants/constant';
 import {useDeviceOrientation} from '@react-native-community/hooks';
 import { useNavigation } from '@react-navigation/native';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 export default function Home({allCategories}) {
   const navigation = useNavigation()
@@ -16,21 +17,21 @@ export default function Home({allCategories}) {
   const{portrait} = useDeviceOrientation()
 
 
-  const handleDateFilter = (type, value) => {
-    if (allCategories === null) {
-      setCategories(null);
-      return;
-    }
-    let tempCategories = JSON.parse(JSON.stringify(allCategories));
-    let filteredCategories = dateFilterHelper(type, value, tempCategories);
-    let total = netExpense(filteredCategories);
-    filteredCategories = filteredCategories.map((item, index) => {
-      item.percentage = Math.round((item.totalExpense / total) * 100);
-      return item;
-    });
-    setCategories(filteredCategories);
-    setTotal(total);
-  };
+  // const handleDateFilter = (type, value) => {
+  //   if (allCategories === null) {
+  //     setCategories(null);
+  //     return;
+  //   }
+  //   let tempCategories = JSON.parse(JSON.stringify(allCategories));
+  //   let filteredCategories = dateFilterHelper(type, value, tempCategories);
+  //   let total = netExpense(filteredCategories);
+  //   filteredCategories = filteredCategories.map((item, index) => {
+  //     item.percentage = Math.round((item.totalExpense / total) * 100);
+  //     return item;
+  //   });
+  //   setCategories(filteredCategories);
+  //   setTotal(total);
+  // };
 
   const handleButtonPress = () => {
     navigation.navigate(screenNames.AddTransactions,{
@@ -39,10 +40,18 @@ export default function Home({allCategories}) {
     });
   };
 
+  const handleCategoryPress = value => {
+    let category = [value];
+    // let transactions = getAllTransactions(category);
+    // navigation.navigate('AllTransactionsScreen', {
+    //   transactions: transactions,
+    // });
+  };
+
   return (
     <View style={styles.container}>
        <View style={[styles.dateContainer, !portrait && {flex: 4}]}>
-        <DateTypeSelection date={date} sendDateToHome={handleDateFilter} />
+        <DateTypeSelection date={date}  />
       </View>
       
         <View style={styles.chartAndButton}>
@@ -55,9 +64,28 @@ export default function Home({allCategories}) {
             onPress={handleButtonPress}>
             Add Transaction
           </Button>
+          {/* <TouchableOpacity onPress={()=>{
+            navigation.navigate(screenNames.Login);
+            AsyncStorage.removeItem('User_Token')
+          }}>
+            <Text>sign Out</Text>
+          </TouchableOpacity> */}
         </View>
-
-      {/* <Text>Heelo homie</Text> */}
+        <View style={styles.dataContainer}>
+        <FlatList
+          data={categories}
+          keyExtractor={item => item.id}
+          // refreshControl={
+          //   <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
+          // }
+          renderItem={({item}) => (
+            <TouchableOpacity onPress={() => handleCategoryPress(item)}>
+              <Card item={item} />
+            </TouchableOpacity>
+          )}
+        />
+      </View>
+     
     </View>
   );
 }

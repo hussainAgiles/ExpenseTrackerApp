@@ -1,15 +1,10 @@
 import { createStackNavigator } from "@react-navigation/stack";
-import { create } from "react-test-renderer";
 import { screenNames } from "../Constants/constant";
 import Login from "../Screens/Login";
 import SplashScreen from "../Screens/SplashScreen";
 import Registration from "../Screens/Registration";
-import DashBoard from '../Screens/DashBoard';
-import DrawerNavigation from "./DrawerNavigation";
 import BottomNavigation from './BottomNavigator'
 import AddTransaction from "../Screens/AddTransaction";
-
-
 
 const Stack = createStackNavigator()
 

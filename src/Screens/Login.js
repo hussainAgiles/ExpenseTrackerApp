@@ -8,6 +8,7 @@ import {useNavigation} from '@react-navigation/native';
 import Loading from '../Components/Loader';
 import fireStore from '@react-native-firebase/firestore';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import toast from 'react-native-simple-toast'
 
 export default function Login() {
   const navigation = useNavigation();
@@ -39,20 +40,20 @@ export default function Login() {
       const usersCollection = await fireStore().collection('Users')
       usersCollection.where('email','==',data.email).get().then((querySnapshot) => {
         if (querySnapshot.empty) {
-          console.log('User not found');
+          toast.show('User not found',toast.CENTER)
           return;
         }
 
         querySnapshot.forEach((doc) => {
           const user = doc.data();
-          console.log("User",user)
+          // console.log("User",user)
           if (user.password === data.password) {
             // Perform whatever you want after login
             const userToken = user.Uuid
             AsyncStorage.setItem('User_Token', userToken);
             navigation.navigate(screenNames.DashBoard)
           } else {
-            console.log('Invalid password');
+            toast.show('Invalid Password',toast.CENTER)
           }
         });
       })

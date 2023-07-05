@@ -42,3 +42,16 @@ export const Sizes = {
   screenWidth: width,
   screenHeight: height,
 };
+
+export const categoryColors = [
+  '#FBD92F',
+  '#44CD40',
+  '#ff7f50',
+  '#404FCD',
+  '#1e90ff',
+  '#9a5acd',
+  '#C70039',
+  '#5a5acd',
+  '#AFF92F',
+  '#aa7f50',
+];
