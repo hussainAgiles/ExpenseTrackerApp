@@ -7,10 +7,12 @@ import {Button} from 'react-native-paper';
 import DatePicker from '../Components/DatePicker';
 import Loading from '../Components/Loader';
 
-export default function AddTransaction({route, navigation,categories,addTransaction,}) {
+export default function AddTransaction({route, navigation,categories,addTransaction}) {
   const showFutureDates = route.params.showFutureDates;
 
-  const oldTransaction = route.params.transaction;
+  // const oldTransaction = route.params.transaction;
+
+  console.log("transaction",route.params.transaction)
 
 
   let initialState = {

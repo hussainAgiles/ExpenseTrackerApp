@@ -6,6 +6,11 @@ import Registration from "../Screens/Registration";
 import BottomNavigation from './BottomNavigator'
 import AddTransaction from "../Screens/AddTransaction";
 
+
+const transaction = ()=>{
+  console.log("hello")
+}
+
 const Stack = createStackNavigator()
 
 export const StackNavigation = ()=>{
@@ -19,7 +24,7 @@ export const StackNavigation = ()=>{
             <Stack.Screen name={screenNames.Login} component={Login}/>
             <Stack.Screen name={screenNames.Register} component={Registration}/>
             <Stack.Screen name={screenNames.DashBoard} component={BottomNavigation}/>
-            <Stack.Screen name={screenNames.AddTransactions} component={AddTransaction}/>
+            <Stack.Screen name={screenNames.AddTransactions} component={AddTransaction} initialParams={{transaction}}/>
         </Stack.Navigator>
     )
 }

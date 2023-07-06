@@ -1,4 +1,4 @@
-import React, {useEffect, useState} from 'react';
+import React, {useEffect, useId, useState} from 'react';
 import {StyleSheet, Text, View, FlatList, TextInput} from 'react-native';
 import {Button} from 'react-native-paper';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
@@ -6,8 +6,10 @@ import CategoryModal from '../Components/CategoryModal';
 import Loader from '../Components/Loader';
 import {deviceWidth} from '../Utils/Dimension';
 import {primaryColor, textColor} from '../Utils/CustomColors';
-import {categoryColors, globalStyle} from '../Constants/constant';
+import {Sizes, categoryColors, globalStyle} from '../Constants/constant';
 import fireStore from '@react-native-firebase/firestore';
+import uuid from 'react-native-uuid';
+import { TouchableOpacity } from 'react-native-gesture-handler';
 
 const CategoryScreen = () => {
   const [categories, setCategories] = useState([]);
@@ -16,7 +18,6 @@ const CategoryScreen = () => {
     const lower = str.toLowerCase();
     return str.charAt(0).toUpperCase() + lower.slice(1);
   };
-  
 
   const handleCategories = data => {
     data.map((item, index) => {
@@ -26,19 +27,11 @@ const CategoryScreen = () => {
     return data;
   };
 
-  const updateCategory = async category => {
-    console.log("Category =====> ",category)
-    const response = await fireStore().collection('Category').where('title','==',category.title).get()
-    .then((querySnapShot)=>{
-      querySnapShot.forEach((doc)=>{
-        console.log("Document_id",doc.id)
-      })
-    });
-    
-  };
+
+  const uId = uuid.v4()
 
   const addCategory = async category => {
-    const response = await fireStore().collection('Category').add(category);
+    const response = await fireStore().collection('Category').add({id:uId,...category});
     const forwrdData = fetch();
   };
 
@@ -46,9 +39,10 @@ const CategoryScreen = () => {
     const collectionRef = fireStore().collection('Category');
     const snapshot = await collectionRef.get();
     const fetcheddata = snapshot.docs.map(doc => doc.data());
-    const finalCat =handleCategories(fetcheddata)
+    const finalCat = handleCategories(fetcheddata);
     setCategories(finalCat);
   };
+
 
   let initialState = {
     title: '',
@@ -93,6 +87,7 @@ const CategoryScreen = () => {
 
     let isSuccessful;
     if (isUpdate) {
+      // console.log('update ===', payload);
       isSuccessful = await updateCategory(payload);
       setIsUpdate(false);
     } else {
@@ -106,25 +101,41 @@ const CategoryScreen = () => {
     setIsLoading(false);
   };
 
-  const handleDelete = async id => {
+  const handleDelete = async item => {
     setIsLoading(true);
-    const isDeleted = await deleteCategory(id);
-    if (isDeleted === false) {
-      Alert.alert(
-        'Error!',
-        'Problem deleting category. Please try again later.',
-        [
-          {
-            text: 'Ok',
-          },
-        ],
-        {cancelable: true},
-      );
-    }
+    const isDeleted = await deleteCategory(item);
     setIsLoading(false);
   };
 
+  const deleteCategory = async category => {
+    // console.log('Delete category', category);
+    var query =fireStore()
+      .collection('Category').where('id','==',category.id)
+      query.get().then((querySnapshot)=> {
+      querySnapshot.forEach((doc)=> {
+        doc.ref.delete();
+      });
+    });
+    fetch()
+  };
+
+  const updateCategory = async category => {
+    // console.log('Category =====> ', category);
+    var query =fireStore()
+      .collection('Category').where('id','==',category.id)
+      query.get().then((snapshot)=> {
+        const batch = fireStore().batch();
+        snapshot.forEach(doc => {
+          batch.update(doc.ref, category);
+        });
+    
+        return batch.commit();
+    });
+    fetch()
+  };
+
   const handleUpdate = item => {
+    // console.log('handle update', item);
     setIsUpdate(true);
     setPayload(item);
     setModalVisible(true);
@@ -137,8 +148,8 @@ const CategoryScreen = () => {
   };
 
   useEffect(() => {
-        fetch()
-  }, []);
+    fetch();
+  }, [categories]);
 
   const renderItem = ({item}) => (
     <View style={styles.card}>
@@ -163,7 +174,7 @@ const CategoryScreen = () => {
           size={25}
           color="#D11A2A"
           name="delete"
-          onPress={() => handleDelete(item.id)}
+          onPress={() => handleDelete(item)}
         />
       </View>
     </View>
@@ -194,13 +205,16 @@ const CategoryScreen = () => {
                   placeholderTextColor="grey"
                   onChangeText={text => handleSearch(text)}
                 />
-                <Button
+                <TouchableOpacity style={{width:Sizes.medium2,backgroundColor:primaryColor,height:Sizes.medium2}}>
+                  <Text >+</Text>
+                </TouchableOpacity>
+                {/* <Button
                   color={primaryColor}
                   mode="contained"
                   style={{alignSelf: 'center'}}
                   onPress={handleAdd}>
                   Add
-                </Button>
+                </Button> */}
               </View>
               {errMsg.trim().length !== 0 && (
                 <Text style={globalStyle.error} onPress={() => setErrMsg('')}>

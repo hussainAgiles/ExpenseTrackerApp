@@ -9,7 +9,8 @@ import {useDeviceOrientation} from '@react-native-community/hooks';
 import { useNavigation } from '@react-navigation/native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
-export default function Home({allCategories}) {
+export default function Home({allCategories,transaction}) {
+  console.log("getting props",transaction)
   const navigation = useNavigation()
   const [date, setDate] = useState(new Date());
   const [categories, setCategories] = useState([]);
