@@ -1,22 +1,66 @@
 import {StyleSheet, Text, TouchableOpacity, View,FlatList} from 'react-native';
-import React, {useState} from 'react';
+import React, {useState,useEffect} from 'react';
 import DateTypeSelection from '../Components/DateTypeSelection';
 import PieChart from '../Components/PieChart';
 import {primaryColor} from '../Utils/CustomColors';
 import {Button} from 'react-native-paper';
-import {screenNames} from '../Constants/constant';
+import {categoryColors, screenNames} from '../Constants/constant';
 import {useDeviceOrientation} from '@react-native-community/hooks';
 import { useNavigation } from '@react-navigation/native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import Card from '../Components/Card';
+import fireStore from '@react-native-firebase/firestore';
+import toast from 'react-native-simple-toast'
 
-export default function Home({allCategories,transaction}) {
-  console.log("getting props",transaction)
+export default function Home({allCategories}) {
+  useEffect(() => {
+    fetchtransaction()
+  }, [])
+  
   const navigation = useNavigation()
   const [date, setDate] = useState(new Date());
-  const [categories, setCategories] = useState([]);
+  const [transaction, setTransaction] = useState([]);
   const [total, setTotal] = useState(0);
   const{portrait} = useDeviceOrientation()
 
+  const capitalize = str => {
+    const lower = str.toLowerCase();
+    return str.charAt(0).toUpperCase() + lower.slice(1);
+  };
+
+  // 
+  const fetchtransaction = async () => {
+    const collectionRef = fireStore().collection('Transaction');
+    const snapshot = await collectionRef.get();
+    const fetcheddata = snapshot.docs.map(doc => doc.data());
+    // setTransaction(fetcheddata)
+    await fireStore().collection('Category').get().then((querySnapshot)=>{
+      querySnapshot.forEach((doc) => {
+        const Categry = doc.data();
+        if(Categry.id === fetcheddata.category_id){
+          console.log("hello")
+        }
+      });
+    })
+    // const finalCat = handleCategories(fetcheddata);
+   
+   
+  };
+
+
+
+  // adding colors to Categories and making title first letter Capital
+  const handleCategories = data => {
+    data.map((item, index) => {
+      data[index].title = capitalize(item.title);
+      data[index].color = categoryColors[index % categoryColors.length];
+    });
+    return data;
+  };
+
+  const calculatingTotalExpense = ()  => {
+    
+};
 
   // const handleDateFilter = (type, value) => {
   //   if (allCategories === null) {
@@ -56,7 +100,7 @@ export default function Home({allCategories,transaction}) {
       </View>
       
         <View style={styles.chartAndButton}>
-          <PieChart categories={categories} total={total} />
+          <PieChart categories={transaction} total={total} />
           <Button
             icon="plus-thick"
             color={primaryColor}
@@ -74,14 +118,13 @@ export default function Home({allCategories,transaction}) {
         </View>
         <View style={styles.dataContainer}>
         <FlatList
-          data={categories}
-          keyExtractor={item => item.id}
+          data={transaction}
           // refreshControl={
           //   <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
           // }
           renderItem={({item}) => (
-            <TouchableOpacity onPress={() => handleCategoryPress(item)}>
-              <Card item={item} />
+            <TouchableOpacity >
+              {/* <Card item={item} /> */}
             </TouchableOpacity>
           )}
         />

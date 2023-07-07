@@ -8,7 +8,9 @@ import AddTransaction from "../Screens/AddTransaction";
 
 
 const transaction = ()=>{
-  console.log("hello")
+  return (
+    console.log("hello")
+  )
 }
 
 const Stack = createStackNavigator()

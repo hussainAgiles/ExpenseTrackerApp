@@ -9,9 +9,9 @@ import {primaryColor, textColor} from '../Utils/CustomColors';
 import {Sizes, categoryColors, globalStyle} from '../Constants/constant';
 import fireStore from '@react-native-firebase/firestore';
 import uuid from 'react-native-uuid';
-import { TouchableOpacity } from 'react-native-gesture-handler';
+import {TouchableOpacity} from 'react-native-gesture-handler';
 
-const CategoryScreen = () => {
+const CategoryScreen = ({handleSearch}) => {
   const [categories, setCategories] = useState([]);
 
   const capitalize = str => {
@@ -20,6 +20,7 @@ const CategoryScreen = () => {
   };
 
   const handleCategories = data => {
+    console.log("rieved data",data)
     data.map((item, index) => {
       data[index].title = capitalize(item.title);
       data[index].color = categoryColors[index % categoryColors.length];
@@ -27,12 +28,13 @@ const CategoryScreen = () => {
     return data;
   };
 
+  const uId = uuid.v4();
 
-  const uId = uuid.v4()
-
-  const addCategory = async category => {
-    const response = await fireStore().collection('Category').add({id:uId,...category});
-    const forwrdData = fetch();
+  const addCategory = async (value) => {
+    const response = await fireStore()
+      .collection('Category')
+      .add({id: uId, ...value});
+    fetch();
   };
 
   const fetch = async () => {
@@ -40,9 +42,9 @@ const CategoryScreen = () => {
     const snapshot = await collectionRef.get();
     const fetcheddata = snapshot.docs.map(doc => doc.data());
     const finalCat = handleCategories(fetcheddata);
+    console.log("fainal catgry ==",finalCat)
     setCategories(finalCat);
   };
-
 
   let initialState = {
     title: '',
@@ -56,13 +58,13 @@ const CategoryScreen = () => {
   const [modalVisible, setModalVisible] = useState(false);
 
   // Handle Search
-  const handleSearch = text => {
-    setCategories(
-      categories.filter(
-        item => item.title.toLowerCase().indexOf(text.toLowerCase()) !== -1,
-      ),
-    );
-  };
+  // const handleSearch = text => {
+  //   setCategories(
+  //     categories.filter(
+  //       item => item.title.toLowerCase().indexOf(text.toLowerCase()) !== -1,
+  //     ),
+  //   );
+  // };
 
   // handle textinput changes
   const handleChange = (key, value) => {
@@ -109,29 +111,31 @@ const CategoryScreen = () => {
 
   const deleteCategory = async category => {
     // console.log('Delete category', category);
-    var query =fireStore()
-      .collection('Category').where('id','==',category.id)
-      query.get().then((querySnapshot)=> {
-      querySnapshot.forEach((doc)=> {
+    var query = fireStore()
+      .collection('Category')
+      .where('id', '==', category.id);
+    query.get().then(querySnapshot => {
+      querySnapshot.forEach(doc => {
         doc.ref.delete();
       });
     });
-    fetch()
+    fetch();
   };
 
   const updateCategory = async category => {
     // console.log('Category =====> ', category);
-    var query =fireStore()
-      .collection('Category').where('id','==',category.id)
-      query.get().then((snapshot)=> {
-        const batch = fireStore().batch();
-        snapshot.forEach(doc => {
-          batch.update(doc.ref, category);
-        });
-    
-        return batch.commit();
+    var query = fireStore()
+      .collection('Category')
+      .where('id', '==', category.id);
+    query.get().then(snapshot => {
+      const batch = fireStore().batch();
+      snapshot.forEach(doc => {
+        batch.update(doc.ref, category);
+      });
+
+      return batch.commit();
     });
-    fetch()
+    fetch();
   };
 
   const handleUpdate = item => {
@@ -149,7 +153,7 @@ const CategoryScreen = () => {
 
   useEffect(() => {
     fetch();
-  }, [categories]);
+  }, []);
 
   const renderItem = ({item}) => (
     <View style={styles.card}>
@@ -205,9 +209,19 @@ const CategoryScreen = () => {
                   placeholderTextColor="grey"
                   onChangeText={text => handleSearch(text)}
                 />
-                <TouchableOpacity style={{width:Sizes.medium2,backgroundColor:primaryColor,height:Sizes.medium2}}>
-                  <Text >+</Text>
-                </TouchableOpacity>
+                <View  style={{
+                      width: Sizes.h1 *2,
+                      backgroundColor: primaryColor,
+                      borderRadius:30,
+                      height: Sizes.h1 *2,
+                      justifyContent:"center",
+                      alignItems:"center"
+                    }}>
+                  <TouchableOpacity onPress={handleAdd}>
+                    <Text style={{fontSize:35,color:"#FFFFFF"}}>+</Text>
+                  </TouchableOpacity>
+                </View>
+
                 {/* <Button
                   color={primaryColor}
                   mode="contained"
