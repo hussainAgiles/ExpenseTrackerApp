@@ -1,22 +1,28 @@
-import {FlatList, StyleSheet, Text, TextInput, View,TouchableOpacity} from 'react-native';
-import React,{useState,useEffect} from 'react';
-import {primaryColor,secondaryColor, textColor} from '../Utils/CustomColors';
+import {
+  FlatList,
+  StyleSheet,
+  Text,
+  TextInput,
+  View,
+  TouchableOpacity,
+} from 'react-native';
+import React, {useState, useEffect} from 'react';
+import {primaryColor, secondaryColor, textColor} from '../Utils/CustomColors';
 import moment from 'moment';
 import FontAwesome from 'react-native-vector-icons/FontAwesome';
 import {Button} from 'react-native-paper';
 import DatePicker from '../Components/DatePicker';
 import Loading from '../Components/Loader';
 import fireStore from '@react-native-firebase/firestore';
-import toast from 'react-native-simple-toast'
+import toast from 'react-native-simple-toast';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { screenNames } from '../Constants/constant';
+import {screenNames} from '../Constants/constant';
 
-export default function AddTransaction({route, navigation,oldTransaction}) {
-
+export default function AddTransaction({route, navigation, oldTransaction}) {
   useEffect(() => {
-    fetchCategories()
-  }, [])
-  
+    fetchCategories();
+  }, []);
+
   const showFutureDates = route.params.showFutureDates;
 
   // const oldTransaction = route.params.transaction;
@@ -24,9 +30,8 @@ export default function AddTransaction({route, navigation,oldTransaction}) {
   let initialState = {
     amount: 0,
     note: '',
-    transactionDate: new Date().getTime()
+    transactionDate: new Date()
   };
-
 
   const today = new Date();
   let yesterday = new Date();
@@ -34,20 +39,19 @@ export default function AddTransaction({route, navigation,oldTransaction}) {
   yesterday.setDate(today.getDate() - 1);
   tomorrow.setDate(today.getDate() + 1);
 
-
   const [payload, setPayload] = useState(initialState);
   const [categoryId, setCategoryId] = useState(null);
   const [selectedDate, setSelectedDate] = useState(new Date());
   const [showDatePicker, setShowDatePicker] = useState(false);
   const [errMsg, setErrMsg] = useState('');
-  const [isLoading, setisLoading] = useState(false)
-  const [category, setCategory] = useState([])
+  const [isLoading, setisLoading] = useState(false);
+  const [category, setCategory] = useState([]);
 
   const fetchCategories = async () => {
     const collectionRef = fireStore().collection('Category');
     const snapshot = await collectionRef.get();
     const fetcheddata = snapshot.docs.map(doc => doc.data());
-    setCategory(fetcheddata)
+    setCategory(fetcheddata);
     // const finalCat = handleCategories(fetcheddata);
     // setCategories(finalCat);
   };
@@ -79,17 +83,17 @@ export default function AddTransaction({route, navigation,oldTransaction}) {
     );
   };
 
-  const validate = () =>{
-      if(payload.amount <= 0){
-        setErrMsg("Amount must be greater than Zero")
-        return false
-      } 
-      if(isNaN(payload.amount)){
-        setErrMsg("Amount should be a number")
-        return false
-      } 
-      return true
-  }
+  const validate = () => {
+    if (payload.amount <= 0) {
+      setErrMsg('Amount must be greater than Zero');
+      return false;
+    }
+    if (isNaN(payload.amount)) {
+      setErrMsg('Amount should be a number');
+      return false;
+    }
+    return true;
+  };
 
   const handleSubmit = async () => {
     // setIsLoading(true);
@@ -100,7 +104,7 @@ export default function AddTransaction({route, navigation,oldTransaction}) {
       return;
     }
 
-    let payloadToSend= {...payload}
+    let payloadToSend = {...payload};
     let isSuccessful;
     if (oldTransaction !== undefined)
       isSuccessful = await updateTransaction(
@@ -108,16 +112,25 @@ export default function AddTransaction({route, navigation,oldTransaction}) {
         categoryId,
         oldTransaction.id,
       );
-    else isSuccessful = await addTransaction()
+    else isSuccessful = await addTransaction();
+    if(isSuccessful){
+      setCategoryId(null);
+      setPayload(initialState)
+      setErrMsg('')
+      navigation.goBack();
+    }
   };
 
-  const addTransaction = async()=>{
+  const addTransaction = async () => {
     const userId = await AsyncStorage.getItem('User_Token');
     // console.log("user Id",userId)
-    const response = await fireStore().collection('Transaction').add({...payload, category_id:categoryId, user_id:userId}).then(()=>{
-      toast.show('Transaction added succesfullt',toast.CENTER)
-    })
-  }
+    const response = await fireStore()
+      .collection('Transaction')
+      .add({...payload, category_id: categoryId, user_id: userId})
+      .then(() => {
+        toast.show('Transaction added succesfullt', toast.CENTER);
+      });
+  };
 
   return (
     <View style={{padding: 10}}>
@@ -152,12 +165,11 @@ export default function AddTransaction({route, navigation,oldTransaction}) {
             onPress={() => setCategoryId(item.id)}
             style={[
               styles.categoryBox,
-              {borderColor: item.color},
-              categoryId === item.id && {backgroundColor: item.color},
+              categoryId === item.id,
             ]}>
             {item.title.length > 10 ? (
               <Text style={styles.categoryText}>
-                {item.title.slice(0, 8) + '...'}
+                {item.title.slice(0, 10) + '...'}
               </Text>
             ) : (
               <Text style={styles.categoryText}>{item.title}</Text>

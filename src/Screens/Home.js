@@ -16,7 +16,6 @@ export default function Home({allCategories}) {
   useEffect(() => {
     fetchtransaction()
   }, [])
-  
   const navigation = useNavigation()
   const [date, setDate] = useState(new Date());
   const [transaction, setTransaction] = useState([]);
@@ -33,18 +32,17 @@ export default function Home({allCategories}) {
     const collectionRef = fireStore().collection('Transaction');
     const snapshot = await collectionRef.get();
     const fetcheddata = snapshot.docs.map(doc => doc.data());
-    // setTransaction(fetcheddata)
-    await fireStore().collection('Category').get().then((querySnapshot)=>{
-      querySnapshot.forEach((doc) => {
-        const Categry = doc.data();
-        if(Categry.id === fetcheddata.category_id){
-          console.log("hello")
-        }
-      });
-    })
-    // const finalCat = handleCategories(fetcheddata);
-   
-   
+    const totalExpense = netExpense(fetcheddata)
+    // console.log("total Expense",totalExpense)
+    setTransaction(fetcheddata)
+    setTotal(totalExpense) 
+  };
+
+  const netExpense = categories => {
+    // console.log("netExpense categories",categories)
+    let sum = 0;
+    for (let category of categories) sum = sum + category.amount;
+    return sum;
   };
 
 
@@ -58,25 +56,66 @@ export default function Home({allCategories}) {
     return data;
   };
 
-  const calculatingTotalExpense = ()  => {
-    
-};
+  const handleDateFilter = (type, value) => {
+    console.log("Type in ",value)
+    let filteredCategories = dateFilter(type, value, transaction);
+  
+  };
 
-  // const handleDateFilter = (type, value) => {
-  //   if (allCategories === null) {
-  //     setCategories(null);
-  //     return;
-  //   }
-  //   let tempCategories = JSON.parse(JSON.stringify(allCategories));
-  //   let filteredCategories = dateFilterHelper(type, value, tempCategories);
-  //   let total = netExpense(filteredCategories);
-  //   filteredCategories = filteredCategories.map((item, index) => {
-  //     item.percentage = Math.round((item.totalExpense / total) * 100);
-  //     return item;
-  //   });
-  //   setCategories(filteredCategories);
-  //   setTotal(total);
-  // };
+  const dateFilter = (type, value, transaction) => {
+    let result = [];
+  
+    for (let category of transaction) {
+      if (transaction === null) continue;
+      let tempTransactions = [];
+      let total = 0;
+      for (let txn of transaction) {
+        let date = new Date(txn.transactionDate);
+        console.log("Date in filter ",date)
+        switch (type) {
+          case 'Day':
+            console.log("Day")
+            if (date.toLocaleDateString() === value.toLocaleDateString()) {
+              total += txn.amount;
+              console.log("Total in day",total)
+              tempTransactions.push(txn);
+              console.log("TempTransaction in Day",tempTransactions)
+            }
+            break;
+          case 'Month':
+            console.log("Month")
+            if (
+              date.getMonth() === value.getMonth() &&
+              date.getFullYear() === value.getFullYear()
+            ) {
+              total += txn.amount;
+              console.log("Total in month",total)
+              tempTransactions.push(txn);
+              console.log("TempTransaction in month",tempTransactions)
+            }
+            break;
+          case 'Year':
+            console.log("yeaaar")
+            if (date.getFullYear() === value) {
+              total += txn.amount;
+              console.log("Total in month",total)
+              tempTransactions.push(txn);
+              console.log("TempTransaction",tempTransactions)
+            }
+            break;
+        }
+      }
+      category.amount = total;
+      transaction = tempTransactions;
+      if (tempTransactions.length > 0) result.push(transaction);
+    }
+    console.log("Result ==== ",result)
+    // return result;
+  };
+
+
+
+
 
   const handleButtonPress = () => {
     navigation.navigate(screenNames.AddTransactions,{
@@ -96,11 +135,11 @@ export default function Home({allCategories}) {
   return (
     <View style={styles.container}>
        <View style={[styles.dateContainer, !portrait && {flex: 4}]}>
-        <DateTypeSelection date={date}  />
+        <DateTypeSelection date={date} sendDateToHome={handleDateFilter} />
       </View>
       
         <View style={styles.chartAndButton}>
-          <PieChart categories={transaction} total={total} />
+          <PieChart categories={transaction} total={total}  />
           <Button
             icon="plus-thick"
             color={primaryColor}
@@ -124,7 +163,7 @@ export default function Home({allCategories}) {
           // }
           renderItem={({item}) => (
             <TouchableOpacity >
-              {/* <Card item={item} /> */}
+              <Card item={item} />
             </TouchableOpacity>
           )}
         />

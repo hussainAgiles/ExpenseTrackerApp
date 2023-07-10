@@ -5,7 +5,7 @@ import {textColor} from '../Utils/CustomColors';
 import Categories from '../Screens/Categories';
 
 const PieChart = ({categories, total}) => {
-  // console.log("category === ",Categories)
+  console.log("category === ",Categories)
   const rupeesSymbol = '\u20B9';
   const gaugeText = `${total} ${rupeesSymbol}`;
 

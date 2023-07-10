@@ -20,7 +20,7 @@ const CategoryScreen = ({handleSearch}) => {
   };
 
   const handleCategories = data => {
-    console.log("rieved data",data)
+    // console.log("rieved data",data)
     data.map((item, index) => {
       data[index].title = capitalize(item.title);
       data[index].color = categoryColors[index % categoryColors.length];
@@ -34,7 +34,8 @@ const CategoryScreen = ({handleSearch}) => {
     const response = await fireStore()
       .collection('Category')
       .add({id: uId, ...value});
-    fetch();
+      fetch();
+    
   };
 
   const fetch = async () => {
@@ -42,7 +43,7 @@ const CategoryScreen = ({handleSearch}) => {
     const snapshot = await collectionRef.get();
     const fetcheddata = snapshot.docs.map(doc => doc.data());
     const finalCat = handleCategories(fetcheddata);
-    console.log("fainal catgry ==",finalCat)
+    // console.log("fainal catgry ==",finalCat)
     setCategories(finalCat);
   };
 

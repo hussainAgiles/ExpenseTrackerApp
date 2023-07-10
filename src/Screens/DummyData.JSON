@@ -1,0 +1,317 @@
+{
+    "amount": 300,
+    "category_id": "5b41ae97-52e5-49a7-a6b1-3f31ee4766ea",
+    "note": "health insurase",
+    "transactionDate": 1688973711308,
+    "user_id": "57060743-3672-373-4"
+},
+{
+    "amount": 700,
+    "category_id": "5b41ae97-52e5-49a7-a6b1-3f31ee4766ea",
+    "note": "health insurance paid",
+    "transactionDate": 1688966394562,
+    "user_id": "57060743-3672-373-4"
+},
+{
+    "amount": 900,
+    "category_id": "5b41ae97-52e5-49a7-a6b1-3f31ee4766ea",
+    "note": "Health insurance premium",
+    "transactionDate": 1688973282690,
+    "user_id": "57060743-3672-373-4"
+},
+{
+    "amount": 300,
+    "category_id": "026af7c0-a12d-4a75-b6bc-dbc23e1b7595",
+    "note": "Spent in Nandana palace",
+    "transactionDate": 1688972908560,
+    "user_id": "57060743-3672-373-4"
+}
+
+
+============================================ Month =====================================================================
+
+{
+    "amount": 600,
+    "category_id": "19c45450-08d7-4472-9548-63a4400c32cf",
+    "note": "vdsfs",
+    "transactionDate": 1688718616029,
+    "user_id": "57060743-3672-373-4"
+},
+{
+    "amount": 300,
+    "category_id": "5b41ae97-52e5-49a7-a6b1-3f31ee4766ea",
+    "note": "health insurase",
+    "transactionDate": 1688973711308,
+    "user_id": "57060743-3672-373-4"
+},
+{
+    "amount": 700,
+    "category_id": "5b41ae97-52e5-49a7-a6b1-3f31ee4766ea",
+    "note": "health insurance paid",
+    "transactionDate": 1688966394562,
+    "user_id": "57060743-3672-373-4"
+},
+{
+    "amount": 600,
+    "category_id": "d3d4b662-af57-47af-8457-6e8b1591200f",
+    "note": "vdsfs",
+    "transactionDate": 1688718616029,
+    "user_id": "57060743-3672-373-4"
+},
+{
+    "amount": 900,
+    "category_id": "5b41ae97-52e5-49a7-a6b1-3f31ee4766ea",
+    "note": "Health insurance premium",
+    "transactionDate": 1688973282690,
+    "user_id": "57060743-3672-373-4"
+},
+{
+    "amount": 300,
+    "category_id": "026af7c0-a12d-4a75-b6bc-dbc23e1b7595",
+    "note": "Spent in Nandana palace",
+    "transactionDate": 1688972908560,
+    "user_id": "57060743-3672-373-4"
+}
+
+
+========================================================== 
+
+
+{
+    "amount": 2200,
+    "category_id": "5b41ae97-52e5-49a7-a6b1-3f31ee4766ea",
+    "note": "health insurase",
+    "transactionDate": 1688973711308,
+    "user_id": "57060743-3672-373-4"
+},
+{
+    "amount": 4100,
+    "category_id": "5b41ae97-52e5-49a7-a6b1-3f31ee4766ea",
+    "note": "health insurance paid",
+    "transactionDate": 1688966394562,
+    "user_id": "57060743-3672-373-4"
+},
+{
+    "amount": 7500,
+    "category_id": "5b41ae97-52e5-49a7-a6b1-3f31ee4766ea",
+    "note": "Health insurance premium",
+    "transactionDate": 1688973282690,
+    "user_id": "57060743-3672-373-4"
+},
+{
+    "amount": 14100,
+    "category_id": "026af7c0-a12d-4a75-b6bc-dbc23e1b7595",
+    "note": "Spent in Nandana palace",
+    "transactionDate": 1688972908560,
+    "user_id": "57060743-3672-373-4"
+}
+],
+[
+{
+    "amount": 2200,
+    "category_id": "5b41ae97-52e5-49a7-a6b1-3f31ee4766ea",
+    "note": "health insurase",
+    "transactionDate": 1688973711308,
+    "user_id": "57060743-3672-373-4"
+},
+{
+    "amount": 4100,
+    "category_id": "5b41ae97-52e5-49a7-a6b1-3f31ee4766ea",
+    "note": "health insurance paid",
+    "transactionDate": 1688966394562,
+    "user_id": "57060743-3672-373-4"
+},
+{
+    "amount": 7500,
+    "category_id": "5b41ae97-52e5-49a7-a6b1-3f31ee4766ea",
+    "note": "Health insurance premium",
+    "transactionDate": 1688973282690,
+    "user_id": "57060743-3672-373-4"
+},
+{
+    "amount": 14100,
+    "category_id": "026af7c0-a12d-4a75-b6bc-dbc23e1b7595",
+    "note": "Spent in Nandana palace",
+    "transactionDate": 1688972908560,
+    "user_id": "57060743-3672-373-4"
+}
+],
+[
+{
+    "amount": 2200,
+    "category_id": "5b41ae97-52e5-49a7-a6b1-3f31ee4766ea",
+    "note": "health insurase",
+    "transactionDate": 1688973711308,
+    "user_id": "57060743-3672-373-4"
+},
+{
+    "amount": 4100,
+    "category_id": "5b41ae97-52e5-49a7-a6b1-3f31ee4766ea",
+    "note": "health insurance paid",
+    "transactionDate": 1688966394562,
+    "user_id": "57060743-3672-373-4"
+},
+{
+    "amount": 7500,
+    "category_id": "5b41ae97-52e5-49a7-a6b1-3f31ee4766ea",
+    "note": "Health insurance premium",
+    "transactionDate": 1688973282690,
+    "user_id": "57060743-3672-373-4"
+},
+{
+    "amount": 14100,
+    "category_id": "026af7c0-a12d-4a75-b6bc-dbc23e1b7595",
+    "note": "Spent in Nandana palace",
+    "transactionDate": 1688972908560,
+    "user_id": "57060743-3672-373-4"
+}
+],
+[
+{
+    "amount": 2200,
+    "category_id": "5b41ae97-52e5-49a7-a6b1-3f31ee4766ea",
+    "note": "health insurase",
+    "transactionDate": 1688973711308,
+    "user_id": "57060743-3672-373-4"
+},
+{
+    "amount": 4100,
+    "category_id": "5b41ae97-52e5-49a7-a6b1-3f31ee4766ea",
+    "note": "health insurance paid",
+    "transactionDate": 1688966394562,
+    "user_id": "57060743-3672-373-4"
+},
+{
+    "amount": 7500,
+    "category_id": "5b41ae97-52e5-49a7-a6b1-3f31ee4766ea",
+    "note": "Health insurance premium",
+    "transactionDate": 1688973282690,
+    "user_id": "57060743-3672-373-4"
+},
+{
+    "amount": 14100,
+    "category_id": "026af7c0-a12d-4a75-b6bc-dbc23e1b7595",
+    "note": "Spent in Nandana palace",
+    "transactionDate": 1688972908560,
+    "user_id": "57060743-3672-373-4"
+}
+],
+[
+{
+    "amount": 2200,
+    "category_id": "5b41ae97-52e5-49a7-a6b1-3f31ee4766ea",
+    "note": "health insurase",
+    "transactionDate": 1688973711308,
+    "user_id": "57060743-3672-373-4"
+},
+{
+    "amount": 4100,
+    "category_id": "5b41ae97-52e5-49a7-a6b1-3f31ee4766ea",
+    "note": "health insurance paid",
+    "transactionDate": 1688966394562,
+    "user_id": "57060743-3672-373-4"
+},
+{
+    "amount": 7500,
+    "category_id": "5b41ae97-52e5-49a7-a6b1-3f31ee4766ea",
+    "note": "Health insurance premium",
+    "transactionDate": 1688973282690,
+    "user_id": "57060743-3672-373-4"
+},
+{
+    "amount": 14100,
+    "category_id": "026af7c0-a12d-4a75-b6bc-dbc23e1b7595",
+    "note": "Spent in Nandana palace",
+    "transactionDate": 1688972908560,
+    "user_id": "57060743-3672-373-4"
+}
+],
+[
+{
+    "amount": 2200,
+    "category_id": "5b41ae97-52e5-49a7-a6b1-3f31ee4766ea",
+    "note": "health insurase",
+    "transactionDate": 1688973711308,
+    "user_id": "57060743-3672-373-4"
+},
+{
+    "amount": 4100,
+    "category_id": "5b41ae97-52e5-49a7-a6b1-3f31ee4766ea",
+    "note": "health insurance paid",
+    "transactionDate": 1688966394562,
+    "user_id": "57060743-3672-373-4"
+},
+{
+    "amount": 7500,
+    "category_id": "5b41ae97-52e5-49a7-a6b1-3f31ee4766ea",
+    "note": "Health insurance premium",
+    "transactionDate": 1688973282690,
+    "user_id": "57060743-3672-373-4"
+},
+{
+    "amount": 14100,
+    "category_id": "026af7c0-a12d-4a75-b6bc-dbc23e1b7595",
+    "note": "Spent in Nandana palace",
+    "transactionDate": 1688972908560,
+    "user_id": "57060743-3672-373-4"
+}
+],
+[
+{
+    "amount": 2200,
+    "category_id": "5b41ae97-52e5-49a7-a6b1-3f31ee4766ea",
+    "note": "health insurase",
+    "transactionDate": 1688973711308,
+    "user_id": "57060743-3672-373-4"
+},
+{
+    "amount": 4100,
+    "category_id": "5b41ae97-52e5-49a7-a6b1-3f31ee4766ea",
+    "note": "health insurance paid",
+    "transactionDate": 1688966394562,
+    "user_id": "57060743-3672-373-4"
+},
+{
+    "amount": 7500,
+    "category_id": "5b41ae97-52e5-49a7-a6b1-3f31ee4766ea",
+    "note": "Health insurance premium",
+    "transactionDate": 1688973282690,
+    "user_id": "57060743-3672-373-4"
+},
+{
+    "amount": 14100,
+    "category_id": "026af7c0-a12d-4a75-b6bc-dbc23e1b7595",
+    "note": "Spent in Nandana palace",
+    "transactionDate": 1688972908560,
+    "user_id": "57060743-3672-373-4"
+}
+],
+[
+{
+    "amount": 2200,
+    "category_id": "5b41ae97-52e5-49a7-a6b1-3f31ee4766ea",
+    "note": "health insurase",
+    "transactionDate": 1688973711308,
+    "user_id": "57060743-3672-373-4"
+},
+{
+    "amount": 4100,
+    "category_id": "5b41ae97-52e5-49a7-a6b1-3f31ee4766ea",
+    "note": "health insurance paid",
+    "transactionDate": 1688966394562,
+    "user_id": "57060743-3672-373-4"
+},
+{
+    "amount": 7500,
+    "category_id": "5b41ae97-52e5-49a7-a6b1-3f31ee4766ea",
+    "note": "Health insurance premium",
+    "transactionDate": 1688973282690,
+    "user_id": "57060743-3672-373-4"
+},
+{
+    "amount": 14100,
+    "category_id": "026af7c0-a12d-4a75-b6bc-dbc23e1b7595",
+    "note": "Spent in Nandana palace",
+    "transactionDate": 1688972908560,
+    "user_id": "57060743-3672-373-4"
+}

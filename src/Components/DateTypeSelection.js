@@ -5,7 +5,7 @@ import DatePicker from './DatePicker';
 import MonthYearPicker from './MonthYearPicker';
 import {primaryColor, textColor} from '../Utils/CustomColors';
 
-const DateTypeSelection = ({date, sendDateToHome}) => {
+const DateTypeSelection = ({date,sendDateToHome}) => {
     
   const options = ['Day', 'Month', 'Year'];
   const [selectedDate, setSelectedDate] = useState(date);
@@ -17,10 +17,11 @@ const DateTypeSelection = ({date, sendDateToHome}) => {
 
   // Options selection: Day, Month and Year
   const handleSelectOption = index => {
-    // console.log("hello handle Selection")
+    // console.log("hello handle Selection",index)
     const presentDate = new Date();
     setSelectedDate(presentDate);
     const text = options[index];
+    // console.log("handle ==== ",text)
     setSelectedOption(text);
     if (text === 'Day') setSelectedValue(presentDate.toDateString());
     else if (text === 'Year') setSelectedValue(presentDate.getFullYear());
@@ -40,26 +41,27 @@ const DateTypeSelection = ({date, sendDateToHome}) => {
 
   // Previous and Next buttons
   const handleNavigation = type => {
-    let tempDate = selectedDate;
-    if (selectedOption === 'Day') {
-      if (type === 'Prev') tempDate.setDate(tempDate.getDate() - 1);
-      else tempDate.setDate(tempDate.getDate() + 1);
-      setSelectedValue(tempDate.toDateString());
-      setSelectedDate(tempDate);
-      sendDateToHome(selectedOption, tempDate);
-    } else if (selectedOption === 'Month') {
-      if (type === 'Prev') tempDate.setMonth(tempDate.getMonth() - 1);
-      else tempDate.setMonth(tempDate.getMonth() + 1);
-      setSelectedValue(moment(tempDate).format('MMMM, YYYY'));
-      setSelectedDate(tempDate);
-      sendDateToHome(selectedOption, tempDate);
-    } else {
-      if (type === 'Prev') tempDate.setMonth(tempDate.getMonth() - 12);
-      else tempDate.setMonth(tempDate.getMonth() + 12);
-      setSelectedValue(tempDate.getFullYear());
-      setSelectedDate(tempDate);
-      sendDateToHome(selectedOption, tempDate.getFullYear());
-    }
+    console.log("Type in prev and next button",type)
+    // let tempDate = selectedDate;
+    // if (selectedOption === 'Day') {
+    //   if (type === 'Prev') tempDate.setDate(tempDate.getDate() - 1);
+    //   else tempDate.setDate(tempDate.getDate() + 1);
+    //   setSelectedValue(tempDate.toDateString());
+    //   setSelectedDate(tempDate);
+    //   sendDateToHome(selectedOption, tempDate);
+    // } else if (selectedOption === 'Month') {
+    //   if (type === 'Prev') tempDate.setMonth(tempDate.getMonth() - 1);
+    //   else tempDate.setMonth(tempDate.getMonth() + 1);
+    //   setSelectedValue(moment(tempDate).format('MMMM, YYYY'));
+    //   setSelectedDate(tempDate);
+    //   sendDateToHome(selectedOption, tempDate);
+    // } else {
+    //   if (type === 'Prev') tempDate.setMonth(tempDate.getMonth() - 12);
+    //   else tempDate.setMonth(tempDate.getMonth() + 12);
+    //   setSelectedValue(tempDate.getFullYear());
+    //   setSelectedDate(tempDate);
+    //   sendDateToHome(selectedOption, tempDate.getFullYear());
+    // }
   };
 
   const pickerTypeDisplay = () => {
