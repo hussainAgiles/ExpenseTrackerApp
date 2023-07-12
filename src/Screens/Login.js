@@ -46,6 +46,7 @@ export default function Login() {
 
         querySnapshot.forEach((doc) => {
           const user = doc.data();
+          AsyncStorage.setItem('userId',user.Uuid)
           // console.log("User",user)
           if (user.password === data.password) {
             // Perform whatever you want after login

@@ -6,19 +6,20 @@ import {
   View,
   TouchableOpacity,
 } from 'react-native';
-import React, {useState, useEffect} from 'react';
-import {primaryColor, secondaryColor, textColor} from '../Utils/CustomColors';
+import React, { useState, useEffect } from 'react';
+import { primaryColor, secondaryColor, textColor } from '../Utils/CustomColors';
 import moment from 'moment';
 import FontAwesome from 'react-native-vector-icons/FontAwesome';
-import {Button} from 'react-native-paper';
+import { Button } from 'react-native-paper';
 import DatePicker from '../Components/DatePicker';
 import Loading from '../Components/Loader';
 import fireStore from '@react-native-firebase/firestore';
 import toast from 'react-native-simple-toast';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import {screenNames} from '../Constants/constant';
+import { screenNames } from '../Constants/constant';
+import uuid from 'react-native-uuid';
 
-export default function AddTransaction({route, navigation, oldTransaction}) {
+export default function AddTransaction({ route, navigation, oldTransaction }) {
   useEffect(() => {
     fetchCategories();
   }, []);
@@ -32,6 +33,8 @@ export default function AddTransaction({route, navigation, oldTransaction}) {
     note: '',
     transactionDate: new Date()
   };
+
+
 
   const today = new Date();
   let yesterday = new Date();
@@ -57,7 +60,7 @@ export default function AddTransaction({route, navigation, oldTransaction}) {
   };
 
   const handleChange = (key, value) => {
-    setPayload({...payload, [key]: value});
+    setPayload({ ...payload, [key]: value });
   };
 
   const dateToString = date => {
@@ -67,7 +70,8 @@ export default function AddTransaction({route, navigation, oldTransaction}) {
   const handleSelectDate = inDate => {
     setShowDatePicker(false);
     setSelectedDate(inDate);
-    setPayload({...payload, transactionDate: inDate.getTime()});
+    setPayload({ ...payload, transactionDate: inDate.getTime() });
+    // setTransactionDate(inDate.getTime())
   };
 
   const isSelectedDateVisible = () => {
@@ -104,36 +108,40 @@ export default function AddTransaction({route, navigation, oldTransaction}) {
       return;
     }
 
-    let payloadToSend = {...payload};
+    let payloadToSend = { ...payload };
     let isSuccessful;
     if (oldTransaction !== undefined)
-      isSuccessful = await updateTransaction(
+      isSuccessful = await updateTrxn(
         payloadToSend,
         categoryId,
         oldTransaction.id,
       );
     else isSuccessful = await addTransaction();
-    if(isSuccessful){
+    if (isSuccessful) {
       setCategoryId(null);
       setPayload(initialState)
       setErrMsg('')
-      navigation.goBack();
     }
   };
 
+  const uId = uuid.v4();
+
   const addTransaction = async () => {
     const userId = await AsyncStorage.getItem('User_Token');
-    // console.log("user Id",userId)
+    // console.log("Payload getting pushed",payload)
     const response = await fireStore()
       .collection('Transaction')
-      .add({...payload, category_id: categoryId, user_id: userId})
+      .add({ ...payload, category_id: categoryId, user_id: userId, id: uId })
       .then(() => {
-        toast.show('Transaction added succesfullt', toast.CENTER);
+        toast.show('Transaction added succesfully', toast.CENTER);
       });
+    navigation.navigate(screenNames.Transaction)
   };
 
+
+
   return (
-    <View style={{padding: 10}}>
+    <View style={{ padding: 10}}>
       <FlatList
         ListHeaderComponent={
           <>
@@ -142,7 +150,9 @@ export default function AddTransaction({route, navigation, oldTransaction}) {
                 marginVertical: 10,
                 flexDirection: 'row',
                 justifyContent: 'center',
+                alignItems: "center"
               }}>
+              <Text style={{ marginRight: 10, fontSize: 20 }}>Amount</Text>
               <TextInput
                 value={payload.amount.toString()}
                 style={styles.amountField}
@@ -150,22 +160,23 @@ export default function AddTransaction({route, navigation, oldTransaction}) {
                 placeholder="INR"
                 placeholderTextColor={textColor}
                 keyboardType="numeric"
-                onChangeText={text => handleChange('amount', text)}
+                onChangeText={amt => handleChange('amount', amt)}
               />
             </View>
-            <Text style={[styles.heading, {marginTop: 10}]}>Categories</Text>
+            <Text style={[styles.heading, { marginTop: 10 }]}>Categories</Text>
           </>
         }
         numColumns={4}
         data={category}
         keyExtractor={item => item.id}
-        columnWrapperStyle={{flex: 1, justifyContent: 'space-evenly'}}
-        renderItem={({item, index}) => (
+        columnWrapperStyle={{ flex: 1, justifyContent: 'space-evenly' }}
+        renderItem={({ item, index }) => (
           <TouchableOpacity
             onPress={() => setCategoryId(item.id)}
             style={[
               styles.categoryBox,
-              categoryId === item.id,
+              categoryId === item.id && { backgroundColor: '#44CD40' },
+
             ]}>
             {item.title.length > 10 ? (
               <Text style={styles.categoryText}>
@@ -178,7 +189,7 @@ export default function AddTransaction({route, navigation, oldTransaction}) {
         )}
         ListFooterComponent={
           <>
-            {!showFutureDates && (
+            {/* {!showFutureDates && (
               <TouchableOpacity
                 onPress={() => navigation.navigate(screenNames.Categories)}
                 style={
@@ -189,8 +200,8 @@ export default function AddTransaction({route, navigation, oldTransaction}) {
                   + Create
                 </Text>
               </TouchableOpacity>
-            )}
-            <View style={{marginVertical: 10}}>
+            )} */}
+            <View style={{ marginVertical: 10 }}>
               <Text style={styles.heading}>Date</Text>
               <View style={styles.dateContainer}>
                 <View style={styles.dateBoxes}>
@@ -199,9 +210,9 @@ export default function AddTransaction({route, navigation, oldTransaction}) {
                       onPress={() => handleSelectDate(tomorrow)}
                       style={[
                         styles.dateBox,
-                        {marginRight: 30},
+                        { marginRight: 30 },
                         selectedDate.toLocaleDateString() ===
-                          tomorrow.toLocaleDateString() && {
+                        tomorrow.toLocaleDateString() && {
                           backgroundColor: secondaryColor,
                         },
                       ]}>
@@ -219,7 +230,7 @@ export default function AddTransaction({route, navigation, oldTransaction}) {
                         style={[
                           styles.dateBox,
                           selectedDate.toLocaleDateString() ===
-                            today.toLocaleDateString() && {
+                          today.toLocaleDateString() && {
                             backgroundColor: secondaryColor,
                           },
                         ]}>
@@ -234,9 +245,9 @@ export default function AddTransaction({route, navigation, oldTransaction}) {
                         onPress={() => handleSelectDate(yesterday)}
                         style={[
                           styles.dateBox,
-                          {marginHorizontal: 30},
+                          { marginHorizontal: 30 },
                           selectedDate.toLocaleDateString() ===
-                            yesterday.toLocaleDateString() && {
+                          yesterday.toLocaleDateString() && {
                             backgroundColor: secondaryColor,
                           },
                         ]}>
@@ -253,7 +264,7 @@ export default function AddTransaction({route, navigation, oldTransaction}) {
                     <TouchableOpacity
                       style={[
                         styles.dateBox,
-                        {backgroundColor: secondaryColor},
+                        { backgroundColor: secondaryColor },
                       ]}>
                       <View style={styles.textContainer}>
                         <Text style={styles.dateText}>
@@ -279,7 +290,7 @@ export default function AddTransaction({route, navigation, oldTransaction}) {
                 />
               )}
             </View>
-            <View style={{marginVertical: 10}}>
+            <View style={{ marginVertical: 10 }}>
               <Text style={styles.heading}>Note</Text>
               <TextInput
                 value={payload.note}
@@ -332,7 +343,6 @@ const styles = StyleSheet.create({
     borderRadius: 10,
     marginVertical: 5,
     width: 85,
-    backgroundColor: '#fff',
   },
   addCategoryBox: {
     borderRadius: 10,

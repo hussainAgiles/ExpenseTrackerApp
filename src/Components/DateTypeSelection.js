@@ -41,27 +41,27 @@ const DateTypeSelection = ({date,sendDateToHome}) => {
 
   // Previous and Next buttons
   const handleNavigation = type => {
-    console.log("Type in prev and next button",type)
-    // let tempDate = selectedDate;
-    // if (selectedOption === 'Day') {
-    //   if (type === 'Prev') tempDate.setDate(tempDate.getDate() - 1);
-    //   else tempDate.setDate(tempDate.getDate() + 1);
-    //   setSelectedValue(tempDate.toDateString());
-    //   setSelectedDate(tempDate);
-    //   sendDateToHome(selectedOption, tempDate);
-    // } else if (selectedOption === 'Month') {
-    //   if (type === 'Prev') tempDate.setMonth(tempDate.getMonth() - 1);
-    //   else tempDate.setMonth(tempDate.getMonth() + 1);
-    //   setSelectedValue(moment(tempDate).format('MMMM, YYYY'));
-    //   setSelectedDate(tempDate);
-    //   sendDateToHome(selectedOption, tempDate);
-    // } else {
-    //   if (type === 'Prev') tempDate.setMonth(tempDate.getMonth() - 12);
-    //   else tempDate.setMonth(tempDate.getMonth() + 12);
-    //   setSelectedValue(tempDate.getFullYear());
-    //   setSelectedDate(tempDate);
-    //   sendDateToHome(selectedOption, tempDate.getFullYear());
-    // }
+    // console.log("Type in prev and next button",type)
+    let tempDate = selectedDate;
+    if (selectedOption === 'Day') {
+      if (type === 'Prev') tempDate.setDate(tempDate.getDate() - 1);
+      else tempDate.setDate(tempDate.getDate() + 1);
+      setSelectedValue(tempDate.toDateString());
+      setSelectedDate(tempDate);
+      sendDateToHome(selectedOption, tempDate);
+    } else if (selectedOption === 'Month') {
+      if (type === 'Prev') tempDate.setMonth(tempDate.getMonth() - 1);
+      else tempDate.setMonth(tempDate.getMonth() + 1);
+      setSelectedValue(moment(tempDate).format('MMMM, YYYY'));
+      setSelectedDate(tempDate);
+      sendDateToHome(selectedOption, tempDate);
+    } else {
+      if (type === 'Prev') tempDate.setMonth(tempDate.getMonth() - 12);
+      else tempDate.setMonth(tempDate.getMonth() + 12);
+      setSelectedValue(tempDate.getFullYear());
+      setSelectedDate(tempDate);
+      sendDateToHome(selectedOption, tempDate.getFullYear());
+    }
   };
 
   const pickerTypeDisplay = () => {

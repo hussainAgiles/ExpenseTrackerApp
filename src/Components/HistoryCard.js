@@ -1,9 +1,11 @@
 import React from 'react';
 import {StyleSheet, Text, View} from 'react-native';
 import {textColor} from '../Utils/CustomColors';
+import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 
-const HistoryCard = ({item}) => {
-  console.log("History transactions === ",item)
+const HistoryCard = ({item,deleteTransaction}) => {
+  // console.log("History transactions === ",deleteTransaction)
+
   return (
     <View style={styles.card}>
       <View style={[styles.content]}>
@@ -15,6 +17,20 @@ const HistoryCard = ({item}) => {
           <Text style={styles.text}>{item.note}</Text>
           <Text style={styles.text}>{item.amount}</Text>
         </View>
+        <View style={styles.iconsContainer}>
+        {/* <Icon
+          size={25}
+          color="#0096FF"
+          name="square-edit-outline"
+          onPress={() => handleUpdate(item)}
+        /> */}
+        <Icon
+          size={25}
+          color="#D11A2A"
+          name="delete"
+          onPress={() => deleteTransaction(item)}
+        />
+      </View>
       </View>
     </View>
   );
@@ -61,5 +77,11 @@ const styles = StyleSheet.create({
   },
   text: {
     color: '#000000',
+  },
+  iconsContainer: {
+    flex: 1,
+    alignItems: 'center',
+    flexDirection: 'row',
+    justifyContent: 'space-around',
   },
 });

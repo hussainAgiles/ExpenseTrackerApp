@@ -1,7 +1,8 @@
-import {StyleSheet, View, TextInput} from 'react-native';
+import { StyleSheet, View, TextInput,Text } from 'react-native';
 import React from 'react';
-import {deviceHeight, deviceWidth} from '../Utils/Dimension';
+import { deviceHeight, deviceWidth } from '../Utils/Dimension';
 import AntDesign from 'react-native-vector-icons/AntDesign';
+import { Sizes } from '../Constants/constant';
 
 export default function CustTextInput({
   labelValue,
@@ -11,26 +12,37 @@ export default function CustTextInput({
   autoCapitalize,
   autoCorrect,
   secureTextEntry,
-  keyboardType
+  keyboardType,
+  error,
+  errorMessage
 }) {
   return (
-    <View style={styles.inputContainer}>
-      <View style={styles.iconStyle}>
-        <AntDesign name={iconType} size={25} color="#03707a" />
+    <>
+      <View style={styles.inputContainer}>
+        <View style={styles.iconStyle}>
+          <AntDesign name={iconType} size={25} color="#03707a" />
+        </View>
+        <TextInput
+          value={labelValue}
+          style={styles.input}
+          numberOfLines={1}
+          placeholder={placeholderText}
+          placeholderTextColor="#666"
+          onChangeText={onChangeText}
+          autoCapitalize={autoCapitalize}
+          autoCorrect={autoCorrect}
+          secureTextEntry={secureTextEntry}
+          keyboardType={keyboardType}
+        />
       </View>
-      <TextInput
-        value={labelValue}
-        style={styles.input}
-        numberOfLines={1}
-        placeholder={placeholderText}
-        placeholderTextColor="#666"
-        onChangeText={onChangeText}
-        autoCapitalize={autoCapitalize}
-        autoCorrect={autoCorrect}
-        secureTextEntry={secureTextEntry}
-        keyboardType={keyboardType}
-      />
-    </View>
+      {error && (
+        <View style={{ marginLeft: Sizes.medium, marginTop: -Sizes.base * 2 }}>
+          <Text style={{fontSize:10, color:'red' }}>
+            {errorMessage}
+          </Text>
+        </View>
+      )}
+    </>
   );
 }
 

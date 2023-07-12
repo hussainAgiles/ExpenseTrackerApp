@@ -15,6 +15,9 @@ import {useNavigation} from '@react-navigation/native';
 import fireStore from '@react-native-firebase/firestore';
 import Loading from '../Components/Loader';
 import { globalStyle, screenNames } from '../Constants/constant';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import { userNameErrMsg } from '../Utils/ErrorStrings';
+import toast from 'react-native-simple-toast'
 
 
 export default function Registration() {
@@ -38,34 +41,93 @@ export default function Registration() {
   const [data, setData] = useState(initialState);
   const [isLoading, setIsLoading] = useState(false);
   const [errMsg,setErrMsg] = useState('');
+  
+
+  const [firstnameErr,setFirstnameErr] = useState(null)
+  const [lastnameErr,setLastnameErr] = useState(null)
+  const [emailErr,setEmailErr] = useState(null)
+  const [passwordError,setPasswordError] = useState(null)
+  const [conpasswordError,setConfirmPasswordError] = useState(null)
+
 
   const handleTextChange = async (key, value) => {
     await setData({...data, [key]: value});
   };
 
 
+  const validation =()=>{
+    // if(data.firstname == '' || data.lastname == ''|| data.email == '' || data.password == ''|| data.confirm_password == ''){
+    //   toast.show('Please enter the details')
+    // }
+
+    if(data.firstname === ''){
+      setFirstnameErr("First name cannot be empty")
+    }
+
+    if(data.lastname === ''){
+      setLastnameErr(" lastname cannot be empty")
+    }
+
+    if(data.email === ''){
+      setEmailErr("email cannot be empty")
+    }
+
+    // let reg = /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w\w+)+$/;
+    // if (reg.test(data.email) === false) {
+    //   setEmailErr('Incorrect email address');
+    //   return false;
+    // }
+
+    if(data.password === ''){
+      setPasswordError("password cannot be empty")
+    }
+
+    if(data.confirm_password === ''){
+      setConfirmPasswordError("cannot be empty")
+    }
+
+
+  }
+
+  // const validateEmail = (email) => {
+  //   const regex = /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w\w+)+$/;
+  //   if (regex.test(email) === false) {
+  //     setEmailErr('Invalid format of  email address');
+  //     return false;
+  //   }
+   
+  // };
+
   const checkValidation = () =>{
-    if (
-      data.firstname.length === 0 ||
-      data.lastname.length === 0 ||
-      data.email.length === 0
-    ) {
-      setErrMsg('All the fields are mandatory');
+    if (data.firstname.length === 0) {
+      setFirstnameErr('Please enter firstname');
       return false;
     }
+
+    if (data.lastname.length === 0) {
+      setLastnameErr('Please enter your lastname');
+      return false;
+    }
+
+    if (data.email.length === 0) {
+      setEmailErr('Please enter your email');
+      return false;
+    }
+
+
 
     let reg = /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w\w+)+$/;
     if (reg.test(data.email) === false) {
-      setErrMsg('Incorrect email address');
+      setEmailErr('Incorrect email address');
       return false;
     }
 
-    if (data.password.length < 6) {
-      setErrMsg('Password must be of atleast 6 characters');
+    if (data.password.length === 0) {
+      setPasswordError('Password must be of atleast 6 characters');
       return false;
     }
     if (data.password !== data.confirm_password) {
-      setErrMsg('Passwords must match');
+      setConfirmPasswordError('Passwords must match');
       return false;
     }
   
@@ -74,19 +136,14 @@ export default function Registration() {
   }
 
   const handleRegister = async () => {
-    setIsLoading(true)
-
-    if(checkValidation() === true){
+    if(Boolean(validation())){
+      // console.log("hello")
       const uid = generateUUID();
       const response = await fireStore().collection('Users').add({Uuid :uid,
         ...data}).then(()=>{
-        Alert.alert('success','You are Registered successfully',[{
-          text:'ok',onPress:()=>{
-            navigation.navigate(screenNames.DashBoard)
-          }
-        }])
+          toast.show('You are Registered successfully', toast.CENTER);
+          navigation.navigate(screenNames.DashBoard);
       })
-      setIsLoading(false);
     }
   };
 
@@ -110,8 +167,8 @@ export default function Registration() {
             autoCorrect={false}
             onChangeText={text => handleTextChange('firstname',text)}
           />
-          {errMsg.trim().length !== 0 && (
-            <Text style={globalStyle.errorRegisteration}>{errMsg}</Text>
+          {firstnameErr !== 0 && (
+            <Text style={globalStyle.errorRegisteration}>{firstnameErr}</Text>
           )}
           <CustTextInput
             placeholderText="Last Name"
@@ -120,8 +177,8 @@ export default function Registration() {
             autoCorrect={false}
             onChangeText={text => handleTextChange('lastname',text)}
           />
-          {errMsg.trim().length !== 0 && (
-            <Text style={globalStyle.errorRegisteration}>{errMsg}</Text>
+          {lastnameErr !== 0 && (
+            <Text style={globalStyle.errorRegisteration}>{lastnameErr}</Text>
           )}
           <CustTextInput
             placeholderText="Email"
@@ -131,8 +188,8 @@ export default function Registration() {
             keyboardType="email-address"
             onChangeText={text => handleTextChange('email',text)}
           />
-          {errMsg.trim().length !== 0 && (
-            <Text style={globalStyle.errorRegisteration}>{errMsg}</Text>
+          {emailErr !== 0 && (
+            <Text style={globalStyle.errorRegisteration}>{emailErr}</Text>
           )}
           <CustTextInput
             placeholderText="Password"
@@ -142,8 +199,8 @@ export default function Registration() {
             secureTextEntry={true}
             onChangeText={text => handleTextChange('password',text)}
           />
-          {errMsg.trim().length !== 0 && (
-            <Text style={globalStyle.errorRegisteration}>{errMsg}</Text>
+          {passwordError !== 0 && (
+            <Text style={globalStyle.errorRegisteration}>{passwordError}</Text>
           )}
           <CustTextInput
             placeholderText="Confirm Password"
@@ -153,8 +210,8 @@ export default function Registration() {
             secureTextEntry={true}
             onChangeText={text => handleTextChange('confirm_password',text)}
           />
-          {errMsg.trim().length !== 0 && (
-            <Text style={globalStyle.errorRegisteration}>{errMsg}</Text>
+          {conpasswordError !== 0 && (
+            <Text style={globalStyle.errorRegisteration}>{conpasswordError}</Text>
           )}
           <CustButton title="Register" onPress={handleRegister} />
           <TouchableOpacity

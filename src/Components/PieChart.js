@@ -5,9 +5,9 @@ import {textColor} from '../Utils/CustomColors';
 import Categories from '../Screens/Categories';
 
 const PieChart = ({categories, total}) => {
-  console.log("category === ",Categories)
+  // console.log("category === ",Categories)
   const rupeesSymbol = '\u20B9';
-  const gaugeText = `${total} ${rupeesSymbol}`;
+  const gaugeText = `${rupeesSymbol}${total}`;
 
   let data = [];
   // if (categories !== null) {
@@ -28,9 +28,9 @@ const PieChart = ({categories, total}) => {
         // dividerSize={2}
         backgroundColor="#ddd"
       />
-      <View style={styles.gauge}>
-        <Text style={styles.gaugeText}>{gaugeText}</Text>
-      </View>
+        <View style={styles.gauge}>
+          <Text style={styles.gaugeText}>{gaugeText}</Text>
+        </View>
     </View>
   );
 };

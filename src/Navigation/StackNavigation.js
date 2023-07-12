@@ -26,7 +26,7 @@ export const StackNavigation = ()=>{
             <Stack.Screen name={screenNames.Login} component={Login}/>
             <Stack.Screen name={screenNames.Register} component={Registration}/>
             <Stack.Screen name={screenNames.DashBoard} component={BottomNavigation}/>
-            <Stack.Screen name={screenNames.AddTransactions} component={AddTransaction} initialParams={{transaction}}/>
+            <Stack.Screen name={screenNames.AddTransactions} component={AddTransaction}/>
         </Stack.Navigator>
     )
 }

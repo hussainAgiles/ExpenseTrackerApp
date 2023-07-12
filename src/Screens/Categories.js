@@ -11,7 +11,7 @@ import fireStore from '@react-native-firebase/firestore';
 import uuid from 'react-native-uuid';
 import {TouchableOpacity} from 'react-native-gesture-handler';
 
-const CategoryScreen = ({handleSearch}) => {
+const CategoryScreen = () => {
   const [categories, setCategories] = useState([]);
 
   const capitalize = str => {
@@ -59,13 +59,13 @@ const CategoryScreen = ({handleSearch}) => {
   const [modalVisible, setModalVisible] = useState(false);
 
   // Handle Search
-  // const handleSearch = text => {
-  //   setCategories(
-  //     categories.filter(
-  //       item => item.title.toLowerCase().indexOf(text.toLowerCase()) !== -1,
-  //     ),
-  //   );
-  // };
+  const handleSearch = text => {
+    setCategories(
+      categories.filter(
+        item => item.title.toLowerCase().indexOf(text.toLowerCase()) !== -1,
+      ),
+    );
+  };
 
   // handle textinput changes
   const handleChange = (key, value) => {
@@ -77,7 +77,7 @@ const CategoryScreen = ({handleSearch}) => {
     setModalVisible(flag);
   };
 
-  // handling add category
+  // handling add and update category
   const handleSubmit = async () => {
     setModalVisible(false);
     setIsLoading(true);
@@ -136,11 +136,11 @@ const CategoryScreen = ({handleSearch}) => {
 
       return batch.commit();
     });
-    fetch();
+   await fetch();
   };
 
   const handleUpdate = item => {
-    // console.log('handle update', item);
+    console.log('handle update', item);
     setIsUpdate(true);
     setPayload(item);
     setModalVisible(true);
@@ -273,6 +273,8 @@ const styles = StyleSheet.create({
     borderRadius: 10,
     marginTop: 10,
     marginHorizontal: 10,
+    borderColor:'#404FCD',
+    borderWidth:1
   },
   color: {
     marginRight: 10,

@@ -11,6 +11,8 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import Card from '../Components/Card';
 import fireStore from '@react-native-firebase/firestore';
 import toast from 'react-native-simple-toast'
+import Header from '../Components/Header';
+
 
 export default function Home({allCategories}) {
   useEffect(() => {
@@ -59,7 +61,6 @@ export default function Home({allCategories}) {
   const handleDateFilter = (type, value) => {
     console.log("Type in ",value)
     let filteredCategories = dateFilter(type, value, transaction);
-  
   };
 
   const dateFilter = (type, value, transaction) => {
@@ -74,11 +75,10 @@ export default function Home({allCategories}) {
         console.log("Date in filter ",date)
         switch (type) {
           case 'Day':
-            console.log("Day")
             if (date.toLocaleDateString() === value.toLocaleDateString()) {
               total += txn.amount;
               console.log("Total in day",total)
-              tempTransactions.push(txn);
+              // tempTransactions.push(txn);
               console.log("TempTransaction in Day",tempTransactions)
             }
             break;
@@ -90,7 +90,7 @@ export default function Home({allCategories}) {
             ) {
               total += txn.amount;
               console.log("Total in month",total)
-              tempTransactions.push(txn);
+              // tempTransactions.push(txn);
               console.log("TempTransaction in month",tempTransactions)
             }
             break;
@@ -99,22 +99,19 @@ export default function Home({allCategories}) {
             if (date.getFullYear() === value) {
               total += txn.amount;
               console.log("Total in month",total)
-              tempTransactions.push(txn);
+              // tempTransactions.push(txn);
               console.log("TempTransaction",tempTransactions)
             }
             break;
         }
       }
-      category.amount = total;
-      transaction = tempTransactions;
-      if (tempTransactions.length > 0) result.push(transaction);
+      // category.amount = total;
+      // transaction = tempTransactions;
+      // if (tempTransactions.length > 0) result.push(transaction);
     }
-    console.log("Result ==== ",result)
+    // console.log("Result ==== ",result)
     // return result;
   };
-
-
-
 
 
   const handleButtonPress = () => {
@@ -134,12 +131,13 @@ export default function Home({allCategories}) {
 
   return (
     <View style={styles.container}>
+      <Header/>
        <View style={[styles.dateContainer, !portrait && {flex: 4}]}>
         <DateTypeSelection date={date} sendDateToHome={handleDateFilter} />
       </View>
       
         <View style={styles.chartAndButton}>
-          <PieChart categories={transaction} total={total}  />
+          {/* <PieChart categories={transaction} total={total} /> */}
           <Button
             icon="plus-thick"
             color={primaryColor}
@@ -158,9 +156,6 @@ export default function Home({allCategories}) {
         <View style={styles.dataContainer}>
         <FlatList
           data={transaction}
-          // refreshControl={
-          //   <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
-          // }
           renderItem={({item}) => (
             <TouchableOpacity >
               <Card item={item} />

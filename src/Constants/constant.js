@@ -23,7 +23,7 @@ export const globalStyle = StyleSheet.create({
   errorRegisteration: {
     color: 'red',
     fontSize: 15,
-    textAlign: 'left',
+    textAlign:"left",
     marginVertical: 5,
   },
 });
