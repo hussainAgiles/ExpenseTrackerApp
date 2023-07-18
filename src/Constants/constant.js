@@ -9,7 +9,8 @@ export const screenNames = {
   Home: `Home`,
   Transaction: `Transaction History`,
   Categories: `Categories`,
-  AddTransactions :`Add Transactions`
+  AddTransactions :`Add Transactions`,
+  TransactionPopup :`Update Transaction`
 };
 
 export const globalStyle = StyleSheet.create({
@@ -55,3 +56,7 @@ export const categoryColors = [
   '#AFF92F',
   '#aa7f50',
 ];
+
+  
+
+

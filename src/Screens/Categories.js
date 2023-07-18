@@ -10,23 +10,24 @@ import {Sizes, categoryColors, globalStyle} from '../Constants/constant';
 import fireStore from '@react-native-firebase/firestore';
 import uuid from 'react-native-uuid';
 import {TouchableOpacity} from 'react-native-gesture-handler';
+import { handleCategories} from '../Utils/TransactionUpdates';
 
 const CategoryScreen = () => {
   const [categories, setCategories] = useState([]);
 
-  const capitalize = str => {
-    const lower = str.toLowerCase();
-    return str.charAt(0).toUpperCase() + lower.slice(1);
-  };
+  // const capitalize = str => {
+  //   const lower = str.toLowerCase();
+  //   return str.charAt(0).toUpperCase() + lower.slice(1);
+  // };
 
-  const handleCategories = data => {
-    // console.log("rieved data",data)
-    data.map((item, index) => {
-      data[index].title = capitalize(item.title);
-      data[index].color = categoryColors[index % categoryColors.length];
-    });
-    return data;
-  };
+  // const handleCategories = data => {
+  //   // console.log("rieved data",data)
+  //   data.map((item, index) => {
+  //     data[index].title = capitalize(item.title);
+  //     data[index].color = categoryColors[index % categoryColors.length];
+  //   });
+  //   return data;
+  // };
 
   const uId = uuid.v4();
 
@@ -81,7 +82,6 @@ const CategoryScreen = () => {
   const handleSubmit = async () => {
     setModalVisible(false);
     setIsLoading(true);
-
     if (payload.title.trim() === '') {
       setErrMsg('Fill the title.');
       setIsLoading(false);
@@ -123,7 +123,7 @@ const CategoryScreen = () => {
     fetch();
   };
 
-  const updateCategory = async category => {
+  const updateCategory = async(category)=> {
     // console.log('Category =====> ', category);
     var query = fireStore()
       .collection('Category')
@@ -133,10 +133,9 @@ const CategoryScreen = () => {
       snapshot.forEach(doc => {
         batch.update(doc.ref, category);
       });
-
       return batch.commit();
     });
-   await fetch();
+  await fetch();
   };
 
   const handleUpdate = item => {

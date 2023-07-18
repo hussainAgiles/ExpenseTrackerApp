@@ -2,20 +2,20 @@ import React from 'react';
 import {StyleSheet, Text, View} from 'react-native';
 import Pie from 'react-native-pie';
 import {textColor} from '../Utils/CustomColors';
-import Categories from '../Screens/Categories';
 
 const PieChart = ({categories, total}) => {
-  // console.log("category === ",Categories)
+  console.log("categorybdfjdsjj === ",categories)
   const rupeesSymbol = '\u20B9';
   const gaugeText = `${rupeesSymbol}${total}`;
 
   let data = [];
   // if (categories !== null) {
   //   data = categories.map(item => {
-  //     let obj = {};
-  //     obj.percentage = item.percentage;
-  //     obj.color = item.color;
-  //     return obj;
+  //     console.log("Items === ",item)
+  //     // let obj = {};
+  //     // obj.key = item.key;
+  //     // obj.value = item.amount;
+  //     // return obj;
   //   });
   // }
 
@@ -24,12 +24,30 @@ const PieChart = ({categories, total}) => {
       <Pie
         radius={90}
         innerRadius={50}
-        sections={data}
-        // dividerSize={2}
+        sections={[
+          {
+            percentage: 1.28,
+            color: '#C70039',
+          },
+          {
+            percentage: 95.19,
+            color: '#44CD40',
+          },
+          {
+            percentage: 2.00,
+            color: '#404FCD',
+          },
+          {
+            percentage: 0.95,
+            color: '#EBD22F',
+          },
+
+        ]}
+        dividerSize={2}
         backgroundColor="#ddd"
       />
         <View style={styles.gauge}>
-          <Text style={styles.gaugeText}>{gaugeText}</Text>
+          <Text style={styles.gaugeText}>{gaugeText} </Text>
         </View>
     </View>
   );

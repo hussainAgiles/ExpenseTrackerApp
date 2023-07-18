@@ -1,3 +1,6 @@
+import Images from "../Constants/Images";
+import { categoryColors } from "../Constants/constant";
+
 export const updateTrxn = async (transaction)=>{
     // console.log("update item",transaction)
     var query = fireStore()
@@ -11,3 +14,18 @@ export const updateTrxn = async (transaction)=>{
       return batch.commit();
     });
   }
+
+
+  export const handleCategories = data => {
+    // console.log("rieved data",data)
+    data.map((item, index) => {
+      data[index].title = capitalize(item.title);
+      data[index].color = categoryColors[index % categoryColors.length];
+    });
+    return data;
+  };
+
+ export  const capitalize = str => {
+    const lower = str.toLowerCase();
+    return str.charAt(0).toUpperCase() + lower.slice(1);
+  };

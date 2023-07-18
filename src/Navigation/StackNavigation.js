@@ -5,6 +5,7 @@ import SplashScreen from "../Screens/SplashScreen";
 import Registration from "../Screens/Registration";
 import BottomNavigation from './BottomNavigator'
 import AddTransaction from "../Screens/AddTransaction";
+import TransactionModal from "../Components/TransactionModal";
 
 
 const transaction = ()=>{
@@ -27,6 +28,7 @@ export const StackNavigation = ()=>{
             <Stack.Screen name={screenNames.Register} component={Registration}/>
             <Stack.Screen name={screenNames.DashBoard} component={BottomNavigation}/>
             <Stack.Screen name={screenNames.AddTransactions} component={AddTransaction}/>
+            <Stack.Screen name={screenNames.TransactionPopup} component={TransactionModal}/>
         </Stack.Navigator>
     )
 }

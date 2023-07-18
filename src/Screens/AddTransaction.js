@@ -16,25 +16,46 @@ import Loading from '../Components/Loader';
 import fireStore from '@react-native-firebase/firestore';
 import toast from 'react-native-simple-toast';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { screenNames } from '../Constants/constant';
+import { categoryColors, globalStyle, screenNames } from '../Constants/constant';
 import uuid from 'react-native-uuid';
+import {handleCategories,updateTrxn} from '../Utils/TransactionUpdates'
 
-export default function AddTransaction({ route, navigation, oldTransaction }) {
+export default function AddTransaction({ route, navigation }) {
+
+  console.log("welcome")
+
+  const oldTransaction = route.params.payload;
+  console.log("Flagship",oldTransaction)
+
   useEffect(() => {
     fetchCategories();
   }, []);
 
-  const showFutureDates = route.params.showFutureDates;
+  const prepopulateDataForUpdate = () => {
+    console.log("inside useffect")
+    setCategoryId(oldTransaction.category_id);
+    // console.log("Category Id",categoryId)
+    setCategoryName(oldTransaction.category_name);
+    // console.log("Category Name",categoryName)
+    setSelectedDate(new Date(oldTransaction.transactionDate.toDate()));
+    // console.log("Date",selectedDate)
+    setPayload({
+      amount: oldTransaction.amount,
+      note: oldTransaction.note,
+      transactionDate: oldTransaction.transactionDate,
+    });
 
-  // const oldTransaction = route.params.transaction;
+    console.log("Payload now ",payload)
+
+  };
+
+  const showFutureDates = route.params.showFutureDates;
 
   let initialState = {
     amount: 0,
     note: '',
     transactionDate: new Date()
   };
-
-
 
   const today = new Date();
   let yesterday = new Date();
@@ -44,6 +65,7 @@ export default function AddTransaction({ route, navigation, oldTransaction }) {
 
   const [payload, setPayload] = useState(initialState);
   const [categoryId, setCategoryId] = useState(null);
+  const [categoryName,setCategoryName] = useState(null)
   const [selectedDate, setSelectedDate] = useState(new Date());
   const [showDatePicker, setShowDatePicker] = useState(false);
   const [errMsg, setErrMsg] = useState('');
@@ -54,9 +76,9 @@ export default function AddTransaction({ route, navigation, oldTransaction }) {
     const collectionRef = fireStore().collection('Category');
     const snapshot = await collectionRef.get();
     const fetcheddata = snapshot.docs.map(doc => doc.data());
-    setCategory(fetcheddata);
-    // const finalCat = handleCategories(fetcheddata);
-    // setCategories(finalCat);
+    // setCategory(fetcheddata);
+    const finalCat = handleCategories(fetcheddata);
+    setCategory(finalCat);
   };
 
   const handleChange = (key, value) => {
@@ -110,13 +132,15 @@ export default function AddTransaction({ route, navigation, oldTransaction }) {
 
     let payloadToSend = { ...payload };
     let isSuccessful;
-    if (oldTransaction !== undefined)
-      isSuccessful = await updateTrxn(
+    if (oldTransaction !== undefined){
+      isSuccessful = updateTransaction(
         payloadToSend,
-        categoryId,
         oldTransaction.id,
       );
-    else isSuccessful = await addTransaction();
+    }
+    else{
+      isSuccessful = await addTransaction();
+    } 
     if (isSuccessful) {
       setCategoryId(null);
       setPayload(initialState)
@@ -128,17 +152,35 @@ export default function AddTransaction({ route, navigation, oldTransaction }) {
 
   const addTransaction = async () => {
     const userId = await AsyncStorage.getItem('User_Token');
-    // console.log("Payload getting pushed",payload)
     const response = await fireStore()
       .collection('Transaction')
-      .add({ ...payload, category_id: categoryId, user_id: userId, id: uId })
+      .add({ ...payload, category_id: categoryId, user_id: userId, id: uId, category_name:categoryName})
       .then(() => {
         toast.show('Transaction added succesfully', toast.CENTER);
       });
     navigation.navigate(screenNames.Transaction)
   };
 
+  const updateTransaction = (data,transactionId) =>{
+    // console.log("Updateing traxn === ",data)
+    var query = fireStore()
+      .collection('Transaction')
+      .where('id', '==', transactionId);
+    query.get().then(snapshot => {
+      const batch = fireStore().batch();
+      snapshot.forEach(doc => {
+        batch.update(doc.ref,data );
+      });
+      return batch.commit()
+    });
+    toast.show('Transaction Updated succesfully', toast.CENTER);
+    navigation.navigate(screenNames.Transaction)
+  }
 
+  useEffect(() => {
+    if( oldTransaction !== undefined) prepopulateDataForUpdate(); 
+  }, []);
+  
 
   return (
     <View style={{ padding: 10}}>
@@ -172,11 +214,12 @@ export default function AddTransaction({ route, navigation, oldTransaction }) {
         columnWrapperStyle={{ flex: 1, justifyContent: 'space-evenly' }}
         renderItem={({ item, index }) => (
           <TouchableOpacity
-            onPress={() => setCategoryId(item.id)}
+            onPress={() =>{ setCategoryId(item.id)
+              setCategoryName(item.title)
+            }}
             style={[
               styles.categoryBox,
-              categoryId === item.id && { backgroundColor: '#44CD40' },
-
+              categoryId === item.id && { backgroundColor: '#44CD40' }
             ]}>
             {item.title.length > 10 ? (
               <Text style={styles.categoryText}>

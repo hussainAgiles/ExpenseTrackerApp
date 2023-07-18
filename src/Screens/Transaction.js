@@ -1,40 +1,62 @@
-import { StyleSheet, TouchableOpacity, View ,FlatList,Text} from 'react-native'
-import React,{useEffect,useState} from 'react'
-import HistoryCard from '../Components/HistoryCard'
+import {
+  StyleSheet,
+  TouchableOpacity,
+  View,
+  FlatList,
+  Text,
+  Image,
+} from 'react-native';
+import React, {useEffect, useState} from 'react';
+import HistoryCard from '../Components/HistoryCard';
 import fireStore from '@react-native-firebase/firestore';
-import { categoryColors, screenNames } from '../Constants/constant';
+import {categoryColors, screenNames} from '../Constants/constant';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
-import { useNavigation } from '@react-navigation/native';
+import Icons from 'react-native-vector-icons/MaterialIcons';
+import {useNavigation} from '@react-navigation/native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-
-
+import Images from '../Constants/Images';
 
 export default function Transaction() {
-
-const [data,setData] = useState([]);
-const navigation = useNavigation()
+  const [data, setData] = useState([]);
+  const navigation = useNavigation();
   useEffect(() => {
-    fetchtransaction()
-  }, [])
+    fetchtransaction();
+  }, []);
 
+  // Fetch all the transaction
   const fetchtransaction = async () => {
-    const userId =await AsyncStorage.getItem('userId')
-    // console.log("Fetched Async userId",userId)
-    const collectionRef = fireStore().collection('Transaction').where('user_id','==',userId);
+    const userId = await AsyncStorage.getItem('userId');
+    const collectionRef = fireStore()
+      .collection('Transaction')
+      .where('user_id', '==', userId);
     const snapshot = await collectionRef.get();
     const fetcheddata = snapshot.docs.map(doc => doc.data());
-    const datawithColors = handleCategories(fetcheddata)
-    setData(datawithColors)
+
+    // adding icons to categories
+    const datawithColors = handleCategorieswithImage(fetcheddata);
+    // const dataTotalExpense = calculateTotalExpense(datawithColors)
+    setData(datawithColors);
   };
 
-  const fetchtransactionUpdation = async (trnsactionId) => {
-    const collectionRef = fireStore().collection('Transaction').where('id','==',trnsactionId);
+  const calculateTotalExpense = categories => {
+    // console.log("Calculating === ",categories)
+    let total = 0;
+    categories.map((item, index) => {
+        total = total + Number(item.amount);
+    }); 
+    const totalExpense = total;
+    console.log("Total amount spent",totalExpense)
+    return categories;
+  };
+
+  const fetchtransactionUpdation = async trnsactionId => {
+    const collectionRef = fireStore()
+      .collection('Transaction')
+      .where('id', '==', trnsactionId);
     const snapshot = await collectionRef.get();
     const fetcheddata = snapshot.docs.map(doc => doc.data());
-    console.log("Updating data",fetcheddata)
-    
-    // const datawithColors = handleCategories(fetcheddata)
-    // setData(datawithColors)
+    // console.log('Updating data', fetcheddata[0]);
+    return fetcheddata[0];
   };
 
   const deleteTrxn = async transaction => {
@@ -55,56 +77,107 @@ const navigation = useNavigation()
     return str.charAt(0).toUpperCase() + lower.slice(1);
   };
 
-  const handleCategories = data => {
+  const handleCategorieswithImage = data => {
     // console.log("rieved data",data)
     data.map((item, index) => {
       data[index].note = capitalize(item.note);
       data[index].color = categoryColors[index % categoryColors.length];
+
+      if (
+        data[index].category_name === 'Dining' ||
+        data[index].category_name === 'dining'
+      ) {
+        data[index].icon_name = 'local-dining';
+      }
+      if (
+        data[index].category_name === 'Travel' ||
+        data[index].category_name === 'travel'
+      ) {
+        data[index].icon_name = 'flight-takeoff';
+      }
+      if (
+        data[index].category_name === 'Telephone' ||
+        data[index].category_name === 'telephone'
+      ) {
+        data[index].icon_name = 'phone';
+      }
+      if (
+        data[index].category_name === 'Education' ||
+        data[index].category_name === 'education'
+      ) {
+        data[index].icon_name = 'school';
+      }
+      if (
+        data[index].category_name === 'Others' ||
+        data[index].category_name === 'others'
+      ) {
+        data[index].icon_name = 'miscellaneous-services';
+      }
     });
     return data;
   };
 
+  const handleUpdate = async item => {
+    const transactionId = item.id;
+    const payloadToSend = await fetchtransactionUpdation(transactionId);
+    // console.log("payloaddddd = ", payloadToSend)
+    navigation.navigate(screenNames.AddTransactions, {
+      showFutureDates: false,
+      payload: payloadToSend,
+    });
+  };
 
-  const handleUpdate = (item) =>{
-    const transactionId = item.id
-    fetchtransactionUpdation(transactionId)
-  }
-  
   return (
-    <View style={{marginTop:15}}>
-     <FlatList
-          data={data}
-          renderItem={({item}) => (
-            <View style={styles.card}>
+    <View style={{marginTop: 15}}>
+      <FlatList
+        data={data}
+        renderItem={({item}) => (
+          <View style={styles.card}>
             <View style={[styles.content]}>
-              <View style>
-                <View style={[styles.color]} />
-                {/* <Text style={styles.text}>{item.transactionDate}</Text> */}
-              </View>
               <View style={styles.rightContent}>
+                <View
+                  style={{
+                    width: 70,
+                    height: 30,
+                    justifyContent: 'center',
+                    alignItems: 'center',
+                  }}>
+                  {/* <Image source={item.image} resizeMode='contain'/> */}
+                  <Icons size={30} color="#0096FF" name={item.icon_name} />
+                  <Text
+                    style={{
+                      textAlign: 'center',
+                      fontSize: 13,
+                      fontWeight: 700,
+                    }}>
+                    {item.category_name}
+                  </Text>
+                </View>
                 <Text style={styles.text}>{item.note}</Text>
-                <Text style={styles.text}>{'\u20B9'}. {item.amount}</Text>
+                <Text style={styles.text}>
+                  {'\u20B9'}. {item.amount}
+                </Text>
               </View>
               <View style={styles.iconsContainer}>
-              <Icon
-                size={25}
-                color="#0096FF"
-                name="square-edit-outline"
-                onPress={() => handleUpdate(item)}
-              />
-              <Icon
-                size={25}
-                color="#D11A2A"
-                name="delete"
-                onPress={() => deleteTrxn(item)}
-              />
-            </View>
+                <Icon
+                  size={25}
+                  color="#0096FF"
+                  name="square-edit-outline"
+                  onPress={() => handleUpdate(item)}
+                />
+                <Icon
+                  size={25}
+                  color="#D11A2A"
+                  name="delete"
+                  onPress={() => deleteTrxn(item)}
+                />
+              </View>
             </View>
           </View>
-          )}
-        />
+        )}
+      />
     </View>
-  )
+  );
 }
 
 const styles = StyleSheet.create({
@@ -118,15 +191,16 @@ const styles = StyleSheet.create({
     shadowRadius: 2,
     shadowColor: 'black',
     elevation: 3,
-    margin:10,
-    borderColor:'#404FCD'
+    margin: 5,
+    borderColor: '#404FCD',
+    height: 80,
   },
   content: {
     flex: 1,
     flexDirection: 'row',
     alignItems: 'center',
-    paddingVertical: 12,
-    paddingHorizontal: 15,
+    paddingVertical: 5,
+    paddingHorizontal: 5,
   },
   leftContent: {
     flex: 4,
@@ -148,11 +222,12 @@ const styles = StyleSheet.create({
   },
   text: {
     color: '#000000',
+    textAlign: 'left',
   },
   iconsContainer: {
     flex: 1,
     alignItems: 'center',
     flexDirection: 'row',
-    justifyContent: 'space-around',
-  }
-})
+    justifyContent:"space-evenly"
+  },
+});
