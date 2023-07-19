@@ -4,7 +4,6 @@ import DateTimePicker from '@react-native-community/datetimepicker';
 const DatePicker = ({handleSelectDate, showFutureDates}) => {
     
   const onChange = (event, selectedDate) => {
-    console.log("Selected Date ",event)
     const currentDate = selectedDate || new Date();
     handleSelectDate(currentDate);
   };

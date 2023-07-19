@@ -42,10 +42,10 @@ export default function Transaction() {
     // console.log("Calculating === ",categories)
     let total = 0;
     categories.map((item, index) => {
-        total = total + Number(item.amount);
-    }); 
+      total = total + Number(item.amount);
+    });
     const totalExpense = total;
-    console.log("Total amount spent",totalExpense)
+    console.log('Total amount spent', totalExpense);
     return categories;
   };
 
@@ -128,7 +128,7 @@ export default function Transaction() {
   };
 
   return (
-    <View style={{marginTop: 15}}>
+    <View style={{marginTop: 10}}>
       <FlatList
         data={data}
         renderItem={({item}) => (
@@ -142,21 +142,24 @@ export default function Transaction() {
                     justifyContent: 'center',
                     alignItems: 'center',
                   }}>
-                  {/* <Image source={item.image} resizeMode='contain'/> */}
                   <Icons size={30} color="#0096FF" name={item.icon_name} />
                   <Text
                     style={{
-                      textAlign: 'center',
+                      textAlign: 'left',
                       fontSize: 13,
-                      fontWeight: 700,
                     }}>
                     {item.category_name}
                   </Text>
                 </View>
+
+
                 <Text style={styles.text}>{item.note}</Text>
                 <Text style={styles.text}>
-                  {'\u20B9'}. {item.amount}
+                  <Text style={styles.rupeeText}>{'\u20B9'}.</Text>{' '}
+                  {item.amount}
                 </Text>
+
+                
               </View>
               <View style={styles.iconsContainer}>
                 <Icon
@@ -214,20 +217,18 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     alignItems: 'center',
   },
-  color: {
-    marginRight: 10,
-    width: 18,
-    height: 18,
-    borderRadius: 18 / 2,
-  },
   text: {
     color: '#000000',
-    textAlign: 'left',
+    fontFamily: 'Lato-Regular',
+  },
+  rupeeText: {
+    fontFamily: 'Lato-Bold',
+    color: '#C70039',
   },
   iconsContainer: {
     flex: 1,
-    alignItems: 'center',
-    flexDirection: 'row',
-    justifyContent:"space-evenly"
+    flexDirection: 'column',
+    justifyContent:'flex-end',
+    alignItems:"flex-end"
   },
 });

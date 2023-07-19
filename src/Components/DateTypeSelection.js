@@ -146,7 +146,7 @@ const styles = StyleSheet.create({
   },
   optionText: {
     color: textColor,
-    fontSize: 16,
+    fontSize: 18,
   },
   active: {
     color: primaryColor,
@@ -163,6 +163,8 @@ const styles = StyleSheet.create({
   },
   selectedText: {
     color: textColor,
+    fontSize:16,
+    fontFamily:"Lato-Black"
   },
   navigationButtons: {
     color: textColor,

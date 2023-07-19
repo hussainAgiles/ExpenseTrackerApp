@@ -18,6 +18,11 @@ export default function Home({allCategories}) {
     // fetchtransaction()
     fetchTransactionCategryBased();
   }, []);
+
+  useEffect(() => {
+    fetchRecentTrxn()
+  }, [])
+  
   const navigation = useNavigation();
   const [date, setDate] = useState(new Date());
   const [transaction, setTransaction] = useState([]);
@@ -54,7 +59,7 @@ export default function Home({allCategories}) {
     return total;
   };
 
-  const calculateCategoryWiseExpense = (categories) => {
+  const calculateCategoryWiseExpense = categories => {
     // const expenses = [{key:'1',sum:'100',category:'car'},{key:'2',sum:'200',category:'food'},{key:'3',sum:'300',category:'furniture'},
     // {key:'4',sum:'400',category:'food'},{key:'5',sum:'700',category:'car'},],
 
@@ -63,8 +68,11 @@ export default function Home({allCategories}) {
 
     const categoryTotals = categoriseAmount(categories);
     // console.log("Category Totals",categoryTotals)
-    const totalExpense = Object.values(categoryTotals).reduce((total, amount) => total + amount,0);
-    console.log("totalexpenses ==== ",Number(totalExpense))
+    const totalExpense = Object.values(categoryTotals).reduce(
+      (total, amount) => total + amount,
+      0,
+    );
+    // console.log("totalexpenses ==== ",Number(totalExpense))
     const categoryPercentages = {};
     for (const category in categoryTotals) {
       const percentage = (categoryTotals[category] / totalExpense) * 100;
@@ -77,9 +85,9 @@ export default function Home({allCategories}) {
     // return result;
   };
 
-  const categoriseAmount = (categories) => {
+  const categoriseAmount = categories => {
     const categoryTotals = {};
-    categories.forEach((expense )=> {
+    categories.forEach(expense => {
       const {category_name, amount} = expense;
       if (categoryTotals[category_name]) {
         categoryTotals[category_name] += Number(amount);
@@ -87,7 +95,7 @@ export default function Home({allCategories}) {
         categoryTotals[category_name] = Number(amount);
       }
     });
-    console.log("Format returning === ",categoryTotals)
+    // console.log("Format returning === ",categoryTotals)
     return categoryTotals;
   };
 
@@ -102,8 +110,8 @@ export default function Home({allCategories}) {
     // console.log('Home fetched trxn ', fetcheddata);
     const totalExpense = calculateTotalExpense(fetcheddata);
     const categoryWiseExpense = calculateCategoryWiseExpense(fetcheddata);
-    console.log('categoryWiseExpense ==== ', categoryWiseExpense);
-    setTransaction(categoryWiseExpense);
+    // console.log('categoryWiseExpense ==== ', categoryWiseExpense);
+    setTransaction(fetcheddata);
     setTotal(totalExpense);
   };
 
@@ -117,58 +125,65 @@ export default function Home({allCategories}) {
   };
 
   const handleDateFilter = (type, value) => {
-    console.log('Type in ', value);
     let filteredCategories = dateFilter(type, value, transaction);
   };
 
   const dateFilter = (type, value, transaction) => {
     let result = [];
-
     for (let category of transaction) {
       if (transaction === null) continue;
       let tempTransactions = [];
       let total = 0;
       for (let txn of transaction) {
-        let date = new Date(txn.transactionDate);
-        console.log('Date in filter ', date);
+        // console.log("txn ========== ",txn.transactionDate)
+        const timeStamp = txn.transactionDate;
+        const miliseconds =
+          timeStamp.seconds * 1000 + timeStamp.nanoseconds / 1000000;
+        let date = new Date(miliseconds);
+        // console.log('Date in filter ', date);
         switch (type) {
           case 'Day':
             if (date.toLocaleDateString() === value.toLocaleDateString()) {
-              total += txn.amount;
-              console.log('Total in day', total);
-              // tempTransactions.push(txn);
-              console.log('TempTransaction in Day', tempTransactions);
+              total += Number(txn.amount);
+              // console.log('Total in day', total);
+              tempTransactions.push(txn);
+              // console.log('TempTransaction in Day', tempTransactions);
             }
             break;
+
           case 'Month':
-            console.log('Month');
             if (
               date.getMonth() === value.getMonth() &&
               date.getFullYear() === value.getFullYear()
             ) {
-              total += txn.amount;
-              console.log('Total in month', total);
-              // tempTransactions.push(txn);
-              console.log('TempTransaction in month', tempTransactions);
+              total += Number(txn.amount);
+              // console.log('Total in month', total);
+              tempTransactions.push(txn);
+              // console.log('TempTransaction in month', tempTransactions);
             }
             break;
+
           case 'Year':
-            console.log('yeaaar');
             if (date.getFullYear() === value) {
-              total += txn.amount;
-              console.log('Total in month', total);
-              // tempTransactions.push(txn);
-              console.log('TempTransaction', tempTransactions);
+              total += Number(txn.amount);
+              // console.log('Total in year', total);
+              tempTransactions.push(txn);
+              // console.log('TempTransaction year wise', tempTransactions);
             }
             break;
         }
       }
-      // category.amount = total;
-      // transaction = tempTransactions;
-      // if (tempTransactions.length > 0) result.push(transaction);
+      // console.log(
+      //   'outside everything temptransaction value === ',
+      //   tempTransactions,
+      // );
+      setTotal(total);
+      // console.log('total outside for loop ', total);
+      transaction = tempTransactions;
+      if (tempTransactions.length > 0) result.push(transaction);
     }
     // console.log("Result ==== ",result)
-    // return result;
+    return result;
   };
 
   const handleButtonPress = () => {
@@ -178,19 +193,39 @@ export default function Home({allCategories}) {
     });
   };
 
-  const handleCategoryPress = value => {
-    let category = [value];
-    // let transactions = getAllTransactions(category);
-    // navigation.navigate('AllTransactionsScreen', {
-    //   transactions: transactions,
-    // });
-  };
+  // const handleCategoryPress = value => {
+  //   let category = [value];
+  //   // let transactions = getAllTransactions(category);
+  //   // navigation.navigate('AllTransactionsScreen', {
+  //   //   transactions: transactions,
+  //   // });
+  // };
+
+
+
+  // Recent transaction
+
+  const rupeesSymbol = '\u20B9';
+  const [recentTransaction, setRecentTransaction] = useState();
+
+  const fetchRecentTrxn =async () =>{
+    const userId = await AsyncStorage.getItem('userId');
+    const collectionRef = fireStore().collection('Transaction');
+    const querySnapshot = await collectionRef
+      .where('user_id', '==', userId)
+      .orderBy('transactionDate')
+      .limit(3)
+      .get();
+
+        const recentTransactions = querySnapshot.docs.map((doc) => doc.data());
+        setRecentTransaction(recentTransactions);
+  }
 
   return (
     <View style={styles.container}>
       <Header />
       <View style={[styles.dateContainer, !portrait && {flex: 4}]}>
-        {/* <DateTypeSelection date={date} sendDateToHome={handleDateFilter} /> */}
+        <DateTypeSelection date={date} sendDateToHome={handleDateFilter} />
       </View>
 
       <View style={styles.chartAndButton}>
@@ -203,22 +238,23 @@ export default function Home({allCategories}) {
           onPress={handleButtonPress}>
           Add Transaction
         </Button>
-        {/* <TouchableOpacity onPress={()=>{
-            navigation.navigate(screenNames.Login);
-            AsyncStorage.removeItem('User_Token')
-          }}>
-            <Text>sign Out</Text>
-          </TouchableOpacity> */}
       </View>
-      <View style={styles.dataContainer}>
-        {/* <FlatList
-          data={transaction}
+      <View style={styles.card}>
+        <Text style={{fontSize:20,fontWeight:800,marginLeft:10}}>Latest Transaction</Text>
+        <FlatList
+          data={recentTransaction}
           renderItem={({item}) => (
-            <TouchableOpacity >
-              <Card item={item} />
-            </TouchableOpacity>
+           <View style={styles.bottomCardContent}>
+            <View style={styles.leftContent}>
+              <Text style={styles.CategoryText}>{item.category_name}</Text>
+              <Text style={styles.descText}>{item.note}</Text>
+            </View>
+            <View style={{flexDirection:'column',justifyContent:"center"}}>
+              <Text style={{fontSize:15,fontWeight:800,color:"#C70039"}}>{rupeesSymbol}<Text style={{fontSize:15,fontWeight:800,color:"#000000"}}>. {item.amount}</Text></Text>
+            </View>
+           </View>
           )}
-        /> */}
+        />
       </View>
     </View>
   );
@@ -254,4 +290,34 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-around',
   },
+  CategoryText:{
+    fontSize:18,
+    color:"#000000"
+  },
+  descText :{
+    fontSize:15,
+    color:"#000000"
+  },
+  card: {
+    marginVertical: 5,
+    borderRadius: 8,
+    backgroundColor: '#fff',
+    shadowOffset: {width: 1, height: 1},
+    shadowOpacity: 0.5,
+    shadowRadius: 2,
+    shadowColor: 'black',
+    // elevation: 3,
+  },
+  bottomCardContent: {
+    flexDirection:'row',
+    justifyContent:"space-between",
+    borderBottomColor:"#000000",
+    borderBottomWidth:1,
+    paddingLeft:10,
+    paddingRight:10,
+    paddingBottom:10
+  },
+  leftContent :{
+    flexDirection:'column',marginTop:10
+  }
 });

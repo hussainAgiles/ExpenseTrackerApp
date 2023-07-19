@@ -21,23 +21,20 @@ import uuid from 'react-native-uuid';
 import {handleCategories,updateTrxn} from '../Utils/TransactionUpdates'
 
 export default function AddTransaction({ route, navigation }) {
-
-  console.log("welcome")
-
   const oldTransaction = route.params.payload;
-  console.log("Flagship",oldTransaction)
+  // console.log("Flagship",oldTransaction)
 
   useEffect(() => {
     fetchCategories();
   }, []);
 
   const prepopulateDataForUpdate = () => {
-    console.log("inside useffect")
+    // console.log("inside useffect")
     setCategoryId(oldTransaction.category_id);
     // console.log("Category Id",categoryId)
     setCategoryName(oldTransaction.category_name);
     // console.log("Category Name",categoryName)
-    setSelectedDate(new Date(oldTransaction.transactionDate.toDate()));
+    setSelectedDate(new Date(oldTransaction.transactionDate));
     // console.log("Date",selectedDate)
     setPayload({
       amount: oldTransaction.amount,
@@ -45,7 +42,7 @@ export default function AddTransaction({ route, navigation }) {
       transactionDate: oldTransaction.transactionDate,
     });
 
-    console.log("Payload now ",payload)
+    // console.log("Payload now ",payload)
 
   };
 

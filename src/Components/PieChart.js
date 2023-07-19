@@ -4,7 +4,7 @@ import Pie from 'react-native-pie';
 import {textColor} from '../Utils/CustomColors';
 
 const PieChart = ({categories, total}) => {
-  console.log("categorybdfjdsjj === ",categories)
+  // console.log("categorybdfjdsjj === ",categories)
   const rupeesSymbol = '\u20B9';
   const gaugeText = `${rupeesSymbol}${total}`;
 
