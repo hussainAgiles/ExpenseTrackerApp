@@ -12,14 +12,14 @@ const Header = () => {
         {/* <View>
             <Text style={{textAlign:"center"}}>DashBoard</Text>
         </View> */}
-      <View style={{width:80,backgroundColor:"#03707a",borderRadius:20,padding:10,height:40}}>
+      <View style={{width: '90%',backgroundColor:"#03707a",borderRadius:20,padding:8,height:40,marginLeft:'5%'}}>
         <TouchableOpacity
           onPress={() => {
             navigation.navigate(screenNames.Login);
             AsyncStorage.removeItem('User_Token');
             AsyncStorage.removeItem('UserId');
           }}>
-          <Text style={{textAlign:"center",color:"#fff"}}>sign Out</Text>
+          <Text style={{textAlign:"center",color:"#fff",fontSize:18}}>Sign Out</Text>
         </TouchableOpacity>
       </View>
     </View>

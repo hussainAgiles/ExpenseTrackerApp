@@ -15,20 +15,6 @@ import { handleCategories} from '../Utils/TransactionUpdates';
 const CategoryScreen = () => {
   const [categories, setCategories] = useState([]);
 
-  // const capitalize = str => {
-  //   const lower = str.toLowerCase();
-  //   return str.charAt(0).toUpperCase() + lower.slice(1);
-  // };
-
-  // const handleCategories = data => {
-  //   // console.log("rieved data",data)
-  //   data.map((item, index) => {
-  //     data[index].title = capitalize(item.title);
-  //     data[index].color = categoryColors[index % categoryColors.length];
-  //   });
-  //   return data;
-  // };
-
   const uId = uuid.v4();
 
   const addCategory = async (value) => {
@@ -44,8 +30,8 @@ const CategoryScreen = () => {
     const snapshot = await collectionRef.get();
     const fetcheddata = snapshot.docs.map(doc => doc.data());
     const finalCat = handleCategories(fetcheddata);
-    // console.log("fainal catgry ==",finalCat)
     setCategories(finalCat);
+    setIsLoading(false)
   };
 
   let initialState = {
@@ -90,17 +76,11 @@ const CategoryScreen = () => {
 
     let isSuccessful;
     if (isUpdate) {
-      // console.log('update ===', payload);
       isSuccessful = await updateCategory(payload);
       setIsUpdate(false);
     } else {
       isSuccessful = await addCategory(payload);
     }
-    // if (isSuccessful === true) {
-    //   setPayload(initialState);
-    // } else {
-    //   setErrMsg('Problem occured. Please try again later.');
-    // }
     setIsLoading(false);
   };
 
@@ -124,7 +104,6 @@ const CategoryScreen = () => {
   };
 
   const updateCategory = async(category)=> {
-    // console.log('Category =====> ', category);
     var query = fireStore()
       .collection('Category')
       .where('id', '==', category.id);
@@ -152,6 +131,7 @@ const CategoryScreen = () => {
   };
 
   useEffect(() => {
+    setIsLoading(true)
     fetch();
   }, []);
 
@@ -188,7 +168,7 @@ const CategoryScreen = () => {
     <>
       {isLoading ? (
         <View style={{flex: 1, justifyContent: 'center', alignItems: 'center'}}>
-          <Loader />
+          <Loader message="Please wait ..." />
         </View>
       ) : (
         <>

@@ -29,13 +29,9 @@ export default function AddTransaction({ route, navigation }) {
   }, []);
 
   const prepopulateDataForUpdate = () => {
-    // console.log("inside useffect")
     setCategoryId(oldTransaction.category_id);
-    // console.log("Category Id",categoryId)
     setCategoryName(oldTransaction.category_name);
-    // console.log("Category Name",categoryName)
     setSelectedDate(new Date(oldTransaction.transactionDate));
-    // console.log("Date",selectedDate)
     setPayload({
       amount: oldTransaction.amount,
       note: oldTransaction.note,
@@ -344,13 +340,33 @@ export default function AddTransaction({ route, navigation }) {
               <Text style={globalStyle.error}>{errMsg}</Text>
             )}
 
-            <Button
+            {/* <Button
               mode="contained"
               color={primaryColor}
               style={styles.addButton}
               onPress={handleSubmit}>
               Save
-            </Button>
+            </Button> */}
+          
+            <View
+              style={{
+                width: '90%',
+                backgroundColor: '#03707a',
+                borderRadius: 20,
+                padding: 8,
+                height: 50,
+                marginLeft: '5%',
+                justifyContent:"center",
+                alignItems:"center"
+              }}>
+              <TouchableOpacity onPress={handleSubmit}>
+                <Text style={{textAlign: 'center', color: '#fff',fontSize:18}}>
+                 Save
+                </Text>
+              </TouchableOpacity>
+            </View>
+
+
           </>
         }
       />
@@ -426,8 +442,8 @@ const styles = StyleSheet.create({
     color: textColor,
     paddingLeft: 10,
   },
-  addButton: {
-    padding: 5,
-    marginTop: 10,
-  },
+  // addButton: {
+  //   padding: 5,
+  //   marginTop: 10,
+  // },
 });

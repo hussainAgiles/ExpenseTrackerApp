@@ -62,14 +62,17 @@ export default function Registration() {
 
     if(data.firstname === ''){
       setFirstnameErr("First name cannot be empty")
+      return false
     }
 
     if(data.lastname === ''){
       setLastnameErr(" lastname cannot be empty")
+      return false
     }
 
     if(data.email === ''){
       setEmailErr("email cannot be empty")
+      return false
     }
 
     // let reg = /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w\w+)+$/;
@@ -80,12 +83,14 @@ export default function Registration() {
 
     if(data.password === ''){
       setPasswordError("password cannot be empty")
+      return false
     }
 
     if(data.confirm_password === ''){
       setConfirmPasswordError("cannot be empty")
+      return false
     }
-
+    return true
 
   }
 

@@ -10,7 +10,8 @@ export const screenNames = {
   Transaction: `Transaction History`,
   Categories: `Categories`,
   AddTransactions :`Add Transactions`,
-  TransactionPopup :`Update Transaction`
+  TransactionPopup :`Update Transaction`,
+  Logout :`Log out`
 };
 
 export const globalStyle = StyleSheet.create({

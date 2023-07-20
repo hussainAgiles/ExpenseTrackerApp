@@ -8,41 +8,41 @@ const PieChart = ({categories, total}) => {
   const rupeesSymbol = '\u20B9';
   const gaugeText = `${rupeesSymbol}${total}`;
 
-  let data = [];
+  let data = []
+  let color = ['#C70039','#44CD40','#404FCD','#EBD22F','#EC407A',]
   // if (categories !== null) {
-  //   data = categories.map(item => {
-  //     console.log("Items === ",item)
-  //     // let obj = {};
-  //     // obj.key = item.key;
-  //     // obj.value = item.amount;
-  //     // return obj;
+  //   categories.map(item => {
+  //     data.push({
+  //       // text:item.categoryData,
+  //       percentage:item.percentage
+  //     })
   //   });
+    
   // }
+  //  
+
 
   return (
     <View style={styles.container}>
       <Pie
         radius={90}
         innerRadius={50}
-        sections={[
-          {
-            percentage: 1.28,
-            color: '#C70039',
-          },
-          {
-            percentage: 95.19,
-            color: '#44CD40',
-          },
-          {
-            percentage: 2.00,
-            color: '#404FCD',
-          },
-          {
-            percentage: 0.95,
-            color: '#EBD22F',
-          },
-
-        ]}
+        sections={[{
+                percentage: 10.1,
+                color: '#C70039',
+              },
+              {
+                percentage: 23.5,
+                color: '#44CD40',
+              },
+              {
+                percentage: 30,
+                color: '#404FCD',
+              },
+              {
+                percentage: 40,
+                color: '#EBD22F',
+              }]}
         dividerSize={2}
         backgroundColor="#ddd"
       />

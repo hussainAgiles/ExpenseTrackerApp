@@ -1,31 +1,31 @@
-import {StyleSheet, Text, TouchableOpacity, View, FlatList} from 'react-native';
-import React, {useState, useEffect} from 'react';
-import DateTypeSelection from '../Components/DateTypeSelection';
-import PieChart from '../Components/PieChart';
-import {primaryColor} from '../Utils/CustomColors';
-import {Button} from 'react-native-paper';
-import {categoryColors, screenNames} from '../Constants/constant';
-import {useDeviceOrientation} from '@react-native-community/hooks';
-import {useNavigation} from '@react-navigation/native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import Card from '../Components/Card';
+import {useDeviceOrientation} from '@react-native-community/hooks';
 import fireStore from '@react-native-firebase/firestore';
-import toast from 'react-native-simple-toast';
+import {useNavigation} from '@react-navigation/native';
+import React, {useEffect, useState} from 'react';
+import {FlatList, StyleSheet, Text, View,TouchableOpacity} from 'react-native';
+import {Button} from 'react-native-paper';
+import DateTypeSelection from '../Components/DateTypeSelection';
 import Header from '../Components/Header';
+import Loader from '../Components/Loader';
+import PieChart from '../Components/PieChart';
+import {categoryColors, screenNames} from '../Constants/constant';
+import {primaryColor} from '../Utils/CustomColors';
 
-export default function Home({allCategories}) {
+export default function Home() {
   useEffect(() => {
-    // fetchtransaction()
     fetchTransactionCategryBased();
-  }, []);
+  }, [transaction]);
 
   useEffect(() => {
-    fetchRecentTrxn()
-  }, [])
-  
+    fetchRecentTrxn();
+  }, [transaction]);
+
   const navigation = useNavigation();
+  const [isLoading, setLoading] = useState(false);
   const [date, setDate] = useState(new Date());
   const [transaction, setTransaction] = useState([]);
+  const [categoryWiseTrxn, setCategoryWiseTrxn] = useState();
   const [total, setTotal] = useState(0);
   const {portrait} = useDeviceOrientation();
 
@@ -55,51 +55,39 @@ export default function Home({allCategories}) {
       total = total + Number(item.amount);
     });
     const totalExpense = total;
-    console.log('Total amount spent', totalExpense);
+    // console.log('Total amount spent', totalExpense);
     return total;
   };
 
   const calculateCategoryWiseExpense = categories => {
-    // const expenses = [{key:'1',sum:'100',category:'car'},{key:'2',sum:'200',category:'food'},{key:'3',sum:'300',category:'furniture'},
-    // {key:'4',sum:'400',category:'food'},{key:'5',sum:'700',category:'car'},],
-
-    // result = Object.values(categories.reduce((r, {category_name, amount}) =>
-    //   (r[category_name] = {category_name, totalSum: (r[category_name]?.totalSum || 0)+ +amount, percentage: totalSum/100}, r), {}))
-
     const categoryTotals = categoriseAmount(categories);
-    // console.log("Category Totals",categoryTotals)
-    const totalExpense = Object.values(categoryTotals).reduce(
-      (total, amount) => total + amount,
-      0,
-    );
-    // console.log("totalexpenses ==== ",Number(totalExpense))
-    const categoryPercentages = {};
-    for (const category in categoryTotals) {
-      const percentage = (categoryTotals[category] / totalExpense) * 100;
-      categoryPercentages[category] = percentage.toFixed(2);
-    }
-    // console.log('Percentage results ', categoryPercentages);
-    return categoryPercentages;
-
-    //   console.log("Results expected",result)
-    // return result;
+    return categoryTotals;
   };
 
   const categoriseAmount = categories => {
     const categoryTotals = {};
+    let totalAmount = 0;
+
     categories.forEach(expense => {
       const {category_name, amount} = expense;
-      if (categoryTotals[category_name]) {
-        categoryTotals[category_name] += Number(amount);
-      } else {
-        categoryTotals[category_name] = Number(amount);
-      }
+      totalAmount += Number(amount);
+      categoryTotals[category_name] =
+        (categoryTotals[category_name] || 0) + Number(amount);
     });
-    // console.log("Format returning === ",categoryTotals)
-    return categoryTotals;
+
+    // Calculating percentage CategoryWise transaction
+    const result = Object.keys(categoryTotals).map(categoryData => {
+      const amount = categoryTotals[categoryData];
+      const percentage = ((amount / totalAmount) * 100).toFixed(2);
+      return {categoryData, amount, percentage};
+    });
+
+    // console.log("Category wise result ===",result)
+    return result;
   };
 
   const fetchTransactionCategryBased = async () => {
+    setLoading(true);
     const userId = await AsyncStorage.getItem('userId');
     const collectionRef = fireStore().collection('Transaction');
     const snapShot = await collectionRef
@@ -107,12 +95,13 @@ export default function Home({allCategories}) {
       .orderBy('category_name')
       .get();
     const fetcheddata = snapShot.docs.map(doc => doc.data());
-    // console.log('Home fetched trxn ', fetcheddata);
     const totalExpense = calculateTotalExpense(fetcheddata);
     const categoryWiseExpense = calculateCategoryWiseExpense(fetcheddata);
     // console.log('categoryWiseExpense ==== ', categoryWiseExpense);
+    setCategoryWiseTrxn(categoryWiseExpense);
     setTransaction(fetcheddata);
     setTotal(totalExpense);
+    setLoading(false);
   };
 
   // adding colors to Categories and making title first letter Capital
@@ -135,19 +124,15 @@ export default function Home({allCategories}) {
       let tempTransactions = [];
       let total = 0;
       for (let txn of transaction) {
-        // console.log("txn ========== ",txn.transactionDate)
         const timeStamp = txn.transactionDate;
         const miliseconds =
           timeStamp.seconds * 1000 + timeStamp.nanoseconds / 1000000;
         let date = new Date(miliseconds);
-        // console.log('Date in filter ', date);
         switch (type) {
           case 'Day':
             if (date.toLocaleDateString() === value.toLocaleDateString()) {
               total += Number(txn.amount);
-              // console.log('Total in day', total);
               tempTransactions.push(txn);
-              // console.log('TempTransaction in Day', tempTransactions);
             }
             break;
 
@@ -157,32 +142,22 @@ export default function Home({allCategories}) {
               date.getFullYear() === value.getFullYear()
             ) {
               total += Number(txn.amount);
-              // console.log('Total in month', total);
               tempTransactions.push(txn);
-              // console.log('TempTransaction in month', tempTransactions);
             }
             break;
 
           case 'Year':
             if (date.getFullYear() === value) {
               total += Number(txn.amount);
-              // console.log('Total in year', total);
               tempTransactions.push(txn);
-              // console.log('TempTransaction year wise', tempTransactions);
             }
             break;
         }
       }
-      // console.log(
-      //   'outside everything temptransaction value === ',
-      //   tempTransactions,
-      // );
       setTotal(total);
-      // console.log('total outside for loop ', total);
       transaction = tempTransactions;
       if (tempTransactions.length > 0) result.push(transaction);
     }
-    // console.log("Result ==== ",result)
     return result;
   };
 
@@ -193,22 +168,13 @@ export default function Home({allCategories}) {
     });
   };
 
-  // const handleCategoryPress = value => {
-  //   let category = [value];
-  //   // let transactions = getAllTransactions(category);
-  //   // navigation.navigate('AllTransactionsScreen', {
-  //   //   transactions: transactions,
-  //   // });
-  // };
-
-
-
   // Recent transaction
 
   const rupeesSymbol = '\u20B9';
   const [recentTransaction, setRecentTransaction] = useState();
 
-  const fetchRecentTrxn =async () =>{
+  const fetchRecentTrxn = async () => {
+    setLoading(true);
     const userId = await AsyncStorage.getItem('userId');
     const collectionRef = fireStore().collection('Transaction');
     const querySnapshot = await collectionRef
@@ -217,46 +183,84 @@ export default function Home({allCategories}) {
       .limit(3)
       .get();
 
-        const recentTransactions = querySnapshot.docs.map((doc) => doc.data());
-        setRecentTransaction(recentTransactions);
-  }
+    const recentTransactions = querySnapshot.docs.map(doc => doc.data());
+    setRecentTransaction(recentTransactions);
+    setLoading(false);
+  };
 
   return (
-    <View style={styles.container}>
-      <Header />
-      <View style={[styles.dateContainer, !portrait && {flex: 4}]}>
-        <DateTypeSelection date={date} sendDateToHome={handleDateFilter} />
-      </View>
+    <>
+      {isLoading ? (
+        <Loader message="Please wait..." />
+      ) : (
+        <View style={styles.container}>
+          {/* <Header /> */}
+          <View style={[styles.dateContainer, !portrait && {flex: 4}]}>
+            <DateTypeSelection date={date} sendDateToHome={handleDateFilter} />
+          </View>
 
-      <View style={styles.chartAndButton}>
-        <PieChart categories={transaction} total={total} />
-        <Button
-          icon="plus-thick"
-          color={primaryColor}
-          mode="contained"
-          style={{width: '90%', padding: 2}}
-          onPress={handleButtonPress}>
-          Add Transaction
-        </Button>
-      </View>
-      <View style={styles.card}>
-        <Text style={{fontSize:20,fontWeight:800,marginLeft:10}}>Latest Transaction</Text>
-        <FlatList
-          data={recentTransaction}
-          renderItem={({item}) => (
-           <View style={styles.bottomCardContent}>
-            <View style={styles.leftContent}>
-              <Text style={styles.CategoryText}>{item.category_name}</Text>
-              <Text style={styles.descText}>{item.note}</Text>
+          <View style={styles.chartAndButton}>
+            <PieChart categories={categoryWiseTrxn} total={total} />
+            {/* <Button
+              icon="plus-thick"
+              color={primaryColor}
+              mode="contained"
+              style={{width: '90%', padding: 2}}
+              onPress={handleButtonPress}>
+              Add Transaction
+            </Button> */}
+            <View
+              style={{
+                width: '90%',
+                backgroundColor: '#03707a',
+                borderRadius: 20,
+                padding: 8,
+                height: 40,
+                marginLeft: '5%',
+              }}>
+              <TouchableOpacity onPress={handleButtonPress}>
+                <Text style={{textAlign: 'center', color: '#fff',fontSize:18}}>
+                  + Add Transaction
+                </Text>
+              </TouchableOpacity>
             </View>
-            <View style={{flexDirection:'column',justifyContent:"center"}}>
-              <Text style={{fontSize:15,fontWeight:800,color:"#C70039"}}>{rupeesSymbol}<Text style={{fontSize:15,fontWeight:800,color:"#000000"}}>. {item.amount}</Text></Text>
-            </View>
-           </View>
-          )}
-        />
-      </View>
-    </View>
+          </View>
+          <View style={styles.card}>
+            <Text style={{fontSize: 20, fontWeight: 800, marginLeft: 10}}>
+              Latest Transaction
+            </Text>
+            <FlatList
+              data={recentTransaction}
+              renderItem={({item}) => (
+                <View style={styles.bottomCardContent}>
+                  <View style={styles.leftContent}>
+                    <Text style={styles.CategoryText}>
+                      {item.category_name}
+                    </Text>
+                    <Text style={styles.descText}>{item.note}</Text>
+                  </View>
+                  <View
+                    style={{flexDirection: 'column', justifyContent: 'center'}}>
+                    <Text
+                      style={{fontSize: 15, fontWeight: 800, color: '#C70039'}}>
+                      {rupeesSymbol}
+                      <Text
+                        style={{
+                          fontSize: 15,
+                          fontWeight: 800,
+                          color: '#000000',
+                        }}>
+                        . {item.amount}
+                      </Text>
+                    </Text>
+                  </View>
+                </View>
+              )}
+            />
+          </View>
+        </View>
+      )}
+    </>
   );
 }
 
@@ -290,13 +294,13 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-around',
   },
-  CategoryText:{
-    fontSize:18,
-    color:"#000000"
+  CategoryText: {
+    fontSize: 18,
+    color: '#000000',
   },
-  descText :{
-    fontSize:15,
-    color:"#000000"
+  descText: {
+    fontSize: 15,
+    color: '#000000',
   },
   card: {
     marginVertical: 5,
@@ -309,15 +313,16 @@ const styles = StyleSheet.create({
     // elevation: 3,
   },
   bottomCardContent: {
-    flexDirection:'row',
-    justifyContent:"space-between",
-    borderBottomColor:"#000000",
-    borderBottomWidth:1,
-    paddingLeft:10,
-    paddingRight:10,
-    paddingBottom:10
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    borderBottomColor: '#000000',
+    borderBottomWidth: 1,
+    paddingLeft: 10,
+    paddingRight: 10,
+    paddingBottom: 10,
   },
-  leftContent :{
-    flexDirection:'column',marginTop:10
-  }
+  leftContent: {
+    flexDirection: 'column',
+    marginTop: 10,
+  },
 });

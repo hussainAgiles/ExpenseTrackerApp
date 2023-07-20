@@ -1,27 +1,24 @@
-import {
-  StyleSheet,
-  TouchableOpacity,
-  View,
-  FlatList,
-  Text,
-  Image,
-} from 'react-native';
-import React, {useEffect, useState} from 'react';
-import HistoryCard from '../Components/HistoryCard';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import fireStore from '@react-native-firebase/firestore';
-import {categoryColors, screenNames} from '../Constants/constant';
+import {useNavigation} from '@react-navigation/native';
+import React, {useEffect, useState} from 'react';
+import {FlatList, StyleSheet, Text, View} from 'react-native';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import Icons from 'react-native-vector-icons/MaterialIcons';
-import {useNavigation} from '@react-navigation/native';
-import AsyncStorage from '@react-native-async-storage/async-storage';
-import Images from '../Constants/Images';
+import {categoryColors, screenNames} from '../Constants/constant';
+import Loader from '../Components/Loader';
 
 export default function Transaction() {
   const [data, setData] = useState([]);
   const navigation = useNavigation();
+
+  const [isLoading, setIsLoading] = useState(false);
+
   useEffect(() => {
+    setIsLoading(true);
     fetchtransaction();
-  }, []);
+    setIsLoading(false);
+  }, [data]);
 
   // Fetch all the transaction
   const fetchtransaction = async () => {
@@ -38,16 +35,15 @@ export default function Transaction() {
     setData(datawithColors);
   };
 
-  const calculateTotalExpense = categories => {
-    // console.log("Calculating === ",categories)
-    let total = 0;
-    categories.map((item, index) => {
-      total = total + Number(item.amount);
-    });
-    const totalExpense = total;
-    console.log('Total amount spent', totalExpense);
-    return categories;
-  };
+  // const calculateTotalExpense = categories => {
+  //   // console.log("Calculating === ",categories)
+  //   let total = 0;
+  //   categories.map((item, index) => {
+  //     total = total + Number(item.amount);
+  //   });
+  //   const totalExpense = total;
+  //   return categories;
+  // };
 
   const fetchtransactionUpdation = async trnsactionId => {
     const collectionRef = fireStore()
@@ -55,7 +51,7 @@ export default function Transaction() {
       .where('id', '==', trnsactionId);
     const snapshot = await collectionRef.get();
     const fetcheddata = snapshot.docs.map(doc => doc.data());
-    // console.log('Updating data', fetcheddata[0]);
+    setIsLoading(false);
     return fetcheddata[0];
   };
 
@@ -78,7 +74,6 @@ export default function Transaction() {
   };
 
   const handleCategorieswithImage = data => {
-    // console.log("rieved data",data)
     data.map((item, index) => {
       data[index].note = capitalize(item.note);
       data[index].color = categoryColors[index % categoryColors.length];
@@ -113,6 +108,24 @@ export default function Transaction() {
       ) {
         data[index].icon_name = 'miscellaneous-services';
       }
+      if (
+        data[index].category_name === 'Emi' ||
+        data[index].category_name === 'emi'
+      ) {
+        data[index].icon_name = 'calculator';
+      }
+      if (
+        data[index].category_name === 'fuel' ||
+        data[index].category_name === 'Fuel'
+      ) {
+        data[index].icon_name = 'fuel';
+      }
+      if (
+        data[index].category_name === 'Groceries' ||
+        data[index].category_name === 'groceries'
+      ) {
+        data[index].icon_name = 'cart-variant';
+      }
     });
     return data;
   };
@@ -128,7 +141,13 @@ export default function Transaction() {
   };
 
   return (
-    <View style={{marginTop: 10}}>
+    <>
+      {isLoading ?(
+        <View style={{flex: 1, justifyContent: 'center', alignItems: 'center'}}>
+          <Loader message="Please wait ..." />
+        </View>
+      ):(
+      <View style={{marginTop: 10}}>
       <FlatList
         data={data}
         renderItem={({item}) => (
@@ -152,14 +171,11 @@ export default function Transaction() {
                   </Text>
                 </View>
 
-
                 <Text style={styles.text}>{item.note}</Text>
                 <Text style={styles.text}>
                   <Text style={styles.rupeeText}>{'\u20B9'}.</Text>{' '}
                   {item.amount}
                 </Text>
-
-                
               </View>
               <View style={styles.iconsContainer}>
                 <Icon
@@ -180,6 +196,8 @@ export default function Transaction() {
         )}
       />
     </View>
+      )}
+    </>
   );
 }
 
@@ -228,7 +246,7 @@ const styles = StyleSheet.create({
   iconsContainer: {
     flex: 1,
     flexDirection: 'column',
-    justifyContent:'flex-end',
-    alignItems:"flex-end"
+    justifyContent: 'flex-end',
+    alignItems: 'flex-end',
   },
 });

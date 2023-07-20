@@ -1,4 +1,4 @@
-import {Animated, StyleSheet, Text, View} from 'react-native';
+import {Animated, Dimensions, StyleSheet, Text, View} from 'react-native';
 import React,{useRef} from 'react';
 import {Sizes, screenNames} from '../Constants/constant';
 import Home from '../Screens/Home';
@@ -7,22 +7,25 @@ import Transaction from '../Screens/Transaction';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import {createBottomTabNavigator} from '@react-navigation/bottom-tabs';
 import {primaryColor} from '../Utils/CustomColors';
+import SignOut from '../Screens/SignOut';
 
 const Tab = createBottomTabNavigator();
 
 export default function BottomNavigation() {
 
     const tabOffsetValue = useRef(new Animated.Value(0)).current;
+
     function getWidth() {
         let width = Dimensions.get('window').width;
     
         // Horizontal Padding = 20...
         width = width - 100;
         // Total five Tabs...
-        return  width / 3;
+        return  width / 4;
       }
 
   return (
+    <>
     <Tab.Navigator
       initialRouteName={screenNames.Home}
       screenOptions={() => {
@@ -80,7 +83,7 @@ export default function BottomNavigation() {
             // Onpress Update....
             tabPress: () => {
               Animated.spring(tabOffsetValue, {
-                toValue: 0,
+                toValue: -10,
                 useNativeDriver: true,
               }).start();
             },
@@ -126,7 +129,7 @@ export default function BottomNavigation() {
             // Onpress Update....
             tabPress: () => {
               Animated.spring(tabOffsetValue, {
-                toValue: 0,
+                toValue: getWidth() * 1.2,
                 useNativeDriver: true,
               }).start();
             },
@@ -175,12 +178,77 @@ export default function BottomNavigation() {
             // Onpress Update....
             tabPress: () => {
               Animated.spring(tabOffsetValue, {
-                toValue: 0,
+                toValue: getWidth() * 2.5,
                 useNativeDriver: true,
               }).start();
             },
           })}/>
+      <Tab.Screen name={screenNames.Logout} component={SignOut} options={() => {
+            return {
+              unmountOnBlur: true,
+              tabBarIcon: ({focused}) => {
+                return (
+                  <View
+                    style={{
+                      justifyContent: 'center',
+                      alignItems: 'center',
+                      height: 40,
+                      marginTop: 17,
+                      marginBottom: Platform.OS === 'android' ? 15 : 0,
+                    }}>
+                    <Icon
+                      name="logout"
+                      size={Sizes.h3}
+                      color={
+                        focused ?primaryColor : '#000000'
+                      }
+                    />
+                    <Text
+                      style={{
+                        color: focused
+                          ? primaryColor
+                          : '#000000',
+                        marginTop: 5,
+                        fontSize: 12,
+                       fontFamily: 'Lato-Regular',
+                      }}>
+                      Sign Out
+                    </Text>
+                  </View>
+                );
+              },
+              // tabBarBadge: 3,
+            };
+          }}
+          listeners={() => ({
+            // Onpress Update....
+            tabPress: () => {
+              Animated.spring(tabOffsetValue, {
+                toValue: getWidth() * 3.9,
+                useNativeDriver: true,
+              }).start();
+            },
+          })}
+          />
     </Tab.Navigator>
+    <Animated.View style={{
+                width: getWidth() - 20,
+                height: 2,
+                backgroundColor:primaryColor,
+                position: 'absolute',
+                bottom: 57,
+                // Horizontal Padding = 20...
+                left: 35,
+                borderRadius: 20,
+                transform: [
+                    { translateX: tabOffsetValue }
+                ]
+            }}>
+
+            </Animated.View>
+
+</>
+    
   );
 }
 

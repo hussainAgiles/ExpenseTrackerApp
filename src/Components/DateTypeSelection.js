@@ -142,7 +142,6 @@ const styles = StyleSheet.create({
   options: {
     flexDirection: 'row',
     justifyContent: 'space-between',
-    marginBottom: 5,
   },
   optionText: {
     color: textColor,
@@ -158,7 +157,6 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignContent: 'center',
-    // marginTop: 12,
     alignItems: 'center',
   },
   selectedText: {
