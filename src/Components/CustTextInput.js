@@ -14,8 +14,10 @@ export default function CustTextInput({
   secureTextEntry,
   keyboardType,
   error,
-  errorMessage
-}) {
+  errorMessage,
+  autoFocus,
+  onSubmitEditing
+},ref) {
   return (
     <>
       <View style={styles.inputContainer}>
@@ -23,6 +25,7 @@ export default function CustTextInput({
           <AntDesign name={iconType} size={25} color="#03707a" />
         </View>
         <TextInput
+          ref={ref}
           value={labelValue}
           style={styles.input}
           numberOfLines={1}
@@ -31,8 +34,10 @@ export default function CustTextInput({
           onChangeText={onChangeText}
           autoCapitalize={autoCapitalize}
           autoCorrect={autoCorrect}
+          autoFocus={autoFocus}
           secureTextEntry={secureTextEntry}
           keyboardType={keyboardType}
+          onSubmitEditing={onSubmitEditing}
         />
       </View>
       {error && (

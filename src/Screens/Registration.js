@@ -147,7 +147,7 @@ export default function Registration() {
       const response = await fireStore().collection('Users').add({Uuid :uid,
         ...data}).then(()=>{
           toast.show('You are Registered successfully', toast.CENTER);
-          navigation.navigate(screenNames.DashBoard);
+          navigation.replace(screenNames.DashBoard);
       })
     }
   };

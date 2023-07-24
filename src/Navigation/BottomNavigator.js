@@ -19,7 +19,7 @@ export default function BottomNavigation() {
         let width = Dimensions.get('window').width;
     
         // Horizontal Padding = 20...
-        width = width - 100;
+        width = width - 120;
         // Total five Tabs...
         return  width / 4;
       }
@@ -40,6 +40,7 @@ export default function BottomNavigation() {
           },
           headerShown: false,
           tabBarShowLabel: false,
+          unmountOnBlur:true
         };
       }}>
       <Tab.Screen name={screenNames.Home} component={Home} options={() => {
@@ -79,15 +80,16 @@ export default function BottomNavigation() {
               // tabBarBadge: 3,
             };
           }}
-          listeners={() => ({
-            // Onpress Update....
-            tabPress: () => {
-              Animated.spring(tabOffsetValue, {
-                toValue: -10,
-                useNativeDriver: true,
-              }).start();
-            },
-          })} />
+          // listeners={() => ({
+          //   // Onpress Update....
+          //   tabPress: () => {
+          //     Animated.spring(tabOffsetValue, {
+          //       toValue: 0,
+          //       useNativeDriver: true,
+          //     }).start();
+          //   },
+          // })}
+           />
       <Tab.Screen name={screenNames.Categories} component={Categories} options={() => {
             return {
               unmountOnBlur: true,
@@ -125,15 +127,15 @@ export default function BottomNavigation() {
               // tabBarBadge: 3,
             };
           }}
-          listeners={() => ({
-            // Onpress Update....
-            tabPress: () => {
-              Animated.spring(tabOffsetValue, {
-                toValue: getWidth() * 1.2,
-                useNativeDriver: true,
-              }).start();
-            },
-          })}
+          // listeners={() => ({
+          //   // Onpress Update....
+          //   tabPress: () => {
+          //     Animated.spring(tabOffsetValue, {
+          //       toValue: getWidth() * 1.4,
+          //       useNativeDriver: true,
+          //     }).start();
+          //   },
+          // })}
           />
       <Tab.Screen name={screenNames.Transaction} component={Transaction} options={() => {
             return {
@@ -174,15 +176,16 @@ export default function BottomNavigation() {
               // tabBarBadge: 3,
             };
           }}
-          listeners={() => ({
-            // Onpress Update....
-            tabPress: () => {
-              Animated.spring(tabOffsetValue, {
-                toValue: getWidth() * 2.5,
-                useNativeDriver: true,
-              }).start();
-            },
-          })}/>
+          // listeners={() => ({
+          //   // Onpress Update....
+          //   tabPress: () => {
+          //     Animated.spring(tabOffsetValue, {
+          //       toValue: getWidth() * 2.8,
+          //       useNativeDriver: true,
+          //     }).start();
+          //   },
+          // })}
+          />
       <Tab.Screen name={screenNames.Logout} component={SignOut} options={() => {
             return {
               unmountOnBlur: true,
@@ -220,32 +223,32 @@ export default function BottomNavigation() {
               // tabBarBadge: 3,
             };
           }}
-          listeners={() => ({
-            // Onpress Update....
-            tabPress: () => {
-              Animated.spring(tabOffsetValue, {
-                toValue: getWidth() * 3.9,
-                useNativeDriver: true,
-              }).start();
-            },
-          })}
+          // listeners={() => ({
+          //   // Onpress Update....
+          //   tabPress: () => {
+          //     Animated.spring(tabOffsetValue, {
+          //       toValue: getWidth() * 4.3,
+          //       useNativeDriver: true,
+          //     }).start();
+          //   },
+          // })}
           />
     </Tab.Navigator>
-    <Animated.View style={{
+    {/* <Animated.View style={{
                 width: getWidth() - 20,
                 height: 2,
                 backgroundColor:primaryColor,
                 position: 'absolute',
                 bottom: 57,
                 // Horizontal Padding = 20...
-                left: 35,
+                left: 25,
                 borderRadius: 20,
                 transform: [
                     { translateX: tabOffsetValue }
                 ]
             }}>
 
-            </Animated.View>
+            </Animated.View> */}
 
 </>
     

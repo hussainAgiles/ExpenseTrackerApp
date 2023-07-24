@@ -10,11 +10,8 @@ export default function SplashScreen() {
     const navigation = useNavigation()
     useEffect(() => {
         setTimeout(async() => {
-          // navigation.navigate(screenNames.DashBoard)
-
           // Actual function
          const fetchedToken = await AsyncStorage.getItem('User_Token')
-        //  console.log("Tokeeeeenn ===",fetchedToken)
             if(Boolean(fetchedToken)){
               navigation.navigate(screenNames.DashBoard)
             }else{

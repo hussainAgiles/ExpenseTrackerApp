@@ -1,43 +1,47 @@
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import fireStore from '@react-native-firebase/firestore';
+import moment from 'moment';
+import React, { useLayoutEffect, useState } from 'react';
 import {
   FlatList,
   StyleSheet,
   Text,
   TextInput,
-  View,
   TouchableOpacity,
+  View,
 } from 'react-native';
-import React, { useState, useEffect } from 'react';
-import { primaryColor, secondaryColor, textColor } from '../Utils/CustomColors';
-import moment from 'moment';
-import FontAwesome from 'react-native-vector-icons/FontAwesome';
-import { Button } from 'react-native-paper';
-import DatePicker from '../Components/DatePicker';
-import Loading from '../Components/Loader';
-import fireStore from '@react-native-firebase/firestore';
 import toast from 'react-native-simple-toast';
-import AsyncStorage from '@react-native-async-storage/async-storage';
-import { categoryColors, globalStyle, screenNames } from '../Constants/constant';
 import uuid from 'react-native-uuid';
-import {handleCategories,updateTrxn} from '../Utils/TransactionUpdates'
+import FontAwesome from 'react-native-vector-icons/FontAwesome';
+import DatePicker from '../Components/DatePicker';
+import { globalStyle, screenNames } from '../Constants/constant';
+import { primaryColor, secondaryColor, textColor } from '../Utils/CustomColors';
+import { handleCategories } from '../Utils/TransactionUpdates';
 
 export default function AddTransaction({ route, navigation }) {
   const oldTransaction = route.params.payload;
   // console.log("Flagship",oldTransaction)
 
-  useEffect(() => {
-    fetchCategories();
-  }, []);
+  useLayoutEffect(() => {
+    let isMounted = true 
+    if(isMounted){
+      fetchCategories();
+    }return () =>{
+      isMounted =false
+    }
+    
+  }, [categoryId]);
 
   const prepopulateDataForUpdate = () => {
     setCategoryId(oldTransaction.category_id);
     setCategoryName(oldTransaction.category_name);
-    setSelectedDate(new Date(oldTransaction.transactionDate));
+    setSelectedDate(new Date(oldTransaction.transactionDate.toDate()));
     setPayload({
       amount: oldTransaction.amount,
       note: oldTransaction.note,
       transactionDate: oldTransaction.transactionDate,
     });
-
+    setisLoading(false)
     // console.log("Payload now ",payload)
 
   };
@@ -69,7 +73,6 @@ export default function AddTransaction({ route, navigation }) {
     const collectionRef = fireStore().collection('Category');
     const snapshot = await collectionRef.get();
     const fetcheddata = snapshot.docs.map(doc => doc.data());
-    // setCategory(fetcheddata);
     const finalCat = handleCategories(fetcheddata);
     setCategory(finalCat);
   };
@@ -115,8 +118,6 @@ export default function AddTransaction({ route, navigation }) {
   };
 
   const handleSubmit = async () => {
-    // setIsLoading(true);
-
     //Validation
     if (validate() === false) {
       // setIsLoading(false);
@@ -128,7 +129,7 @@ export default function AddTransaction({ route, navigation }) {
     if (oldTransaction !== undefined){
       isSuccessful = updateTransaction(
         payloadToSend,
-        oldTransaction.id,
+        oldTransaction.id
       );
     }
     else{
@@ -154,8 +155,8 @@ export default function AddTransaction({ route, navigation }) {
     navigation.navigate(screenNames.Transaction)
   };
 
-  const updateTransaction = (data,transactionId) =>{
-    // console.log("Updateing traxn === ",data)
+  const updateTransaction = async(data,transactionId) =>{
+    // console.log("Updating trxn === ",data)
     var query = fireStore()
       .collection('Transaction')
       .where('id', '==', transactionId);
@@ -170,13 +171,29 @@ export default function AddTransaction({ route, navigation }) {
     navigation.navigate(screenNames.Transaction)
   }
 
-  useEffect(() => {
+  useLayoutEffect(() => {
+    setisLoading(true)
     if( oldTransaction !== undefined) prepopulateDataForUpdate(); 
   }, []);
+
+  
+
+
+  const categorySelected = (categoryItem) =>{
+    setCategoryId(categoryItem.id)
+    // console.log("item id  === ",categoryId)
+    setCategoryName(categoryItem.title)
+  }
   
 
   return (
-    <View style={{ padding: 10}}>
+    <>
+    {isLoading ? (
+      <View style={{flex:1}}>
+        <Loader/>
+      </View>
+    ):(
+      <View style={{ padding: 10}}>
       <FlatList
         ListHeaderComponent={
           <>
@@ -207,9 +224,7 @@ export default function AddTransaction({ route, navigation }) {
         columnWrapperStyle={{ flex: 1, justifyContent: 'space-evenly' }}
         renderItem={({ item, index }) => (
           <TouchableOpacity
-            onPress={() =>{ setCategoryId(item.id)
-              setCategoryName(item.title)
-            }}
+            onPress={() =>categorySelected(item)}
             style={[
               styles.categoryBox,
               categoryId === item.id && { backgroundColor: '#44CD40' }
@@ -291,7 +306,7 @@ export default function AddTransaction({ route, navigation }) {
                           <Text style={styles.dateText}>
                             {dateToString(yesterday)}
                           </Text>
-                          <Text style={styles.dateText}>Yes'day</Text>
+                          <Text style={styles.dateText}>Yesterday</Text>
                         </View>
                       </TouchableOpacity>
                     </>
@@ -359,7 +374,8 @@ export default function AddTransaction({ route, navigation }) {
                 justifyContent:"center",
                 alignItems:"center"
               }}>
-              <TouchableOpacity onPress={handleSubmit}>
+              <TouchableOpacity onPress={handleSubmit} style={{width: '90%', height: 40,justifyContent:"center",
+                alignItems:"center"}}>
                 <Text style={{textAlign: 'center', color: '#fff',fontSize:18}}>
                  Save
                 </Text>
@@ -371,6 +387,12 @@ export default function AddTransaction({ route, navigation }) {
         }
       />
     </View>
+    )
+
+    }
+
+    </>
+    
   );
 }
 

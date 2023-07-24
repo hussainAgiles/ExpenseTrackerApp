@@ -1,25 +1,36 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import {useDeviceOrientation} from '@react-native-community/hooks';
+import { useDeviceOrientation } from '@react-native-community/hooks';
 import fireStore from '@react-native-firebase/firestore';
-import {useNavigation} from '@react-navigation/native';
-import React, {useEffect, useState} from 'react';
-import {FlatList, StyleSheet, Text, View,TouchableOpacity} from 'react-native';
-import {Button} from 'react-native-paper';
+import { useNavigation } from '@react-navigation/native';
+import React, { useEffect, useState } from 'react';
+import { FlatList, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import DateTypeSelection from '../Components/DateTypeSelection';
-import Header from '../Components/Header';
 import Loader from '../Components/Loader';
 import PieChart from '../Components/PieChart';
-import {categoryColors, screenNames} from '../Constants/constant';
-import {primaryColor} from '../Utils/CustomColors';
+import { categoryColors, screenNames } from '../Constants/constant';
 
 export default function Home() {
   useEffect(() => {
-    fetchTransactionCategryBased();
+    let isMounted = true;
+    if(isMounted){
+      fetchTransactionCategryBased();
+    }
+    return () =>{
+      isMounted =false
+    }
+   
   }, [transaction]);
 
   useEffect(() => {
-    fetchRecentTrxn();
-  }, [transaction]);
+    let isMounted = true;
+    if(isMounted){
+      fetchRecentTrxn();
+    }
+    return () =>{
+      isMounted =false
+    }
+    
+  }, [transaction,categoryWiseTrxn]);
 
   const navigation = useNavigation();
   const [isLoading, setLoading] = useState(false);
@@ -89,6 +100,7 @@ export default function Home() {
   const fetchTransactionCategryBased = async () => {
     setLoading(true);
     const userId = await AsyncStorage.getItem('userId');
+    // console.log("User Id ====",userId)
     const collectionRef = fireStore().collection('Transaction');
     const snapShot = await collectionRef
       .where('user_id', '==', userId)
@@ -179,8 +191,8 @@ export default function Home() {
     const collectionRef = fireStore().collection('Transaction');
     const querySnapshot = await collectionRef
       .where('user_id', '==', userId)
-      .orderBy('transactionDate')
-      .limit(3)
+      .orderBy('transactionDate','asc')
+      .limit(5)
       .get();
 
     const recentTransactions = querySnapshot.docs.map(doc => doc.data());
@@ -195,7 +207,7 @@ export default function Home() {
       ) : (
         <View style={styles.container}>
           {/* <Header /> */}
-          <View style={[styles.dateContainer, !portrait && {flex: 4}]}>
+          <View style={[styles.dateContainer]}>
             <DateTypeSelection date={date} sendDateToHome={handleDateFilter} />
           </View>
 
@@ -218,7 +230,7 @@ export default function Home() {
                 height: 40,
                 marginLeft: '5%',
               }}>
-              <TouchableOpacity onPress={handleButtonPress}>
+              <TouchableOpacity onPress={handleButtonPress} style={{ width: '90%',height: 30,}}>
                 <Text style={{textAlign: 'center', color: '#fff',fontSize:18}}>
                   + Add Transaction
                 </Text>

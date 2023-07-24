@@ -2,11 +2,13 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import fireStore from '@react-native-firebase/firestore';
 import {useNavigation} from '@react-navigation/native';
 import React, {useEffect, useState} from 'react';
-import {FlatList, StyleSheet, Text, View} from 'react-native';
+import {Alert, FlatList, StyleSheet, Text, View} from 'react-native';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import Icons from 'react-native-vector-icons/MaterialIcons';
 import {categoryColors, screenNames} from '../Constants/constant';
 import Loader from '../Components/Loader';
+import toast from 'react-native-simple-toast';
+import Moment from 'moment';
 
 export default function Transaction() {
   const [data, setData] = useState([]);
@@ -29,22 +31,12 @@ export default function Transaction() {
     const snapshot = await collectionRef.get();
     const fetcheddata = snapshot.docs.map(doc => doc.data());
 
+
     // adding icons to categories
     const datawithColors = handleCategorieswithImage(fetcheddata);
-    // const dataTotalExpense = calculateTotalExpense(datawithColors)
+    // console.log("data with colors === ",datawithColors)
     setData(datawithColors);
   };
-
-  // const calculateTotalExpense = categories => {
-  //   // console.log("Calculating === ",categories)
-  //   let total = 0;
-  //   categories.map((item, index) => {
-  //     total = total + Number(item.amount);
-  //   });
-  //   const totalExpense = total;
-  //   return categories;
-  // };
-
   const fetchtransactionUpdation = async trnsactionId => {
     const collectionRef = fireStore()
       .collection('Transaction')
@@ -56,15 +48,28 @@ export default function Transaction() {
   };
 
   const deleteTrxn = async transaction => {
-    // console.log('Delete category', category);
-    var query = fireStore()
-      .collection('Transaction')
-      .where('id', '==', transaction.id);
-    query.get().then(querySnapshot => {
-      querySnapshot.forEach(doc => {
-        doc.ref.delete();
-      });
-    });
+    Alert.alert(
+      'Confirm Deletion',
+      'Are you sure you want to delete this record?',
+      [
+        {text: 'Cancel', style: 'cancel'},
+        {
+          text: 'Delete',
+          onPress: () => {
+            var query = fireStore()
+              .collection('Transaction')
+              .where('id', '==', transaction.id);
+            query.get().then(querySnapshot => {
+              querySnapshot.forEach(doc => {
+                doc.ref.delete();
+              });
+            });
+            toast.show('Transaction deleted succesfully', toast.CENTER);
+          },
+        },
+      ],
+      {cancelable: false},
+    );
     fetchtransaction();
   };
 
@@ -73,10 +78,17 @@ export default function Transaction() {
     return str.charAt(0).toUpperCase() + lower.slice(1);
   };
 
+  const timeStampToDate = (dateObj) =>{
+    const transactionDate = dateObj.seconds * 1000 + dateObj.nanoseconds / 1000000; 
+    // console.log(transactionDate)
+    return new Date(transactionDate);
+  }
+
   const handleCategorieswithImage = data => {
     data.map((item, index) => {
       data[index].note = capitalize(item.note);
       data[index].color = categoryColors[index % categoryColors.length];
+      data[index].transactionDate = timeStampToDate(item.transactionDate)
 
       if (
         data[index].category_name === 'Dining' ||
@@ -88,7 +100,7 @@ export default function Transaction() {
         data[index].category_name === 'Travel' ||
         data[index].category_name === 'travel'
       ) {
-        data[index].icon_name = 'flight-takeoff';
+        data[index].icon_name = 'directions-bus';
       }
       if (
         data[index].category_name === 'Telephone' ||
@@ -112,7 +124,7 @@ export default function Transaction() {
         data[index].category_name === 'Emi' ||
         data[index].category_name === 'emi'
       ) {
-        data[index].icon_name = 'calculator';
+        data[index].icon_name = 'calculate';
       }
       if (
         data[index].category_name === 'fuel' ||
@@ -124,7 +136,7 @@ export default function Transaction() {
         data[index].category_name === 'Groceries' ||
         data[index].category_name === 'groceries'
       ) {
-        data[index].icon_name = 'cart-variant';
+        data[index].icon_name = 'shopping-cart';
       }
     });
     return data;
@@ -133,7 +145,6 @@ export default function Transaction() {
   const handleUpdate = async item => {
     const transactionId = item.id;
     const payloadToSend = await fetchtransactionUpdation(transactionId);
-    // console.log("payloaddddd = ", payloadToSend)
     navigation.navigate(screenNames.AddTransactions, {
       showFutureDates: false,
       payload: payloadToSend,
@@ -142,60 +153,80 @@ export default function Transaction() {
 
   return (
     <>
-      {isLoading ?(
+      {isLoading ? (
         <View style={{flex: 1, justifyContent: 'center', alignItems: 'center'}}>
           <Loader message="Please wait ..." />
         </View>
-      ):(
-      <View style={{marginTop: 10}}>
-      <FlatList
-        data={data}
-        renderItem={({item}) => (
-          <View style={styles.card}>
-            <View style={[styles.content]}>
-              <View style={styles.rightContent}>
-                <View
-                  style={{
-                    width: 70,
-                    height: 30,
-                    justifyContent: 'center',
-                    alignItems: 'center',
-                  }}>
-                  <Icons size={30} color="#0096FF" name={item.icon_name} />
-                  <Text
-                    style={{
-                      textAlign: 'left',
-                      fontSize: 13,
-                    }}>
-                    {item.category_name}
-                  </Text>
+      ) : (
+        <View style={{marginTop: 10}}>
+          <FlatList
+            data={data}
+            renderItem={({item}) => (
+              <View style={styles.card}>
+                <View style={[styles.content]}>
+                  <View style={styles.leftContent}>
+                    <View
+                      style={{
+                        width: 70,
+                        height: 30,
+                        justifyContent: 'center',
+                        alignItems: 'center',
+                      }}>
+                      <Icons size={30} color="#0096FF" name={item.icon_name} />
+                      <Text
+                        style={{
+                          textAlign: 'left',
+                          fontSize: 13,
+                          fontFamily:"Lato-BlackItalic"
+                        }}>
+                        {item.category_name}
+                      </Text>
+                    </View>
+                    <View
+                      style={{
+                        flexDirection: 'row',
+                        width:250,
+                        justifyContent: 'space-between',
+                      }}>
+                      <View style={{flexDirection:"column",justifyContent:"space-between"}}>
+                        <Text style={[styles.text, {maxWidth: 200,fontWeight:700,fontSize:15}]}>
+                          {item.note}
+                        </Text>
+                        <Text style={[styles.text, {maxWidth: 200,fontSize:12,}]}>
+                        {Moment(item.transactionDate.toString()).format("ddd, DD MMM YYYY")}.
+                        </Text>
+                      </View>
+                      <View>
+                        <Text style={[styles.text, {fontWeight:700}]}>
+                          <Text style={styles.rupeeText}>{'\u20B9'}.</Text>{' '}
+                          {item.amount}
+                        </Text>
+                      </View>
+                    </View>
+                  </View>
+                  <View style={styles.iconsContainer}>
+                    <View style={{justifyContent:"flex-start"}}> 
+                      <Icon
+                        size={25}
+                        color="#0096FF"
+                        name="square-edit-outline"
+                        onPress={() => handleUpdate(item)}
+                      />
+                    </View>
+                    <View style={{justifyContent:"flex-end"}}>
+                      <Icon
+                        size={25}
+                        color="#D11A2A"
+                        name="delete"
+                        onPress={() => deleteTrxn(item)}
+                      />
+                    </View>
+                  </View>
                 </View>
-
-                <Text style={styles.text}>{item.note}</Text>
-                <Text style={styles.text}>
-                  <Text style={styles.rupeeText}>{'\u20B9'}.</Text>{' '}
-                  {item.amount}
-                </Text>
               </View>
-              <View style={styles.iconsContainer}>
-                <Icon
-                  size={25}
-                  color="#0096FF"
-                  name="square-edit-outline"
-                  onPress={() => handleUpdate(item)}
-                />
-                <Icon
-                  size={25}
-                  color="#D11A2A"
-                  name="delete"
-                  onPress={() => deleteTrxn(item)}
-                />
-              </View>
-            </View>
-          </View>
-        )}
-      />
-    </View>
+            )}
+          />
+        </View>
       )}
     </>
   );
@@ -214,7 +245,7 @@ const styles = StyleSheet.create({
     elevation: 3,
     margin: 5,
     borderColor: '#404FCD',
-    height: 80,
+    height: 100,
   },
   content: {
     flex: 1,
@@ -232,7 +263,6 @@ const styles = StyleSheet.create({
   rightContent: {
     flex: 2,
     flexDirection: 'row',
-    justifyContent: 'space-between',
     alignItems: 'center',
   },
   text: {
@@ -244,9 +274,7 @@ const styles = StyleSheet.create({
     color: '#C70039',
   },
   iconsContainer: {
-    flex: 1,
     flexDirection: 'column',
-    justifyContent: 'flex-end',
-    alignItems: 'flex-end',
+
   },
 });

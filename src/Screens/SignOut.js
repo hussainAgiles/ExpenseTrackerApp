@@ -15,10 +15,10 @@ const SignOut = ({}) => {
   const onLogout = () => {
     // Implement your logout logic here
     // For example, clear user session, remove tokens, etc.
-    navigation.navigate(screenNames.Login);
     AsyncStorage.removeItem('User_Token');
-    AsyncStorage.removeItem('UserId');
+    AsyncStorage.removeItem('userId');
     setLogoutModalVisible(false);
+    navigation.replace(screenNames.Login);
   };
 
   return (

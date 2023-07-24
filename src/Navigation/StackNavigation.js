@@ -20,14 +20,14 @@ export const StackNavigation = ()=>{
     return(
         <Stack.Navigator initialRouteName={screenNames.Splash_Screen} screenOptions={() => {
             return {
-              headerShown: false,
+              headerShown: false
             };
           }}>
             <Stack.Screen name={screenNames.Splash_Screen} component={SplashScreen}/>
             <Stack.Screen name={screenNames.Login} component={Login}/>
             <Stack.Screen name={screenNames.Register} component={Registration}/>
             <Stack.Screen name={screenNames.DashBoard} component={BottomNavigation}/>
-            <Stack.Screen name={screenNames.AddTransactions} component={AddTransaction}/>
+            <Stack.Screen name={screenNames.AddTransactions} component={AddTransaction} options={{headerShown:true ,headerTitleAlign:"center"}}/>
             <Stack.Screen name={screenNames.TransactionPopup} component={TransactionModal}/>
         </Stack.Navigator>
     )

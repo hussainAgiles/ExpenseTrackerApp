@@ -1,8 +1,8 @@
 import {Image, StyleSheet, Text, View, TouchableOpacity} from 'react-native';
-import React, {useState, useEffect} from 'react';
+import React, {useState, useLayoutEffect} from 'react';
 import CustTextInput from '../Components/CustTextInput';
 import CustButton from '../Components/CustButton';
-import {primaryColor} from '../Utils/CustomColors';
+import {primaryColor, textColor} from '../Utils/CustomColors';
 import {screenNames, globalStyle} from '../Constants/constant';
 import {useNavigation} from '@react-navigation/native';
 import Loading from '../Components/Loader';
@@ -17,15 +17,8 @@ export default function Login() {
   const [errMsg, setErrMsg] = useState('');
   const [data, setData] = useState(initialState);
 
-
-  // useEffect(() => {
-  //   getData()
-  // }, [])
-
-  // const getData =async() =>{
-  //   const firebaseData = await fireStore().collection('Users').doc('Tca1k4Fm9nESkQa7W6yV').get()
-  //   // console.log("Data fetched == ",firebaseData)
-  // }
+  const emailRef = React.useRef(null);
+  const passRef = React.useRef(null)
 
   const handleTextChange = async (key, value) => {
     setData({...data, [key]: value});
@@ -47,9 +40,7 @@ export default function Login() {
         querySnapshot.forEach((doc) => {
           const user = doc.data();
           AsyncStorage.setItem('userId',user.Uuid)
-          // console.log("User",user)
           if (user.password === data.password) {
-            // Perform whatever you want after login
             const userToken = user.Uuid
             AsyncStorage.setItem('User_Token', userToken);
             navigation.navigate(screenNames.DashBoard)
@@ -66,6 +57,10 @@ export default function Login() {
     }
   };
 
+  useLayoutEffect(() => {
+    emailRef.current?.focus();
+  }, []);
+
   return (
     <>
       {isLoading ? (
@@ -80,15 +75,22 @@ export default function Login() {
           />
           <Text style={styles.text}>Expense Tracker</Text>
           <CustTextInput
+            // ref={emailRef}
             placeholderText="Email"
             iconType="mail"
             onChangeText={text => handleTextChange('email', text)}
+            // autoFocus={true}
+            // onSubmitEditing={() => {
+            //   passRef.current.focus();
+            // }}
           />
           <CustTextInput
+            // ref={passRef}
             placeholderText="Password"
             iconType="lock"
             onChangeText={text => handleTextChange('password', text)}
             secureTextEntry={true}
+            // autoFocus={true}
           />
           {errMsg.trim().length !== 0 && (
             <Text style={globalStyle.error}>{errMsg}</Text>
@@ -124,7 +126,7 @@ const styles = StyleSheet.create({
     fontFamily: 'Lato-BlackItalic',
     fontSize: 28,
     marginBottom: 10,
-    color: primaryColor,
+    color: textColor,
   },
   navButton: {
     marginTop: 15,
