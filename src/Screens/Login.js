@@ -14,16 +14,18 @@ export default function Login() {
   const navigation = useNavigation();
   let initialState = {email: '', password: ''};
   const [isLoading, setLoading] = useState(false);
-  const [errMsg, setErrMsg] = useState('');
+  const [errMsg, setErrMsg] = useState("");
   const [data, setData] = useState(initialState);
 
   const emailRef = React.useRef(null);
   const passRef = React.useRef(null)
 
+  // handling the text change on TextInput
   const handleTextChange = async (key, value) => {
     setData({...data, [key]: value});
   };
 
+  // handling Login functionality.
   const handleSubmit = async () => {
     if (data.email == '' || data.password == '') {
       setErrMsg('All the fields are mandatory');
@@ -76,6 +78,7 @@ export default function Login() {
           <Text style={styles.text}>Expense Tracker</Text>
           <CustTextInput
             // ref={emailRef}
+            
             placeholderText="Email"
             iconType="mail"
             onChangeText={text => handleTextChange('email', text)}
@@ -83,6 +86,8 @@ export default function Login() {
             // onSubmitEditing={() => {
             //   passRef.current.focus();
             // }}
+            keyboardType='email-address'
+            onFocus={()=>{setErrMsg('')}}
           />
           <CustTextInput
             // ref={passRef}
@@ -90,7 +95,7 @@ export default function Login() {
             iconType="lock"
             onChangeText={text => handleTextChange('password', text)}
             secureTextEntry={true}
-            // autoFocus={true}
+            onFocus={()=>{setErrMsg('')}}
           />
           {errMsg.trim().length !== 0 && (
             <Text style={globalStyle.error}>{errMsg}</Text>

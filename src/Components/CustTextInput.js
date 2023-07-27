@@ -16,7 +16,8 @@ export default function CustTextInput({
   error,
   errorMessage,
   autoFocus,
-  onSubmitEditing
+  onSubmitEditing,
+  onFocus
 },ref) {
   return (
     <>
@@ -38,6 +39,7 @@ export default function CustTextInput({
           secureTextEntry={secureTextEntry}
           keyboardType={keyboardType}
           onSubmitEditing={onSubmitEditing}
+          onFocus={onFocus}
         />
       </View>
       {error && (

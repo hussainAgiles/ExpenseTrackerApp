@@ -17,10 +17,11 @@ import DatePicker from '../Components/DatePicker';
 import { globalStyle, screenNames } from '../Constants/constant';
 import { primaryColor, secondaryColor, textColor } from '../Utils/CustomColors';
 import { handleCategories } from '../Utils/TransactionUpdates';
+import Loader from '../Components/Loader'
 
 export default function AddTransaction({ route, navigation }) {
   const oldTransaction = route.params.payload;
-  // console.log("Flagship",oldTransaction)
+  // console.log("transacion received",oldTransaction)
 
   useLayoutEffect(() => {
     let isMounted = true 
@@ -41,7 +42,7 @@ export default function AddTransaction({ route, navigation }) {
       note: oldTransaction.note,
       transactionDate: oldTransaction.transactionDate,
     });
-    setisLoading(false)
+    // setisLoading(false)
     // console.log("Payload now ",payload)
 
   };
@@ -51,7 +52,7 @@ export default function AddTransaction({ route, navigation }) {
   let initialState = {
     amount: 0,
     note: '',
-    transactionDate: new Date()
+    transactionDate: new Date(),
   };
 
   const today = new Date();
@@ -85,11 +86,11 @@ export default function AddTransaction({ route, navigation }) {
     return moment(date).format('DD/MM');
   };
 
+  // handling Selected date while adding transaction.
   const handleSelectDate = inDate => {
     setShowDatePicker(false);
     setSelectedDate(inDate);
-    setPayload({ ...payload, transactionDate: inDate.getTime() });
-    // setTransactionDate(inDate.getTime())
+    setPayload({ ...payload, transactionDate: inDate });
   };
 
   const isSelectedDateVisible = () => {
@@ -125,10 +126,12 @@ export default function AddTransaction({ route, navigation }) {
     }
 
     let payloadToSend = { ...payload };
+    let payloadToUpadte ={ ...payload,category_id:categoryId, category_name:categoryName}
+    // console.log("Details that are captured to send === ",payloadToUpadte)
     let isSuccessful;
     if (oldTransaction !== undefined){
       isSuccessful = updateTransaction(
-        payloadToSend,
+        payloadToUpadte,
         oldTransaction.id
       );
     }
@@ -172,7 +175,7 @@ export default function AddTransaction({ route, navigation }) {
   }
 
   useLayoutEffect(() => {
-    setisLoading(true)
+    // setisLoading(true)
     if( oldTransaction !== undefined) prepopulateDataForUpdate(); 
   }, []);
 

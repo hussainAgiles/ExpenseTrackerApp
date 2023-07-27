@@ -14,18 +14,16 @@ import AntDesign from 'react-native-vector-icons/AntDesign';
 import {useNavigation} from '@react-navigation/native';
 import fireStore from '@react-native-firebase/firestore';
 import Loading from '../Components/Loader';
-import { globalStyle, screenNames } from '../Constants/constant';
+import {globalStyle, screenNames} from '../Constants/constant';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { userNameErrMsg } from '../Utils/ErrorStrings';
-import toast from 'react-native-simple-toast'
-
+import {userNameErrMsg} from '../Utils/ErrorStrings';
+import toast from 'react-native-simple-toast';
 
 export default function Registration() {
-  
   const navigation = useNavigation();
   const generateUUID = () => {
     let uuid = '';
-  
+
     for (let i = 0; i < 16; i++) {
       const randomHex = Math.floor(Math.random() * 8).toString(8);
       uuid += randomHex;
@@ -33,125 +31,124 @@ export default function Registration() {
         uuid += '-';
       }
     }
-    
-    return uuid;
-  }
 
-  let initialState = {firstname:'',lastname:'',email: '', password: '',confirm_password:''};
+    return uuid;
+  };
+
+  let initialState = {
+    firstname: '',
+    lastname: '',
+    email: '',
+    password: '',
+    confirm_password: '',
+  };
   const [data, setData] = useState(initialState);
   const [isLoading, setIsLoading] = useState(false);
-  const [errMsg,setErrMsg] = useState('');
-  
+  const [errMsg, setErrMsg] = useState('');
 
-  const [firstnameErr,setFirstnameErr] = useState(null)
-  const [lastnameErr,setLastnameErr] = useState(null)
-  const [emailErr,setEmailErr] = useState(null)
-  const [passwordError,setPasswordError] = useState(null)
-  const [conpasswordError,setConfirmPasswordError] = useState(null)
-
+  const [firstnameErr, setFirstnameErr] = useState(null);
+  const [lastnameErr, setLastnameErr] = useState(null);
+  const [emailErr, setEmailErr] = useState(null);
+  const [passwordError, setPasswordError] = useState(null);
+  const [conpasswordError, setConfirmPasswordError] = useState(null);
 
   const handleTextChange = async (key, value) => {
-    await setData({...data, [key]: value});
+    setData({...data, [key]: value});
+  };
+
+  const validation = () => {
+    if (data.firstname === '') {
+      setFirstnameErr('First name cannot be empty');
+      return false;
+    }
+
+    if (data.lastname === '') {
+      setLastnameErr(' lastname cannot be empty');
+      return false;
+    }
+
+    if (data.email === '') {
+      setEmailErr('email cannot be empty');
+      return false;
+    }
+    if (data.email !== '') {
+      let reg = /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w\w+)+$/;
+      if (reg.test(data.email) === false) {
+        setEmailErr('Incorrect email address');
+        return false;
+      }
+    }
+
+    if (data.password === '') {
+      setPasswordError('password cannot be empty');
+      return false;
+    }
+
+    if (data.confirm_password === '') {
+      setConfirmPasswordError('cannot be empty');
+      return false;
+    }
+
+    if(data.password !== data.confirm_password){
+      setConfirmPasswordError('Confirm password does not match');
+      return false;
+    }
+    return true;
   };
 
 
-  const validation =()=>{
-    // if(data.firstname == '' || data.lastname == ''|| data.email == '' || data.password == ''|| data.confirm_password == ''){
-    //   toast.show('Please enter the details')
-    // }
-
-    if(data.firstname === ''){
-      setFirstnameErr("First name cannot be empty")
-      return false
-    }
-
-    if(data.lastname === ''){
-      setLastnameErr(" lastname cannot be empty")
-      return false
-    }
-
-    if(data.email === ''){
-      setEmailErr("email cannot be empty")
-      return false
-    }
-
-    // let reg = /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w\w+)+$/;
-    // if (reg.test(data.email) === false) {
-    //   setEmailErr('Incorrect email address');
-    //   return false;
-    // }
-
-    if(data.password === ''){
-      setPasswordError("password cannot be empty")
-      return false
-    }
-
-    if(data.confirm_password === ''){
-      setConfirmPasswordError("cannot be empty")
-      return false
-    }
-    return true
-
-  }
-
-  // const validateEmail = (email) => {
-  //   const regex = /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w\w+)+$/;
-  //   if (regex.test(email) === false) {
-  //     setEmailErr('Invalid format of  email address');
+  // const checkValidation = () => {
+  //   if (data.firstname.length === 0) {
+  //     setFirstnameErr('Please enter firstname');
   //     return false;
   //   }
-   
+
+  //   if (data.lastname.length === 0) {
+  //     setLastnameErr('Please enter your lastname');
+  //     return false;
+  //   }
+
+  //   if (data.email.length === 0) {
+  //     setEmailErr('Please enter your email');
+  //     return false;
+  //   }
+
+  //   let reg = /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w\w+)+$/;
+  //   if (reg.test(data.email) === false) {
+  //     setEmailErr('Incorrect email address');
+  //     return false;
+  //   }
+
+  //   if (data.password.length === 0) {
+  //     setPasswordError('Password must be of atleast 6 characters');
+  //     return false;
+  //   }
+  //   if (data.password !== data.confirm_password) {
+  //     setConfirmPasswordError('Passwords must match');
+  //     return false;
+  //   }
+
+  //   return true;
   // };
 
-  const checkValidation = () =>{
-    if (data.firstname.length === 0) {
-      setFirstnameErr('Please enter firstname');
-      return false;
-    }
-
-    if (data.lastname.length === 0) {
-      setLastnameErr('Please enter your lastname');
-      return false;
-    }
-
-    if (data.email.length === 0) {
-      setEmailErr('Please enter your email');
-      return false;
-    }
-
-
-
-    let reg = /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w\w+)+$/;
-    if (reg.test(data.email) === false) {
-      setEmailErr('Incorrect email address');
-      return false;
-    }
-
-    if (data.password.length === 0) {
-      setPasswordError('Password must be of atleast 6 characters');
-      return false;
-    }
-    if (data.password !== data.confirm_password) {
-      setConfirmPasswordError('Passwords must match');
-      return false;
-    }
-  
-    return true;
-
-  }
-
   const handleRegister = async () => {
-    if(Boolean(validation())){
+    if (Boolean(validation())) {
       // console.log("hello")
       const uid = generateUUID();
-      const response = await fireStore().collection('Users').add({Uuid :uid,
-        ...data}).then(()=>{
+      const response = await fireStore()
+        .collection('Users')
+        .add({Uuid: uid, ...data})
+        .then(() => {
           toast.show('You are Registered successfully', toast.CENTER);
           navigation.replace(screenNames.DashBoard);
-      })
+        });
     }
   };
 
+
+  // const handleSubmit = () => {
+  //   setFirstnameErr(null);
+  // };
 
   return (
     <>
@@ -170,7 +167,8 @@ export default function Registration() {
             iconType="form"
             autoCapitalize="none"
             autoCorrect={false}
-            onChangeText={text => handleTextChange('firstname',text)}
+            onChangeText={text => handleTextChange('firstname', text)}
+            onFocus={()=>{setFirstnameErr(null)}}
           />
           {firstnameErr !== 0 && (
             <Text style={globalStyle.errorRegisteration}>{firstnameErr}</Text>
@@ -180,7 +178,8 @@ export default function Registration() {
             iconType="form"
             autoCapitalize="none"
             autoCorrect={false}
-            onChangeText={text => handleTextChange('lastname',text)}
+            onChangeText={text => handleTextChange('lastname', text)}
+            onFocus={()=>{setLastnameErr(null)}}
           />
           {lastnameErr !== 0 && (
             <Text style={globalStyle.errorRegisteration}>{lastnameErr}</Text>
@@ -191,7 +190,8 @@ export default function Registration() {
             autoCapitalize="none"
             autoCorrect={false}
             keyboardType="email-address"
-            onChangeText={text => handleTextChange('email',text)}
+            onChangeText={text => handleTextChange('email', text)}
+            onFocus={()=>{setEmailErr(null)}}
           />
           {emailErr !== 0 && (
             <Text style={globalStyle.errorRegisteration}>{emailErr}</Text>
@@ -202,7 +202,8 @@ export default function Registration() {
             autoCapitalize="none"
             autoCorrect={false}
             secureTextEntry={true}
-            onChangeText={text => handleTextChange('password',text)}
+            onChangeText={text => handleTextChange('password', text)}
+            onFocus={()=>{setPasswordError(null)}}
           />
           {passwordError !== 0 && (
             <Text style={globalStyle.errorRegisteration}>{passwordError}</Text>
@@ -213,10 +214,13 @@ export default function Registration() {
             autoCapitalize="none"
             autoCorrect={false}
             secureTextEntry={true}
-            onChangeText={text => handleTextChange('confirm_password',text)}
+            onFocus={()=>{setConfirmPasswordError(null)}}
+            onChangeText={text => handleTextChange('confirm_password', text)}
           />
           {conpasswordError !== 0 && (
-            <Text style={globalStyle.errorRegisteration}>{conpasswordError}</Text>
+            <Text style={globalStyle.errorRegisteration}>
+              {conpasswordError}
+            </Text>
           )}
           <CustButton title="Register" onPress={handleRegister} />
           <TouchableOpacity

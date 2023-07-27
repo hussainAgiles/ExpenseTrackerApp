@@ -31,7 +31,6 @@ export default function Transaction() {
     const snapshot = await collectionRef.get();
     const fetcheddata = snapshot.docs.map(doc => doc.data());
 
-
     // adding icons to categories
     const datawithColors = handleCategorieswithImage(fetcheddata);
     // console.log("data with colors === ",datawithColors)
@@ -49,10 +48,9 @@ export default function Transaction() {
 
   const deleteTrxn = async transaction => {
     Alert.alert(
-      'Confirm Deletion',
+      'Confirm',
       'Are you sure you want to delete this record?',
       [
-        {text: 'Cancel', style: 'cancel'},
         {
           text: 'Delete',
           onPress: () => {
@@ -67,6 +65,7 @@ export default function Transaction() {
             toast.show('Transaction deleted succesfully', toast.CENTER);
           },
         },
+        {text: 'Cancel', style: 'cancel'},
       ],
       {cancelable: false},
     );
@@ -78,17 +77,18 @@ export default function Transaction() {
     return str.charAt(0).toUpperCase() + lower.slice(1);
   };
 
-  const timeStampToDate = (dateObj) =>{
-    const transactionDate = dateObj.seconds * 1000 + dateObj.nanoseconds / 1000000; 
+  const timeStampToDate = dateObj => {
+    const transactionDate =
+      dateObj.seconds * 1000 + dateObj.nanoseconds / 1000000;
     // console.log(transactionDate)
     return new Date(transactionDate);
-  }
+  };
 
   const handleCategorieswithImage = data => {
     data.map((item, index) => {
       data[index].note = capitalize(item.note);
       data[index].color = categoryColors[index % categoryColors.length];
-      data[index].transactionDate = timeStampToDate(item.transactionDate)
+      data[index].transactionDate = timeStampToDate(item.transactionDate);
 
       if (
         data[index].category_name === 'Dining' ||
@@ -127,10 +127,10 @@ export default function Transaction() {
         data[index].icon_name = 'calculate';
       }
       if (
-        data[index].category_name === 'fuel' ||
-        data[index].category_name === 'Fuel'
+        data[index].category_name === 'Fuel' ||
+        data[index].category_name === 'fuel'
       ) {
-        data[index].icon_name = 'fuel';
+        data[index].icon_name = 'local-gas-station';
       }
       if (
         data[index].category_name === 'Groceries' ||
@@ -153,80 +153,105 @@ export default function Transaction() {
 
   return (
     <>
-      {isLoading ? (
-        <View style={{flex: 1, justifyContent: 'center', alignItems: 'center'}}>
-          <Loader message="Please wait ..." />
-        </View>
+      {data.length > 0 ? (
+         <View style={{marginTop: 10}}>
+         <FlatList
+           data={data}
+           renderItem={({item}) => (
+             <View style={styles.card}>
+               <View style={[styles.content]}>
+                 {/* Category Image and name */}
+                 <View
+                   style={{
+                     width: 55,
+                     height: 30,
+                     justifyContent: 'center',
+                     alignItems: 'flex-start',
+                   }}>
+                   <Icons size={30} color="#0096FF" name={item.icon_name} />
+                   <Text
+                     style={{
+                       textAlign: 'left',
+                       fontSize: 13,
+                       fontFamily: 'Lato-BlackItalic',
+                     }}>
+                     {item.category_name}
+                   </Text>
+                 </View>
+                 {/* description and date */}
+                 <View
+                   style={{
+                     width: 250,
+                     flexDirection: 'row',
+                     justifyContent: 'space-between',
+                   }}>
+                   <View
+                     style={{
+                       flexDirection: 'column',
+                       justifyContent: 'space-between',
+                     }}>
+                     <Text
+                       style={[
+                         styles.text,
+                         {maxWidth: 200, fontWeight: 700, fontSize: 15},
+                       ]}>
+                       {item.note}
+                     </Text>
+                     <Text
+                       style={[
+                         styles.text,
+                         {maxWidth: 200, fontSize: 12, paddingTop: 5},
+                       ]}>
+                       {Moment(item.transactionDate.toString()).format(
+                         'ddd, DD MMM YYYY',
+                       )}
+                       .
+                     </Text>
+                   </View>
+                   <View>
+                     <Text style={[styles.text, {fontWeight: 700}]}>
+                       <Text style={styles.rupeeText}>{'\u20B9'}.</Text>{' '}
+                       {item.amount}
+                     </Text>
+                   </View>
+                 </View>
+                 {/* Edit and Delete */}
+                 <View style={styles.iconsContainer}>
+                   <View
+                     style={{
+                       alignItems: 'flex-end',
+                       marginBottom:15
+                     }}>
+                     <Icon
+                       size={25}
+                       color="#0096FF"
+                       name="square-edit-outline"
+                       onPress={() => handleUpdate(item)}
+                     />
+                   </View>
+                   <View
+                     style={{
+                       alignItems: 'flex-end',
+                       marginTop:15
+                     }}>
+                     <Icon
+                       size={25}
+                       color="#D11A2A"
+                       name="delete"
+                       onPress={() => deleteTrxn(item)}
+                     />
+                   </View>
+                 </View>
+               </View>
+             </View>
+           )}
+         />
+       </View>
+        
       ) : (
-        <View style={{marginTop: 10}}>
-          <FlatList
-            data={data}
-            renderItem={({item}) => (
-              <View style={styles.card}>
-                <View style={[styles.content]}>
-                  <View style={styles.leftContent}>
-                    <View
-                      style={{
-                        width: 70,
-                        height: 30,
-                        justifyContent: 'center',
-                        alignItems: 'center',
-                      }}>
-                      <Icons size={30} color="#0096FF" name={item.icon_name} />
-                      <Text
-                        style={{
-                          textAlign: 'left',
-                          fontSize: 13,
-                          fontFamily:"Lato-BlackItalic"
-                        }}>
-                        {item.category_name}
-                      </Text>
-                    </View>
-                    <View
-                      style={{
-                        flexDirection: 'row',
-                        width:250,
-                        justifyContent: 'space-between',
-                      }}>
-                      <View style={{flexDirection:"column",justifyContent:"space-between"}}>
-                        <Text style={[styles.text, {maxWidth: 200,fontWeight:700,fontSize:15}]}>
-                          {item.note}
-                        </Text>
-                        <Text style={[styles.text, {maxWidth: 200,fontSize:12,}]}>
-                        {Moment(item.transactionDate.toString()).format("ddd, DD MMM YYYY")}.
-                        </Text>
-                      </View>
-                      <View>
-                        <Text style={[styles.text, {fontWeight:700}]}>
-                          <Text style={styles.rupeeText}>{'\u20B9'}.</Text>{' '}
-                          {item.amount}
-                        </Text>
-                      </View>
-                    </View>
-                  </View>
-                  <View style={styles.iconsContainer}>
-                    <View style={{justifyContent:"flex-start"}}> 
-                      <Icon
-                        size={25}
-                        color="#0096FF"
-                        name="square-edit-outline"
-                        onPress={() => handleUpdate(item)}
-                      />
-                    </View>
-                    <View style={{justifyContent:"flex-end"}}>
-                      <Icon
-                        size={25}
-                        color="#D11A2A"
-                        name="delete"
-                        onPress={() => deleteTrxn(item)}
-                      />
-                    </View>
-                  </View>
-                </View>
-              </View>
-            )}
-          />
-        </View>
+        <View style={{ flex:1,justifyContent: 'center', alignItems: 'center'}}>
+        <Text>No transaction to show</Text>
+      </View>
       )}
     </>
   );
@@ -243,7 +268,7 @@ const styles = StyleSheet.create({
     shadowRadius: 2,
     shadowColor: 'black',
     elevation: 3,
-    margin: 5,
+    margin: 8,
     borderColor: '#404FCD',
     height: 100,
   },
@@ -274,7 +299,8 @@ const styles = StyleSheet.create({
     color: '#C70039',
   },
   iconsContainer: {
+    flex: 1,
     flexDirection: 'column',
-
+    justifyContent:"space-between"
   },
 });

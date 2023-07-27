@@ -2,7 +2,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useDeviceOrientation } from '@react-native-community/hooks';
 import fireStore from '@react-native-firebase/firestore';
 import { useNavigation } from '@react-navigation/native';
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import { FlatList, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import DateTypeSelection from '../Components/DateTypeSelection';
 import Loader from '../Components/Loader';
@@ -10,6 +10,8 @@ import PieChart from '../Components/PieChart';
 import { categoryColors, screenNames } from '../Constants/constant';
 
 export default function Home() {
+
+
   useEffect(() => {
     let isMounted = true;
     if(isMounted){
@@ -19,7 +21,12 @@ export default function Home() {
       isMounted =false
     }
    
-  }, [transaction]);
+  }, [transaction,categoryWiseTrxn]);
+
+  // useMemo(() => calculateCategoryWiseExpense(),
+  //  [categoryWiseTrxn])
+
+
 
   useEffect(() => {
     let isMounted = true;
@@ -30,7 +37,7 @@ export default function Home() {
       isMounted =false
     }
     
-  }, [transaction,categoryWiseTrxn]);
+  }, [transaction]);
 
   const navigation = useNavigation();
   const [isLoading, setLoading] = useState(false);
@@ -70,10 +77,34 @@ export default function Home() {
     return total;
   };
 
-  const calculateCategoryWiseExpense = categories => {
+  // const resultantData = useMemo((categories)=>{
+  //   console.log("inside use Memo ==== ",categories)
+  //   const categoryTotals = {};
+  //   let totalAmount = 0;
+
+  //   categories.forEach(expense => {
+  //     const {category_name, amount} = expense;
+  //     totalAmount += Number(amount);
+  //     categoryTotals[category_name] =
+  //       (categoryTotals[category_name] || 0) + Number(amount);
+  //   });
+
+  //   // Calculating percentage CategoryWise transaction
+  //   const result = Object.keys(categoryTotals).map(categoryData => {
+  //     const amount = categoryTotals[categoryData];
+  //     const percentage = ((amount / totalAmount) * 100).toFixed(2);
+  //     return {categoryData, amount, percentage};
+  //   });
+
+  //   // console.log("Category wise result ===",result)
+  //   return result;
+  // },[transaction,categoryWiseTrxn]) 
+
+
+ const calculateCategoryWiseExpense = categories => {
     const categoryTotals = categoriseAmount(categories);
     return categoryTotals;
-  };
+  }; 
 
   const categoriseAmount = categories => {
     const categoryTotals = {};
@@ -89,7 +120,7 @@ export default function Home() {
     // Calculating percentage CategoryWise transaction
     const result = Object.keys(categoryTotals).map(categoryData => {
       const amount = categoryTotals[categoryData];
-      const percentage = ((amount / totalAmount) * 100).toFixed(2);
+      const percentage = Number((amount / totalAmount) * 100).toFixed(2);
       return {categoryData, amount, percentage};
     });
 
@@ -100,7 +131,6 @@ export default function Home() {
   const fetchTransactionCategryBased = async () => {
     setLoading(true);
     const userId = await AsyncStorage.getItem('userId');
-    // console.log("User Id ====",userId)
     const collectionRef = fireStore().collection('Transaction');
     const snapShot = await collectionRef
       .where('user_id', '==', userId)
@@ -108,6 +138,7 @@ export default function Home() {
       .get();
     const fetcheddata = snapShot.docs.map(doc => doc.data());
     const totalExpense = calculateTotalExpense(fetcheddata);
+    
     const categoryWiseExpense = calculateCategoryWiseExpense(fetcheddata);
     // console.log('categoryWiseExpense ==== ', categoryWiseExpense);
     setCategoryWiseTrxn(categoryWiseExpense);
@@ -238,7 +269,7 @@ export default function Home() {
             </View>
           </View>
           <View style={styles.card}>
-            <Text style={{fontSize: 20, fontWeight: 800, marginLeft: 10}}>
+            <Text style={{fontSize: 20,marginLeft: 10,fontFamily:"Lato-Bold",fontWeight:"700"}}>
               Latest Transaction
             </Text>
             <FlatList
@@ -309,10 +340,12 @@ const styles = StyleSheet.create({
   CategoryText: {
     fontSize: 18,
     color: '#000000',
+    fontFamily:'Lato-Bold'
   },
   descText: {
     fontSize: 15,
     color: '#000000',
+    fontFamily:'Lato-Regular'
   },
   card: {
     marginVertical: 5,

@@ -118,7 +118,7 @@ const CategoryScreen = () => {
   };
 
   const handleUpdate = item => {
-    console.log('handle update', item);
+    // console.log('handle update', item);
     setIsUpdate(true);
     setPayload(item);
     setModalVisible(true);
