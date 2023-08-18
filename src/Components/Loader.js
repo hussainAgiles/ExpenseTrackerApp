@@ -7,7 +7,7 @@ const Loading = ({message}) => {
     <View style={{flex:1,justifyContent:"center",alignItems:"center"}}>
       <ActivityIndicator size="large" color={primaryColor} />
       {message !== undefined && (
-        <Text style={{color: '#A5A5A5'}}>{message}</Text>
+        <Text style={{color: '#A5A5A5',fontFamily:'EduSABeginner-SemiBold'}}>{message}</Text>
       )}
     </View>
   );

@@ -31,9 +31,9 @@ const SignOut = ({}) => {
           <Text
             style={{
               color: '#000000',
-              fontSize: 13,
+              fontSize: 18,
               textAlign: 'center',
-              fontFamily: 'Lato-Regular',
+              fontFamily:'EduSABeginner-SemiBold'
             }}>
             Are you sure you want to Logout?
           </Text>
@@ -46,7 +46,7 @@ const SignOut = ({}) => {
             }}>
             <View>
               <TouchableOpacity style={{marginRight: 20}} onPress={onLogout}>
-                <Text style={styles.textStyle}>LOG OUT</Text>
+                <Text style={[styles.textStyle,{color:"#388E3C"}]}>Log Out</Text>
               </TouchableOpacity>
             </View>
             <View>
@@ -55,7 +55,7 @@ const SignOut = ({}) => {
                   setLogoutModalVisible(false);
                   navigation.navigate(screenNames.Home)
                 }}>
-                <Text style={styles.textStyle}>CANCEL</Text>
+                <Text style={[styles.textStyle,{color:"#C70039"}]}>Cancel</Text>
               </TouchableOpacity>
             </View>
           </View>
@@ -93,8 +93,8 @@ const styles = StyleSheet.create({
         color: '#000000',
         marginTop: 4,
         marginBottom: 0,
-        fontSize: 16,
-        fontFamily: "Lato-Regular",
+        fontSize: 18,
+        fontFamily:'EduSABeginner-Medium'
     },
 
 });

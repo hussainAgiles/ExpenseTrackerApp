@@ -315,3 +315,17 @@
     "transactionDate": 1688972908560,
     "user_id": "57060743-3672-373-4"
 }
+
+
+
+{
+    "amount": "89.4",
+    "category_id": "c15c246f-3cbe-4bb3-94d0-8351a34d9988",
+    "category_name": "Others",
+    "color": "#FBD92F",
+    "icon_name": "miscellaneous-services",
+    "id": "40662f08-7a78-4eb2-84b9-4af6cdad8f18",
+    "note": "Saved decimal amount",
+    "transactionDate": 2023-07-28T04: 45: 48.130Z,
+    "user_id": "04665174-4151-074-0"
+}

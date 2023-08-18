@@ -10,7 +10,7 @@ const DateTypeSelection = ({date,sendDateToHome}) => {
   const options = ['Day', 'Month', 'Year'];
   const [selectedDate, setSelectedDate] = useState(date);
   const [showPicker, setShowPicker] = useState(false);
-  const [selectedOption, setSelectedOption] = useState('Month');
+  const [selectedOption, setSelectedOption] = useState('Year');
   const [selectedValue, setSelectedValue] = useState(
     moment(date).format('MMMM, YYYY'),
   );
@@ -114,9 +114,9 @@ const DateTypeSelection = ({date,sendDateToHome}) => {
         )}
         {selectedDate.toLocaleDateString() ===
         new Date().toLocaleDateString() ? (
-          <Text style={[styles.navigationButtons, {color: '#b8b3b1'}]}>
+         <Text style={[styles.navigationButtons, {color: '#b8b3b1',fontFamily:'EduSABeginner-Bold'}]}>
             {'>'}
-          </Text>
+          </Text> 
         ) : (
           <Text
             style={styles.navigationButtons}
@@ -146,12 +146,13 @@ const styles = StyleSheet.create({
   optionText: {
     color: textColor,
     fontSize: 18,
+    fontFamily:'EduSABeginner-Medium'
   },
   active: {
     color: primaryColor,
-    fontWeight: 'bold',
     borderBottomColor: primaryColor,
     borderBottomWidth: 2,
+    fontFamily:'EduSABeginner-SemiBold'
   },
   selected: {
     flexDirection: 'row',
@@ -162,7 +163,7 @@ const styles = StyleSheet.create({
   selectedText: {
     color: textColor,
     fontSize:16,
-    fontFamily:"Lato-Black"
+    fontFamily:'EduSABeginner-Bold'
   },
   navigationButtons: {
     color: textColor,

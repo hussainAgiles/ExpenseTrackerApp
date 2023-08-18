@@ -1,4 +1,4 @@
-import { StyleSheet, Text, View } from 'react-native'
+import { StyleSheet, Text, View,PermissionsAndroid } from 'react-native'
 import React,{useEffect} from 'react'
 import Lottie from 'lottie-react-native'
 import { useNavigation } from '@react-navigation/native';
@@ -19,7 +19,6 @@ export default function SplashScreen() {
             }
         }, 4000);
     }, [])
-
     
     
   return (

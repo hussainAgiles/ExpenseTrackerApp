@@ -2,6 +2,50 @@
   "migIndex": 1,
   "data": [
     {
+      "path": "assets/Fonts/Dosis-Bold.ttf",
+      "sha1": "9f646e03f99c47f3a361ce86163485cefe9731f7"
+    },
+    {
+      "path": "assets/Fonts/Dosis-ExtraBold.ttf",
+      "sha1": "ed4dad385262ec71becfb1f4257a515e964e9b5c"
+    },
+    {
+      "path": "assets/Fonts/Dosis-ExtraLight.ttf",
+      "sha1": "0721869e1d4dbdb1ec18d776e5370cc810229a35"
+    },
+    {
+      "path": "assets/Fonts/Dosis-Light.ttf",
+      "sha1": "5c7173f630fa6ff0a4878be2b63d7e121a5fcfac"
+    },
+    {
+      "path": "assets/Fonts/Dosis-Medium.ttf",
+      "sha1": "77e6f8ce6baf98f01d115ddee59bc7e4802e110d"
+    },
+    {
+      "path": "assets/Fonts/Dosis-Regular.ttf",
+      "sha1": "223f2240a8b3da47bb195e560a46f50fcafd43db"
+    },
+    {
+      "path": "assets/Fonts/Dosis-SemiBold.ttf",
+      "sha1": "764f5d2ef34074f9b483f0eb09e252fdd828e167"
+    },
+    {
+      "path": "assets/Fonts/EduSABeginner-Bold.ttf",
+      "sha1": "ea28673f7a46eb2391445621cea443644e1b2968"
+    },
+    {
+      "path": "assets/Fonts/EduSABeginner-Medium.ttf",
+      "sha1": "cb4981e793cfdf7b5ad147adddd399dac5c6d02f"
+    },
+    {
+      "path": "assets/Fonts/EduSABeginner-Regular.ttf",
+      "sha1": "a1a43bfa6cbf11d1cce1c22eb39895d4cb850ace"
+    },
+    {
+      "path": "assets/Fonts/EduSABeginner-SemiBold.ttf",
+      "sha1": "155b83d02b8d40826fface2dd96386909d42570a"
+    },
+    {
       "path": "assets/Fonts/Lato-Black.ttf",
       "sha1": "a001eb827743636e04f8efa7d4aeedf0541c46ac"
     },

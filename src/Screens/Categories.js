@@ -1,5 +1,5 @@
 import React, {useEffect, useId, useState} from 'react';
-import {StyleSheet, Text, View, FlatList, TextInput} from 'react-native';
+import {StyleSheet, Text, View, FlatList, TextInput,Alert} from 'react-native';
 import {Button} from 'react-native-paper';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import CategoryModal from '../Components/CategoryModal';
@@ -11,9 +11,12 @@ import fireStore from '@react-native-firebase/firestore';
 import uuid from 'react-native-uuid';
 import {TouchableOpacity} from 'react-native-gesture-handler';
 import { handleCategories} from '../Utils/TransactionUpdates';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import toast from 'react-native-simple-toast';
 
 const CategoryScreen = () => {
   const [categories, setCategories] = useState([]);
+
 
   const uId = uuid.v4();
 
@@ -29,8 +32,10 @@ const CategoryScreen = () => {
     const collectionRef = fireStore().collection('Category');
     const snapshot = await collectionRef.get();
     const fetcheddata = snapshot.docs.map(doc => doc.data());
-    const finalCat = handleCategories(fetcheddata);
+    const sortedData = fetcheddata.sort((a, b) => a.title.localeCompare(b.title));
+    const finalCat = handleCategories(sortedData);
     setCategories(finalCat);
+    await AsyncStorage.setItem('categoriesList',JSON.stringify(finalCat))
     setIsLoading(false)
   };
 
@@ -47,11 +52,13 @@ const CategoryScreen = () => {
 
   // Handle Search
   const handleSearch = text => {
-    setCategories(
-      categories.filter(
-        item => item.title.toLowerCase().indexOf(text.toLowerCase()) !== -1,
-      ),
-    );
+      if(text.length === 0 || text === '' ){
+        setCategories(categories)
+      }else{
+        const searchedData =  categories.filter(
+          item => item.title.toLowerCase().indexOf(text.toLowerCase()) !== -1,)
+        setCategories(searchedData)
+      }   
   };
 
   // handle textinput changes
@@ -92,14 +99,28 @@ const CategoryScreen = () => {
 
   const deleteCategory = async category => {
     // console.log('Delete category', category);
-    var query = fireStore()
-      .collection('Category')
-      .where('id', '==', category.id);
-    query.get().then(querySnapshot => {
-      querySnapshot.forEach(doc => {
-        doc.ref.delete();
-      });
-    });
+    Alert.alert(
+      'Confirm',
+      'Are you sure you want to delete this Category?',
+      [
+        {
+          text: 'Delete',
+          onPress: () => {
+            var query = fireStore()
+            .collection('Category')
+            .where('id', '==', category.id);
+          query.get().then(querySnapshot => {
+            querySnapshot.forEach(doc => {
+              doc.ref.delete();
+            });
+          });
+            toast.show('Categories deleted succesfully', toast.CENTER);
+          },
+        },
+        {text: 'Cancel', style: 'cancel'},
+      ],
+      {cancelable: false},
+    );
     fetch();
   };
 
@@ -145,7 +166,7 @@ const CategoryScreen = () => {
           alignItems: 'center',
         }}>
         <View style={[styles.color, {backgroundColor: item.color}]} />
-        <Text style={{color: textColor, fontSize: 15}}>{item.title}</Text>
+        <Text style={{color: textColor, fontSize: 15,fontFamily:'Dosis-Regular'}}>{item.title}</Text>
       </View>
       <View style={styles.iconsContainer}>
         <Icon
@@ -181,7 +202,7 @@ const CategoryScreen = () => {
               handleModalVisibility={handleModalVisibility}
             />
           ) : (
-            <View>
+            <View style={{flex:1}}>
               <View style={styles.header}>
                 <TextInput
                   style={styles.input}
@@ -215,12 +236,11 @@ const CategoryScreen = () => {
                   {errMsg}
                 </Text>
               )}
-              <FlatList
-                style={{marginTop: 5}}
+              <FlatList  
                 data={categories}
                 keyExtractor={item => item.id}
                 renderItem={renderItem}
-              />
+              />  
             </View>
           )}
         </>
@@ -249,11 +269,10 @@ const styles = StyleSheet.create({
     flex: 1,
     flexDirection: 'row',
     backgroundColor: '#fff',
-    borderRadius: 10,
-    marginTop: 10,
-    marginHorizontal: 10,
-    borderColor:'#404FCD',
-    borderWidth:1
+    marginVertical:5,
+    marginHorizontal:15,
+    borderBottomWidth:0.5,
+    padding:5
   },
   color: {
     marginRight: 10,
@@ -267,4 +286,4 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-around',
   },
-});
+})

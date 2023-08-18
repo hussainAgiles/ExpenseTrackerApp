@@ -1,26 +1,25 @@
+import fireStore from '@react-native-firebase/firestore';
+import { useNavigation } from '@react-navigation/native';
+import React, { useState } from 'react';
 import {
   ScrollView,
   StyleSheet,
   Text,
-  View,
   TouchableOpacity,
-  Alert,
+  View
 } from 'react-native';
-import React, {useState} from 'react';
-import CustTextInput from '../Components/CustTextInput';
-import CustButton from '../Components/CustButton';
-import {primaryColor} from '../Utils/CustomColors';
-import AntDesign from 'react-native-vector-icons/AntDesign';
-import {useNavigation} from '@react-navigation/native';
-import fireStore from '@react-native-firebase/firestore';
-import Loading from '../Components/Loader';
-import {globalStyle, screenNames} from '../Constants/constant';
-import AsyncStorage from '@react-native-async-storage/async-storage';
-import {userNameErrMsg} from '../Utils/ErrorStrings';
 import toast from 'react-native-simple-toast';
+import AntDesign from 'react-native-vector-icons/AntDesign';
+import CustButton from '../Components/CustButton';
+import CustTextInput from '../Components/CustTextInput';
+import Loading from '../Components/Loader';
+import { globalStyle, screenNames } from '../Constants/constant';
+import { primaryColor } from '../Utils/CustomColors';
 
 export default function Registration() {
   const navigation = useNavigation();
+  // Generating Unique UserId
+  
   const generateUUID = () => {
     let uuid = '';
 
@@ -34,6 +33,7 @@ export default function Registration() {
 
     return uuid;
   };
+
 
   let initialState = {
     firstname: '',
@@ -58,17 +58,17 @@ export default function Registration() {
 
   const validation = () => {
     if (data.firstname === '') {
-      setFirstnameErr('First name cannot be empty');
+      setFirstnameErr('First Name cannot be empty');
       return false;
     }
 
     if (data.lastname === '') {
-      setLastnameErr(' lastname cannot be empty');
+      setLastnameErr(' Last Name cannot be empty');
       return false;
     }
 
     if (data.email === '') {
-      setEmailErr('email cannot be empty');
+      setEmailErr('Email cannot be empty');
       return false;
     }
     if (data.email !== '') {
@@ -80,12 +80,12 @@ export default function Registration() {
     }
 
     if (data.password === '') {
-      setPasswordError('password cannot be empty');
+      setPasswordError('Password cannot be empty');
       return false;
     }
 
     if (data.confirm_password === '') {
-      setConfirmPasswordError('cannot be empty');
+      setConfirmPasswordError('Cannot be empty');
       return false;
     }
 
@@ -95,41 +95,6 @@ export default function Registration() {
     }
     return true;
   };
-
-
-  // const checkValidation = () => {
-  //   if (data.firstname.length === 0) {
-  //     setFirstnameErr('Please enter firstname');
-  //     return false;
-  //   }
-
-  //   if (data.lastname.length === 0) {
-  //     setLastnameErr('Please enter your lastname');
-  //     return false;
-  //   }
-
-  //   if (data.email.length === 0) {
-  //     setEmailErr('Please enter your email');
-  //     return false;
-  //   }
-
-  //   let reg = /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w\w+)+$/;
-  //   if (reg.test(data.email) === false) {
-  //     setEmailErr('Incorrect email address');
-  //     return false;
-  //   }
-
-  //   if (data.password.length === 0) {
-  //     setPasswordError('Password must be of atleast 6 characters');
-  //     return false;
-  //   }
-  //   if (data.password !== data.confirm_password) {
-  //     setConfirmPasswordError('Passwords must match');
-  //     return false;
-  //   }
-
-  //   return true;
-  // };
 
   const handleRegister = async () => {
     if (Boolean(validation())) {
@@ -146,9 +111,6 @@ export default function Registration() {
   };
 
 
-  // const handleSubmit = () => {
-  //   setFirstnameErr(null);
-  // };
 
   return (
     <>
@@ -165,18 +127,20 @@ export default function Registration() {
           <CustTextInput
             placeholderText="First Name"
             iconType="form"
-            autoCapitalize="none"
+            autoCapitalize={true}
             autoCorrect={false}
             onChangeText={text => handleTextChange('firstname', text)}
             onFocus={()=>{setFirstnameErr(null)}}
           />
           {firstnameErr !== 0 && (
-            <Text style={globalStyle.errorRegisteration}>{firstnameErr}</Text>
+            <View style={{alignItems:"flex-start"}}>
+              <Text style={globalStyle.errorRegisteration}>{firstnameErr}</Text>
+            </View>  
           )}
           <CustTextInput
             placeholderText="Last Name"
             iconType="form"
-            autoCapitalize="none"
+            autoCapitalize={true}
             autoCorrect={false}
             onChangeText={text => handleTextChange('lastname', text)}
             onFocus={()=>{setLastnameErr(null)}}
@@ -248,7 +212,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   text: {
-    fontFamily: 'Kufam-SemiBoldItalic',
+    fontFamily: 'EduSABeginner-SemiBold',
     fontSize: 25,
     marginLeft: 5,
     color: primaryColor,
@@ -260,6 +224,7 @@ const styles = StyleSheet.create({
     fontSize: 18,
     fontWeight: '500',
     color: primaryColor,
-    fontFamily: 'Lato-Regular',
+    fontFamily: 'EduSABeginner-SemiBold',
+    textDecorationLine:"underline"
   },
 });

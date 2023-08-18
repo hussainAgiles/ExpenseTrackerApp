@@ -20,13 +20,14 @@ export const globalStyle = StyleSheet.create({
     fontSize: 15,
     textAlign: 'center',
     marginVertical: 5,
+    fontFamily:"EduSABeginner-SemiBold"
   },
 
   errorRegisteration: {
     color: 'red',
     fontSize: 15,
-    textAlign:"left",
     marginVertical: 5,
+    textAlign:"left"
   },
 });
 

@@ -128,7 +128,7 @@ const styles = StyleSheet.create({
     resizeMode: 'cover',
   },
   text: {
-    fontFamily: 'Lato-BlackItalic',
+    fontFamily: 'EduSABeginner-SemiBold',
     fontSize: 28,
     marginBottom: 10,
     color: textColor,
@@ -143,6 +143,7 @@ const styles = StyleSheet.create({
     fontSize: 18,
     fontWeight: '500',
     color: primaryColor,
-    fontFamily: 'Lato-Regular',
+    fontFamily: 'EduSABeginner-SemiBold',
+    textDecorationLine:"underline"
   },
 });

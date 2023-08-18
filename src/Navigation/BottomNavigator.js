@@ -60,7 +60,7 @@ export default function BottomNavigation() {
                       name="home-outline"
                       size={Sizes.h3}
                       color={
-                        focused ?primaryColor : '#000000'
+                        focused ?primaryColor : '#757575'
                       }
                     />
                     <Text
@@ -69,8 +69,8 @@ export default function BottomNavigation() {
                           ? primaryColor
                           : '#000000',
                         marginTop: 5,
-                        fontSize: 12,
-                       fontFamily: 'Lato-Regular',
+                        fontSize: 15,
+                        fontFamily:'EduSABeginner-SemiBold'
                       }}>
                       Home
                     </Text>
@@ -107,7 +107,7 @@ export default function BottomNavigation() {
                       name="clipboard-list"
                       size={Sizes.h3}
                       color={
-                        focused ?primaryColor : '#000000'
+                        focused ?primaryColor : '#757575'
                       }
                     />
                     <Text
@@ -116,8 +116,8 @@ export default function BottomNavigation() {
                           ? primaryColor
                           : '#000000',
                         marginTop: 5,
-                        fontSize: 12,
-                       fontFamily: 'Lato-Regular',
+                        fontSize: 15,
+                        fontFamily:'EduSABeginner-SemiBold'
                       }}>
                       Categories
                     </Text>
@@ -142,6 +142,8 @@ export default function BottomNavigation() {
               unmountOnBlur: true,
               headerShown:true,
               headerTitleAlign:"center",
+              headerTitleStyle:{fontFamily:"EduSABeginner-SemiBold"},
+              headerStyle:{borderBottomWidth:1},
               tabBarIcon: ({focused}) => {
                 return (
                   <View
@@ -156,7 +158,7 @@ export default function BottomNavigation() {
                       name="collapse-all-outline"
                       size={Sizes.h3}
                       color={
-                        focused ?primaryColor : '#000000'
+                        focused ?primaryColor : '#757575'
                       }
                     />
                     <Text
@@ -165,8 +167,8 @@ export default function BottomNavigation() {
                           ? primaryColor
                           : '#000000',
                         marginTop: 5,
-                        fontSize: 12,
-                       fontFamily: 'Lato-Regular',
+                        fontSize: 15,
+                        fontFamily:'EduSABeginner-SemiBold'
                       }}>
                       Transaction
                     </Text>
@@ -203,7 +205,7 @@ export default function BottomNavigation() {
                       name="logout"
                       size={Sizes.h3}
                       color={
-                        focused ?primaryColor : '#000000'
+                        focused ?primaryColor : '#757575'
                       }
                     />
                     <Text
@@ -212,8 +214,8 @@ export default function BottomNavigation() {
                           ? primaryColor
                           : '#000000',
                         marginTop: 5,
-                        fontSize: 12,
-                       fontFamily: 'Lato-Regular',
+                        fontSize: 15,
+                        fontFamily:'EduSABeginner-SemiBold'
                       }}>
                       Sign Out
                     </Text>
