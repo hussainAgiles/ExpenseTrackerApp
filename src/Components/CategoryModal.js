@@ -1,5 +1,5 @@
 import React from 'react';
-import {Modal, StyleSheet, Text, View, TextInput} from 'react-native';
+import {Modal, StyleSheet, Text, View, TextInput,TouchableOpacity} from 'react-native';
 import {Button} from 'react-native-paper';
 import {deviceWidth} from '../Utils/Dimension'; 
 import {primaryColor, textColor} from '../Utils/CustomColors';
@@ -11,6 +11,7 @@ const CategoryModal = ({
   handleChange,
   handleModalVisibility,
 }) => {
+  // console.log("payload === ",payload)
   return (
     <View style={styles.centeredView}>
       <Modal animationType="fade" transparent={true} visible={true}>
@@ -24,34 +25,30 @@ const CategoryModal = ({
             <View style={{padding: 20}}>
               <TextInput
                 style={styles.input}
-                value={payload.title}
+                value={payload.shortname}
                 placeholder="Title"
                 placeholderTextColor="grey"
-                onChangeText={text => handleChange('title', text)}
+                onChangeText={text => handleChange('shortname', text)}
               />
               <TextInput
                 style={styles.input}
-                value={payload.description}
+                value={payload.longname}
                 placeholder="Description"
                 placeholderTextColor="grey"
-                onChangeText={text => handleChange('description', text)}
+                onChangeText={text => handleChange('longname', text)}
               />
             </View>
-            <View style={{flexDirection: 'row'}}>
-              <Button
-                color={primaryColor}
-                mode="contained"
-                style={[styles.button, {borderBottomLeftRadius: 20}]}
+            <View style={{flexDirection: 'row',justifyContent:"center",alignItems:"center"}}>
+              <TouchableOpacity
+                style={[styles.button, {borderBottomLeftRadius: 20,backgroundColor:primaryColor,paddingVertical:15}]}
                 onPress={handleSave}>
-                Save
-              </Button>
-              <Button
-                color={primaryColor}
-                mode="contained"
-                style={[styles.button, {borderBottomRightRadius: 20}]}
+               <Text style={{color:'#fff',textAlign:"center"}}>Save</Text> 
+              </TouchableOpacity>
+              <TouchableOpacity
+                style={[styles.button, {borderBottomRightRadius: 20,backgroundColor:primaryColor,paddingVertical:15}]}
                 onPress={() => handleModalVisibility(false)}>
-                Cancel
-              </Button>
+               <Text style={{color:'#fff',textAlign:"center"}}>Cancel</Text> 
+              </TouchableOpacity>
             </View>
           </View>
         </View>

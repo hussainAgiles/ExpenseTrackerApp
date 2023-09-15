@@ -4,6 +4,8 @@ import moment from 'moment';
 import React, {useLayoutEffect, useState} from 'react';
 import {
   FlatList,
+  Image,
+  Modal,
   StyleSheet,
   Text,
   TextInput,
@@ -14,19 +16,26 @@ import toast from 'react-native-simple-toast';
 import uuid from 'react-native-uuid';
 import FontAwesome from 'react-native-vector-icons/FontAwesome';
 import DatePicker from '../Components/DatePicker';
+import Loader from '../Components/Loader';
 import {globalStyle, screenNames} from '../Constants/constant';
 import {primaryColor, secondaryColor, textColor} from '../Utils/CustomColors';
 import {handleCategories} from '../Utils/TransactionUpdates';
-import Loader from '../Components/Loader';
+// import * as ImagePicker from 'react-native-image-picker';
+import ImagePicker from 'react-native-image-crop-picker';
+import {
+  add_Transaction,
+  fetchCategories,
+  imageUpload,
+} from '../Helpers/helpers';
+import RNFS from 'react-native-fs';
 
 export default function AddTransaction({route, navigation}) {
   const oldTransaction = route.params.payload;
   // console.log("transacion received",oldTransaction)
-
   useLayoutEffect(() => {
     let isMounted = true;
     if (isMounted) {
-      fetchCategories();
+      fetchAllCategories();
     }
     return () => {
       isMounted = false;
@@ -34,24 +43,26 @@ export default function AddTransaction({route, navigation}) {
   }, [categoryId]);
 
   const prepopulateDataForUpdate = () => {
-    setCategoryId(oldTransaction.category_id);
-    setCategoryName(oldTransaction.category_name);
-    setSelectedDate(new Date(oldTransaction.transactionDate.toDate()));
+    setCategoryId(oldTransaction.categories_id);
+    setSelectedDate(new Date(oldTransaction.transaction_date));
     setPayload({
       amount: oldTransaction.amount,
-      note: oldTransaction.note,
-      transactionDate: oldTransaction.transactionDate,
+      transactions_description: oldTransaction.transactions_description,
+      transaction_date: oldTransaction.transaction_date,
+      id: oldTransaction.id,
+      categories_id: oldTransaction.categories_id,
     });
     // setisLoading(false)
-    // console.log("Payload now ",payload)
   };
 
   const showFutureDates = route.params.showFutureDates;
 
   let initialState = {
+    categories_id: 0,
     amount: 0,
-    note: '',
-    transactionDate: new Date(),
+    transactions_description: '',
+    transaction_date: moment(selectedDate).format('YYYY-MM-DD'),
+    transactions_image: '',
   };
 
   const today = new Date();
@@ -61,23 +72,27 @@ export default function AddTransaction({route, navigation}) {
   tomorrow.setDate(today.getDate() + 1);
 
   const [payload, setPayload] = useState(initialState);
-  const [categoryId, setCategoryId] = useState(null);
+  const [categoryId, setCategoryId] = useState(0);
   const [categoryName, setCategoryName] = useState(null);
   const [selectedDate, setSelectedDate] = useState(new Date());
   const [showDatePicker, setShowDatePicker] = useState(false);
   const [errMsg, setErrMsg] = useState('');
   const [isLoading, setisLoading] = useState(false);
   const [category, setCategory] = useState([]);
+  const [imageUri, setImageUri] = useState();
+  const [multipleImages, setMultipleImages] = useState([]);
 
-  const fetchCategories = async () => {
-    const collectionRef = fireStore().collection('Category');
-    const snapshot = await collectionRef.get();
-    const fetcheddata = snapshot.docs.map(doc => doc.data());
-    const sortedData = fetcheddata.sort((a, b) => a.title.localeCompare(b.title));
+  // Fetching all the categories to display for addding transaction.
+  const fetchAllCategories = async () => {
+    const response = await fetchCategories();
+    const sortedData = response.data.categories.sort((a, b) =>
+      a.longname.localeCompare(b.longname),
+    );
     const finalCat = handleCategories(sortedData);
     setCategory(finalCat);
   };
 
+  // handling change of textInput
   const handleChange = (key, value) => {
     setPayload({...payload, [key]: value});
   };
@@ -90,7 +105,10 @@ export default function AddTransaction({route, navigation}) {
   const handleSelectDate = inDate => {
     setShowDatePicker(false);
     setSelectedDate(inDate);
-    setPayload({...payload, transactionDate: inDate});
+    setPayload({
+      ...payload,
+      transaction_date: moment(inDate).format('YYYY-MM-DD'),
+    });
   };
 
   const isSelectedDateVisible = () => {
@@ -106,6 +124,7 @@ export default function AddTransaction({route, navigation}) {
     );
   };
 
+  // Validating the amount field.
   const validate = () => {
     if (payload.amount <= 0) {
       setErrMsg('Amount must be greater than Zero');
@@ -118,8 +137,8 @@ export default function AddTransaction({route, navigation}) {
     return true;
   };
 
+  // On Click of Save Button
   const handleSubmit = async () => {
-    //Validation
     if (validate() === false) {
       // setIsLoading(false);
       return;
@@ -128,13 +147,11 @@ export default function AddTransaction({route, navigation}) {
     let payloadToSend = {...payload};
     let payloadToUpadte = {
       ...payload,
-      category_id: categoryId,
-      category_name: categoryName,
     };
     // console.log("Details that are captured to send === ",payloadToUpadte)
     let isSuccessful;
     if (oldTransaction !== undefined) {
-      isSuccessful = updateTransaction(payloadToUpadte, oldTransaction.id);
+      isSuccessful = updateTransaction(payloadToUpadte);
     } else {
       isSuccessful = await addTransaction();
     }
@@ -147,37 +164,27 @@ export default function AddTransaction({route, navigation}) {
 
   const uId = uuid.v4();
 
+  // handle add Transaction
   const addTransaction = async () => {
-    const userId = await AsyncStorage.getItem('User_Token');
-    const response = await fireStore()
-      .collection('Transaction')
-      .add({
-        ...payload,
-        category_id: categoryId,
-        user_id: userId,
-        id: uId,
-        category_name: categoryName,
-      })
-      .then(() => {
-        toast.show('Transaction added succesfully', toast.CENTER);
-      });
-    navigation.navigate(screenNames.Transaction);
+    const response = await add_Transaction(payload);
+    if (response.status === 200) {
+      toast.show(response.data.message, toast.SHORT);
+      navigation.navigate(screenNames.Transaction);
+    } else {
+      toast.show(response.data.message, toast.SHORT);
+    }
   };
 
-  const updateTransaction = async (data, transactionId) => {
-    // console.log("Updating trxn === ",data)
-    var query = fireStore()
-      .collection('Transaction')
-      .where('id', '==', transactionId);
-    query.get().then(snapshot => {
-      const batch = fireStore().batch();
-      snapshot.forEach(doc => {
-        batch.update(doc.ref, data);
-      });
-      return batch.commit();
-    });
-    toast.show('Transaction Updated succesfully', toast.CENTER);
-    navigation.navigate(screenNames.Transaction);
+  // handle update Transaction
+  const updateTransaction = async data => {
+    // console.log("Data === ",data)
+    const response = await add_Transaction(payload);
+    if (response.status === 200) {
+      toast.show(response.data.message, toast.SHORT);
+      navigation.navigate(screenNames.Transaction);
+    } else {
+      toast.show(response.data.message, toast.SHORT);
+    }
   };
 
   useLayoutEffect(() => {
@@ -185,11 +192,37 @@ export default function AddTransaction({route, navigation}) {
     if (oldTransaction !== undefined) prepopulateDataForUpdate();
   }, []);
 
-  const categorySelected = categoryItem => {
-    setCategoryId(categoryItem.id);
-    // console.log("item id  === ",categoryId)
-    setCategoryName(categoryItem.title);
+  const openCamera = async () => {
+    ImagePicker.openCamera({
+      width: 100,
+      height: 100,
+      cropping: true,
+    }).then(async image => {
+      setImageUri(image.path);
+      const payloadRequest = {
+        image: image,
+        folder: 'ExpenseBills',
+      };
+      const response = await imageUpload(payloadRequest);
+      setPayload({
+        ...payload,
+        transactions_image: response.filepath,
+      });
+    });
   };
+
+  const data = [];
+  const openGallery = async () => {
+    ImagePicker.openPicker({
+      multiple: true,
+    }).then(image => {
+      // console.log(image);
+      setMultipleImages(image);
+    });
+  };
+
+
+  const [modalVisible, setModalVisible] = useState(false);
 
   return (
     <>
@@ -202,78 +235,64 @@ export default function AddTransaction({route, navigation}) {
           <FlatList
             ListHeaderComponent={
               <>
-                <View
-                  style={{
-                    marginVertical: 10,
-                    flexDirection: 'row',
-                    justifyContent: 'center',
-                    alignItems: 'center',
-                  }}>
-                  <Text
-                    style={{
-                      marginRight: 10,
-                      fontSize: 20,
-                      fontFamily: 'EduSABeginner-SemiBold',
-                    }}>
-                    Amount
-                  </Text>
-                  <TextInput
-                    value={payload.amount.toString()}
-                    style={styles.amountField}
-                    autoFocus={true}
-                    placeholder="INR"
-                    placeholderTextColor={textColor}
-                    keyboardType="numeric"
-                    onChangeText={amt => handleChange('amount', amt)}
-                  />
-                </View>
                 <Text
                   style={[
                     styles.heading,
-                    {marginTop: 10, fontFamily: 'EduSABeginner-SemiBold',paddingLeft:10,paddingRight:10},
+                    {
+                      marginTop: 10,
+                      fontFamily: 'EduSABeginner-SemiBold',
+                      paddingLeft: 10,
+                      paddingRight: 10,
+                    },
                   ]}>
                   Categories
                 </Text>
               </>
             }
+            showsVerticalScrollIndicator={false}
             numColumns={4}
             data={category}
             keyExtractor={item => item.id}
             columnWrapperStyle={{flex: 1, justifyContent: 'space-evenly'}}
             renderItem={({item, index}) => (
               <TouchableOpacity
-                onPress={() => categorySelected(item)}
+                onPress={() => {
+                  setCategoryId(item.id);
+                  setPayload({...payload, categories_id: item.id});
+                }}
                 style={[
                   styles.categoryBox,
                   categoryId === item.id && {backgroundColor: '#44CD40'},
                 ]}>
-                {item.title.length > 10 ? (
+                {item.longname.length > 10 ? (
                   <Text style={styles.categoryText}>
-                    {item.title.slice(0, 10) + '...'}
+                    {item.longname.slice(0, 10) + '...'}
                   </Text>
                 ) : (
-                  <Text style={styles.categoryText}>{item.title}</Text>
+                  <Text style={styles.categoryText}>{item.longname}</Text>
                 )}
               </TouchableOpacity>
             )}
             ListFooterComponent={
               <>
-                {/* {!showFutureDates && (
-              <TouchableOpacity
-                onPress={() => navigation.navigate(screenNames.Categories)}
-                style={
-                  // styles.categoryBox,
-                  styles.addCategoryBox
-                }>
-                <Text style={[styles.categoryText, {color: '#fff'}]}>
-                  + Create
-                </Text>
-              </TouchableOpacity>
-            )} */}
                 <View style={{marginVertical: 10}}>
-                  <Text style={[styles.heading,{paddingLeft:10,paddingRight:10,fontFamily:'EduSABeginner-SemiBold'}]}>Date</Text>
+                  <Text
+                    style={[
+                      styles.heading,
+                      {
+                        paddingLeft: 10,
+                        paddingRight: 10,
+                        fontFamily: 'EduSABeginner-SemiBold',
+                      },
+                    ]}>
+                    Date
+                  </Text>
                   <View style={styles.dateContainer}>
-                    <View style={[styles.dateBoxes,{paddingLeft:10,paddingRight:10}]}>
+                    <View
+                      style={[
+                        styles.dateBoxes,
+                        {paddingLeft: 10, paddingRight: 10},
+                      ]}>
                       {showFutureDates ? (
                         <TouchableOpacity
                           onPress={() => handleSelectDate(tomorrow)}
@@ -286,62 +305,103 @@ export default function AddTransaction({route, navigation}) {
                             },
                           ]}>
                           <View style={styles.textContainer}>
-                            <Text style={[styles.dateText,{fontFamily:'EduSABeginner-SemiBold'}]}>
+                            <Text
+                              style={[
+                                styles.dateText,
+                                {fontFamily: 'EduSABeginner-SemiBold'},
+                              ]}>
                               {dateToString(tomorrow)}
                             </Text>
-                            <Text style={[styles.dateText,{fontFamily:'EduSABeginner-Regular'}]}>TMR</Text>
+                            <Text
+                              style={[
+                                styles.dateText,
+                                {fontFamily: 'EduSABeginner-Regular'},
+                              ]}>
+                              Tomorrow
+                            </Text>
                           </View>
                         </TouchableOpacity>
                       ) : (
                         <>
-                          <TouchableOpacity
-                            onPress={() => handleSelectDate(today)}
-                            style={[
-                              styles.dateBox,
-                              selectedDate.toLocaleDateString() ===
-                                today.toLocaleDateString() && {
-                                backgroundColor: secondaryColor,
-                              },
-                            ]}>
-                            <View style={styles.textContainer}>
-                              <Text style={[styles.dateText,{fontFamily:'EduSABeginner-SemiBold'}]}>
-                                {dateToString(today)}
-                              </Text>
-                              <Text style={[styles.dateText,{fontFamily:'EduSABeginner-Regular'}]}>Today</Text>
-                            </View>
-                          </TouchableOpacity>
+                          {isSelectedDateVisible() && (
+                            <TouchableOpacity
+                              style={[
+                                styles.dateBox,
+                                {marginRight: 10},
+                                {backgroundColor: secondaryColor},
+                              ]}>
+                              <View style={styles.textContainer}>
+                                <Text
+                                  style={[
+                                    styles.dateText,
+                                    {fontFamily: 'EduSABeginner-SemiBold'},
+                                  ]}>
+                                  {dateToString(selectedDate)}
+                                </Text>
+                                <Text
+                                  style={[
+                                    styles.dateText,
+                                    {fontFamily: 'EduSABeginner-Regualr'},
+                                  ]}>
+                                  Selected
+                                </Text>
+                              </View>
+                            </TouchableOpacity>
+                          )}
                           <TouchableOpacity
                             onPress={() => handleSelectDate(yesterday)}
                             style={[
                               styles.dateBox,
-                              {marginHorizontal: 30},
                               selectedDate.toLocaleDateString() ===
                                 yesterday.toLocaleDateString() && {
                                 backgroundColor: secondaryColor,
                               },
                             ]}>
                             <View style={styles.textContainer}>
-                              <Text style={[styles.dateText,{fontFamily:'EduSABeginner-SemiBold'}]}>
+                              <Text
+                                style={[
+                                  styles.dateText,
+                                  {fontFamily: 'EduSABeginner-SemiBold'},
+                                ]}>
                                 {dateToString(yesterday)}
                               </Text>
-                              <Text style={[styles.dateText,{fontFamily:'EduSABeginner-Regular'}]}>Yesterday</Text>
+                              <Text
+                                style={[
+                                  styles.dateText,
+                                  {fontFamily: 'EduSABeginner-Regular'},
+                                ]}>
+                                Yesterday
+                              </Text>
+                            </View>
+                          </TouchableOpacity>
+                          <TouchableOpacity
+                            onPress={() => handleSelectDate(today)}
+                            style={[
+                              styles.dateBox,
+                              {marginHorizontal: 10},
+                              selectedDate.toLocaleDateString() ===
+                                today.toLocaleDateString() && {
+                                backgroundColor: secondaryColor,
+                              },
+                            ]}>
+                            <View style={styles.textContainer}>
+                              <Text
+                                style={[
+                                  styles.dateText,
+                                  {fontFamily: 'EduSABeginner-SemiBold'},
+                                ]}>
+                                {dateToString(today)}
+                              </Text>
+                              <Text
+                                style={[
+                                  styles.dateText,
+                                  {fontFamily: 'EduSABeginner-Regular'},
+                                ]}>
+                                Today
+                              </Text>
                             </View>
                           </TouchableOpacity>
                         </>
-                      )}
-                      {isSelectedDateVisible() && (
-                        <TouchableOpacity
-                          style={[
-                            styles.dateBox,
-                            {backgroundColor: secondaryColor},
-                          ]}>
-                          <View style={styles.textContainer}>
-                            <Text style={[styles.dateText,{fontFamily:'EduSABeginner-SemiBold'}]}>
-                              {dateToString(selectedDate)}
-                            </Text>
-                            <Text style={[styles.dateText,{fontFamily:'EduSABeginner-Regualr'}]}>Selected</Text>
-                          </View>
-                        </TouchableOpacity>
                       )}
                     </View>
                     <TouchableOpacity
@@ -363,28 +423,141 @@ export default function AddTransaction({route, navigation}) {
                     />
                   )}
                 </View>
-                <View style={{marginVertical: 10,paddingLeft:10,paddingRight:10}}>
-                  <Text style={[styles.heading,{fontFamily:'EduSABeginner-SemiBold'}]}>Note</Text>
+                <View style={{marginVertical: 10, paddingHorizontal: 10}}>
+                  <Text
+                    style={[
+                      styles.heading,
+                      {fontFamily: 'EduSABeginner-SemiBold'},
+                    ]}>
+                    Description
+                  </Text>
                   <TextInput
-                    value={payload.note}
+                    value={payload.transactions_description}
                     style={styles.note}
                     placeholder="Comment"
                     placeholderTextColor={textColor}
-                    onChangeText={text => handleChange('note', text)}
+                    onChangeText={text =>
+                      handleChange('transactions_description', text)
+                    }
+                  />
+                </View>
+                <View
+                  style={{
+                    marginVertical: 10,
+                    paddingHorizontal: 10,
+                  }}>
+                  <Text
+                    style={{
+                      marginRight: 10,
+                      fontSize: 20,
+                      fontFamily: 'EduSABeginner-SemiBold',
+                    }}>
+                    Amount
+                  </Text>
+                  <TextInput
+                    value={payload.amount.toString()}
+                    style={styles.note}
+                    autoFocus={true}
+                    placeholder="INR"
+                    placeholderTextColor={textColor}
+                    keyboardType="numeric"
+                    onChangeText={amt => handleChange('amount', amt)}
                   />
                 </View>
                 {errMsg.trim().length !== 0 && (
                   <Text style={globalStyle.error}>{errMsg}</Text>
                 )}
 
-                {/* <Button
-              mode="contained"
-              color={primaryColor}
-              style={styles.addButton}
-              onPress={handleSubmit}>
-              Save
-            </Button> */}
+                <View
+                  style={{
+                    flexDirection: 'row',
+                    alignItems: 'center',
+                    marginVertical: 10,
+                    paddingHorizontal: 10,
+                  }}>
+                  <Text
+                    style={{
+                      marginRight: 10,
+                      fontSize: 20,
+                      fontFamily: 'EduSABeginner-SemiBold',
+                      lineHeight: 45,
+                    }}>
+                    Add Image
+                  </Text>
+                  <View
+                    style={{flexDirection: 'row', justifyContent: 'center'}}>
+                    <TouchableOpacity
+                      onPress={() => {
+                        openCamera();
+                      }}
+                      style={{paddingHorizontal: 10}}>
+                      <FontAwesome
+                        name="camera"
+                        size={25}
+                        color={primaryColor}
+                      />
+                    </TouchableOpacity>
+                    <TouchableOpacity
+                      onPress={() => {
+                        openGallery();
+                      }}>
+                      <FontAwesome
+                        name="photo"
+                        size={25}
+                        color={primaryColor}
+                      />
+                    </TouchableOpacity>
+                  </View>
 
+                  {imageUri ? (
+                    <TouchableOpacity onPress={() => setModalVisible(true)}>
+                      <Image
+                        source={{uri: imageUri}}
+                        style={{width: 70, height: 120, marginHorizontal: 10}}
+                      />
+                    </TouchableOpacity>
+                  ) : (
+                    <Text
+                      style={{
+                        marginHorizontal: 10,
+                        fontFamily: 'EduSABeginner-Regular',
+                        fontSize: 18,
+                      }}></Text>
+                  )}
+                  {multipleImages?.length > 0 ? (
+                    <FlatList
+                      data={multipleImages}
+                      numColumns={2}
+                      renderItem={({item}) => (
+                        <View>
+                          <TouchableOpacity onPress={() => setModalVisible(true)}>
+                            <Image
+                              source={{uri: item.path}}
+                              style={{
+                                width: 50,
+                                height: 50,
+                                marginHorizontal: 10,
+                              }}
+                            />
+                          </TouchableOpacity>
+                        </View>
+                      )}
+                    />
+                  ) : (
+                    <Text></Text>
+                  )}
+                  <Modal visible={modalVisible} animationType="fade">
+                    <View style={styles.modalContent}>
+                      <Image
+                        source={{uri: imageUri}}
+                        style={styles.modalImage}
+                      />
+                      <TouchableOpacity onPress={() => setModalVisible(false)}>
+                        <Text style={styles.closeButton}>Close</Text>
+                      </TouchableOpacity>
+                    </View>
+                  </Modal>
+                </View>
                 <View
                   style={{
                     width: '90%',
@@ -409,7 +582,7 @@ export default function AddTransaction({route, navigation}) {
                         textAlign: 'center',
                         color: '#fff',
                         fontSize: 18,
-                        fontFamily:'EduSABeginner-Bold'
+                        fontFamily: 'EduSABeginner-Bold',
                       }}>
                       Save
                     </Text>
@@ -432,9 +605,8 @@ const styles = StyleSheet.create({
   },
   amountField: {
     backgroundColor: '#fff',
-    width: 100,
-    borderBottomWidth: 2,
     fontSize: 20,
+    width: '90%',
     textAlign: 'center',
     color: textColor,
   },
@@ -449,7 +621,7 @@ const styles = StyleSheet.create({
     borderRadius: 10,
     marginVertical: 5,
     width: 85,
-    paddingBottom:5
+    paddingBottom: 5,
   },
   addCategoryBox: {
     borderRadius: 10,
@@ -479,7 +651,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 5,
   },
   dateText: {
-    color: textColor
+    color: textColor,
   },
   calendarIcon: {
     paddingVertical: 12,
@@ -492,11 +664,25 @@ const styles = StyleSheet.create({
     backgroundColor: '#fff',
     color: textColor,
     paddingLeft: 10,
-    fontSize:15,
-    fontFamily:'EduSABeginner-Regular'
+    fontSize: 15,
+    fontFamily: 'EduSABeginner-Regular',
   },
-  // addButton: {
-  //   padding: 5,
-  //   marginTop: 10,
-  // },
+  imageContainer: {
+    marginVertical: 24,
+    alignItems: 'center',
+  },
+  modalContent: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  modalImage: {
+    width: '70%',
+    height: '70%',
+    resizeMode: 'contain',
+  },
+  closeButton: {
+    marginTop: 20,
+    color: 'blue',
+  },
 });

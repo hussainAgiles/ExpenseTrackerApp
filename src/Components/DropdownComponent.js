@@ -1,8 +1,11 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import React, {useState, useEffect} from 'react';
-import {StyleSheet, View, Text} from 'react-native';
+import {StyleSheet, View, Text,Dimensions} from 'react-native';
 import {Dropdown} from 'react-native-element-dropdown';
 import fireStore from '@react-native-firebase/firestore';
+import { fetchCategories, fetchTransactionHistory } from '../Helpers/helpers';
+
+const screenWidth = Dimensions.get('window').width;
 
 const DropdownComponent = ({onResponse}) => {
   const [value, setValue] = useState(null);
@@ -13,15 +16,12 @@ const DropdownComponent = ({onResponse}) => {
   }, []);
 
   const fetchCategoryList = async () => {
-    const collectionRef = fireStore().collection('Category');
-    const snapshot = await collectionRef.get();
-    const fetcheddata = snapshot.docs.map(doc => doc.data());
-    const sortedData = fetcheddata.sort((a, b) =>
-      a.title.localeCompare(b.title),
-    );
+    const response = await fetchCategories();
+    // console.log("Response DD === ",response.data)
+    const sortedData = response.data.categories.sort((a, b) => a.longname.localeCompare(b.longname));
     const reducedData = sortedData.reduce((acc, item) => {
       acc.push({
-        label: item.title,
+        label: item.longname,
         value: item.id,
       });
       return acc;
@@ -40,13 +40,8 @@ const DropdownComponent = ({onResponse}) => {
   });
 
   const handleFilter = async filterValue => {
-      const userId =  await AsyncStorage.getItem('userId');
-      const collectionRef = fireStore().collection('Transaction');
-      const querySnapshot = await collectionRef
-        .where('user_id', '==', userId)
-        .where('category_id', '==', filterValue)
-        .get();
-      const recentTransactions = querySnapshot.docs.map(doc => doc.data());
+    const fetcheddata = await fetchTransactionHistory();
+    const recentTransactions=fetcheddata.filter(transaction => transaction.categories_id === filterValue);
       onResponse(recentTransactions);
     
   };
@@ -77,7 +72,7 @@ export default DropdownComponent;
 const styles = StyleSheet.create({
   dropdown: {
     height: 30,
-    width: 118,
+    width: screenWidth-270,
     borderBottomColor: 'gray',
     borderWidth: 0.5,
     paddingLeft: 5,
@@ -87,7 +82,8 @@ const styles = StyleSheet.create({
   },
   placeholderStyle: {
     fontSize: 16,
-    fontFamily: 'EduSABeginner-SemiBold',
+    fontFamily: 'EduSABeginner-Regular',
+    lineHeight:30
   },
   selectedTextStyle: {
     fontSize: 16,

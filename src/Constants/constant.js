@@ -11,7 +11,11 @@ export const screenNames = {
   Categories: `Categories`,
   AddTransactions :`Add Transactions`,
   TransactionPopup :`Update Transaction`,
-  Logout :`Log out`
+  Forgot_Password : `Forgot Password`,
+  Otp_Verification :`Change Password`,
+  Logout :`Log out`,
+  Profile: `Profile`,
+  UpgradePlan:`Upgrade Plan`
 };
 
 export const globalStyle = StyleSheet.create({

@@ -17,9 +17,8 @@ export const updateTrxn = async (transaction)=>{
 
 
   export const handleCategories = data => {
-    // console.log("rieved data",data)
     data.map((item, index) => {
-      data[index].title = capitalize(item.title);
+      data[index].longname = capitalize(item.longname);
       data[index].color = categoryColors[index % categoryColors.length];
     });
     return data;

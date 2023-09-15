@@ -1,24 +1,31 @@
-import { StyleSheet, View, TextInput,Text } from 'react-native';
+import {StyleSheet, View, TextInput, Text,TouchableOpacity} from 'react-native';
 import React from 'react';
-import { deviceHeight, deviceWidth } from '../Utils/Dimension';
+import {deviceHeight, deviceWidth} from '../Utils/Dimension';
 import AntDesign from 'react-native-vector-icons/AntDesign';
-import { Sizes } from '../Constants/constant';
+import MaterialIcon from 'react-native-vector-icons/MaterialIcons';
+import {Sizes} from '../Constants/constant';
 
-export default function CustTextInput({
-  labelValue,
-  placeholderText,
-  onChangeText,
-  iconType,
-  autoCapitalize,
-  autoCorrect,
-  secureTextEntry,
-  keyboardType,
-  error,
-  errorMessage,
-  autoFocus,
-  onSubmitEditing,
-  onFocus
-},ref) {
+export default function CustTextInput(
+  {
+    labelValue,
+    placeholderText,
+    onChangeText,
+    iconType,
+    autoCapitalize,
+    autoCorrect,
+    secureTextEntry,
+    keyboardType,
+    error,
+    errorMessage,
+    autoFocus,
+    onSubmitEditing,
+    onFocus,
+    rightIcon,
+    rightIconOnPress,
+    rightIconStyle,
+  },
+  ref,
+) {
   return (
     <>
       <View style={styles.inputContainer}>
@@ -41,12 +48,15 @@ export default function CustTextInput({
           onSubmitEditing={onSubmitEditing}
           onFocus={onFocus}
         />
+        {Boolean(rightIcon) && (
+          <TouchableOpacity style={{...rightIconStyle}}>
+            <MaterialIcon name={rightIcon} size={25} color="#03707a" onPress={rightIconOnPress} />
+          </TouchableOpacity>
+        )}
       </View>
       {error && (
-        <View style={{ marginLeft: Sizes.medium, marginTop: -Sizes.base * 2 }}>
-          <Text style={{fontSize:10, color:'red' }}>
-            {errorMessage}
-          </Text>
+        <View style={{marginLeft: Sizes.medium, marginTop: -Sizes.base * 2}}>
+          <Text style={{fontSize: 10, color: 'red'}}>{errorMessage}</Text>
         </View>
       )}
     </>

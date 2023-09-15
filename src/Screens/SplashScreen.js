@@ -13,9 +13,9 @@ export default function SplashScreen() {
           // Actual function
          const fetchedToken = await AsyncStorage.getItem('User_Token')
             if(Boolean(fetchedToken)){
-              navigation.navigate(screenNames.DashBoard)
+              navigation.replace(screenNames.DashBoard)
             }else{
-              navigation.navigate(screenNames.Login)
+              navigation.replace(screenNames.Login)
             }
         }, 4000);
     }, [])

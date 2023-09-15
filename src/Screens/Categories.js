@@ -1,47 +1,54 @@
-import React, {useEffect, useId, useState} from 'react';
-import {StyleSheet, Text, View, FlatList, TextInput,Alert} from 'react-native';
-import {Button} from 'react-native-paper';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import fireStore from '@react-native-firebase/firestore';
+import React, { useEffect, useState } from 'react';
+import { Alert, FlatList, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
+import toast from 'react-native-simple-toast';
+import uuid from 'react-native-uuid';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import CategoryModal from '../Components/CategoryModal';
 import Loader from '../Components/Loader';
-import {deviceWidth} from '../Utils/Dimension';
-import {primaryColor, textColor} from '../Utils/CustomColors';
-import {Sizes, categoryColors, globalStyle} from '../Constants/constant';
-import fireStore from '@react-native-firebase/firestore';
-import uuid from 'react-native-uuid';
-import {TouchableOpacity} from 'react-native-gesture-handler';
-import { handleCategories} from '../Utils/TransactionUpdates';
-import AsyncStorage from '@react-native-async-storage/async-storage';
-import toast from 'react-native-simple-toast';
+import { Sizes, globalStyle } from '../Constants/constant';
+import { fetchCategories,createCategory,fetchCategoryDetails } from '../Helpers/helpers';
+import { primaryColor, textColor } from '../Utils/CustomColors';
+import { deviceWidth } from '../Utils/Dimension';
+import { handleCategories } from '../Utils/TransactionUpdates';
 
 const CategoryScreen = () => {
   const [categories, setCategories] = useState([]);
+  const [oldData,setoldData] = useState([])
 
+  useEffect(() => {
+    setIsLoading(true)
+    fetch();
+  }, []);
 
-  const uId = uuid.v4();
 
   const addCategory = async (value) => {
-    const response = await fireStore()
-      .collection('Category')
-      .add({id: uId, ...value});
+    const response = await createCategory(value)
+    if (response.status === 200) {
+      toast.show('Category added Successfully',toast.LONG)
       fetch();
-    
+    } else {
+      toast.show(response.data.message,toast.LONG)
+    }
   };
 
   const fetch = async () => {
-    const collectionRef = fireStore().collection('Category');
-    const snapshot = await collectionRef.get();
-    const fetcheddata = snapshot.docs.map(doc => doc.data());
-    const sortedData = fetcheddata.sort((a, b) => a.title.localeCompare(b.title));
+    const response = await fetchCategories();
+    const sortedData = response.data.categories.sort((a, b) => a.longname.localeCompare(b.longname));
     const finalCat = handleCategories(sortedData);
     setCategories(finalCat);
+    setoldData(finalCat)
     await AsyncStorage.setItem('categoriesList',JSON.stringify(finalCat))
     setIsLoading(false)
   };
 
   let initialState = {
-    title: '',
-    description: '',
+    shortname: "",
+    longname: "",
+    icon_name: "",
+    is_default_cat_view: 0,
+    status: 1,
   };
 
   const [errMsg, setErrMsg] = useState('');
@@ -50,18 +57,18 @@ const CategoryScreen = () => {
   const [payload, setPayload] = useState(initialState);
   const [modalVisible, setModalVisible] = useState(false);
 
-  // Handle Search
+  // Handling Search Category
   const handleSearch = text => {
-      if(text.length === 0 || text === '' ){
-        setCategories(categories)
+      if(text === '' ){
+        setCategories(oldData)
       }else{
         const searchedData =  categories.filter(
-          item => item.title.toLowerCase().indexOf(text.toLowerCase()) !== -1,)
+          item => item.longname.toLowerCase().indexOf(text.toLowerCase()) !== -1,)
         setCategories(searchedData)
       }   
   };
 
-  // handle textinput changes
+  // handling textinput changes
   const handleChange = (key, value) => {
     setPayload({...payload, [key]: value});
   };
@@ -75,7 +82,7 @@ const CategoryScreen = () => {
   const handleSubmit = async () => {
     setModalVisible(false);
     setIsLoading(true);
-    if (payload.title.trim() === '') {
+    if (payload.shortname.trim() === '' || payload.longname.trim() === '' ) {
       setErrMsg('Fill the title.');
       setIsLoading(false);
       return;
@@ -83,7 +90,7 @@ const CategoryScreen = () => {
 
     let isSuccessful;
     if (isUpdate) {
-      isSuccessful = await updateCategory(payload);
+      isSuccessful = await EditCategory(payload);
       setIsUpdate(false);
     } else {
       isSuccessful = await addCategory(payload);
@@ -124,24 +131,20 @@ const CategoryScreen = () => {
     fetch();
   };
 
-  const updateCategory = async(category)=> {
-    var query = fireStore()
-      .collection('Category')
-      .where('id', '==', category.id);
-    query.get().then(snapshot => {
-      const batch = fireStore().batch();
-      snapshot.forEach(doc => {
-        batch.update(doc.ref, category);
-      });
-      return batch.commit();
-    });
-  await fetch();
+  const EditCategory = async(value)=> {
+   const response = await createCategory(value)
+   if (response.status === 200) {
+     toast.show('Category updated Successfully',toast.LONG)
+     fetch();
+   } else {
+     toast.show(response.data.message,toast.LONG)
+   }
   };
 
-  const handleUpdate = item => {
-    // console.log('handle update', item);
-    setIsUpdate(true);
-    setPayload(item);
+  const handleUpdate = async(item) => {
+    setIsUpdate(true);  
+    const fetchCategoryData = await fetchCategoryDetails(item.longname)
+    setPayload(fetchCategoryData.data.category)
     setModalVisible(true);
   };
 
@@ -151,11 +154,7 @@ const CategoryScreen = () => {
     setModalVisible(true);
   };
 
-  useEffect(() => {
-    setIsLoading(true)
-    fetch();
-  }, []);
-
+  
   const renderItem = ({item}) => (
     <View style={styles.card}>
       <View
@@ -166,7 +165,7 @@ const CategoryScreen = () => {
           alignItems: 'center',
         }}>
         <View style={[styles.color, {backgroundColor: item.color}]} />
-        <Text style={{color: textColor, fontSize: 15,fontFamily:'Dosis-Regular'}}>{item.title}</Text>
+        <Text style={{color: textColor, fontSize: 15,fontFamily:'Dosis-Regular'}}>{item.longname}</Text>
       </View>
       <View style={styles.iconsContainer}>
         <Icon
@@ -175,12 +174,12 @@ const CategoryScreen = () => {
           name="square-edit-outline"
           onPress={() => handleUpdate(item)}
         />
-        <Icon
+        {/* <Icon
           size={25}
           color="#D11A2A"
           name="delete"
           onPress={() => handleDelete(item)}
-        />
+        /> */}
       </View>
     </View>
   );
@@ -222,14 +221,6 @@ const CategoryScreen = () => {
                     <Text style={{fontSize:35,color:"#FFFFFF"}}>+</Text>
                   </TouchableOpacity>
                 </View>
-
-                {/* <Button
-                  color={primaryColor}
-                  mode="contained"
-                  style={{alignSelf: 'center'}}
-                  onPress={handleAdd}>
-                  Add
-                </Button> */}
               </View>
               {errMsg.trim().length !== 0 && (
                 <Text style={globalStyle.error} onPress={() => setErrMsg('')}>
@@ -263,7 +254,9 @@ const styles = StyleSheet.create({
     borderBottomWidth: 1,
     width: deviceWidth / 1.4,
     borderBottomColor: '#D3D3D3',
-    fontSize: 17,
+    fontSize: 20,
+    marginHorizontal:10,
+    fontFamily:"EduSABeginner-Regular"
   },
   card: {
     flex: 1,

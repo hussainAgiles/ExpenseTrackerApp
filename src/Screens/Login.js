@@ -1,24 +1,37 @@
-import {Image, StyleSheet, Text, View, TouchableOpacity} from 'react-native';
-import React, {useState, useLayoutEffect} from 'react';
-import CustTextInput from '../Components/CustTextInput';
-import CustButton from '../Components/CustButton';
-import {primaryColor, textColor} from '../Utils/CustomColors';
-import {screenNames, globalStyle} from '../Constants/constant';
-import {useNavigation} from '@react-navigation/native';
-import Loading from '../Components/Loader';
-import fireStore from '@react-native-firebase/firestore';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import toast from 'react-native-simple-toast'
+import fireStore from '@react-native-firebase/firestore';
+import {useNavigation} from '@react-navigation/native';
+import React, {useLayoutEffect, useState} from 'react';
+import {
+  Dimensions,
+  Image,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  View,
+} from 'react-native';
+import toast from 'react-native-simple-toast';
+import CustButton from '../Components/CustButton';
+import CustTextInput from '../Components/CustTextInput';
+import Loading from '../Components/Loader';
+import {globalStyle, screenNames} from '../Constants/constant';
+import {primaryColor, textColor} from '../Utils/CustomColors';
+import {setClientToken} from '../API/Api';
+import {handleLogin} from '../Helpers/helpers';
+
+const screenWidth = Dimensions.get('window').width - 90;
 
 export default function Login() {
   const navigation = useNavigation();
   let initialState = {email: '', password: ''};
   const [isLoading, setLoading] = useState(false);
-  const [errMsg, setErrMsg] = useState("");
+  const [errMsg, setErrMsg] = useState('');
   const [data, setData] = useState(initialState);
 
   const emailRef = React.useRef(null);
-  const passRef = React.useRef(null)
+  const passRef = React.useRef(null);
+  const [secureText, setSecureText] = useState(true);
+  const [disable, setDisable] = useState(false);
 
   // handling the text change on TextInput
   const handleTextChange = async (key, value) => {
@@ -27,41 +40,39 @@ export default function Login() {
 
   // handling Login functionality.
   const handleSubmit = async () => {
+    const request = {
+      email: data.email,
+      password: data.password,
+    };
     if (data.email == '' || data.password == '') {
-      setErrMsg('All the fields are mandatory');
+      setErrMsg('All fields are mandatory');
       setLoading(false);
       return;
     } else {
-      const usersCollection = await fireStore().collection('Users')
-      usersCollection.where('email','==',data.email).get().then((querySnapshot) => {
-        if (querySnapshot.empty) {
-          toast.show('User not found',toast.CENTER)
-          return;
-        }
-
-        querySnapshot.forEach((doc) => {
-          const user = doc.data();
-          AsyncStorage.setItem('userId',user.Uuid)
-          if (user.password === data.password) {
-            const userToken = user.Uuid
-            AsyncStorage.setItem('User_Token', userToken);
-            navigation.navigate(screenNames.DashBoard)
-          } else {
-            toast.show('Invalid Password',toast.CENTER)
-          }
+      // setDisable(true)
+      const response = await handleLogin(request);
+      if (response.status === 200) {
+        AsyncStorage.setItem('User_Token', response.data.access_token);
+        navigation.replace(screenNames.DashBoard);
+      } else {
+        toast.show(response.data.message, {
+          type: 'danger',
+          placement: 'top',
+          duration: 4000,
+          offset: 30,
+          animationType: 'slide-in',
         });
-      })
-
-      .catch((error) => {
-        console.log('Error getting user:', error);
-      });
-
+      }
     }
   };
 
   useLayoutEffect(() => {
     emailRef.current?.focus();
   }, []);
+
+  const handleSecureText = () => {
+    setSecureText(!secureText);
+  };
 
   return (
     <>
@@ -77,37 +88,55 @@ export default function Login() {
           />
           <Text style={styles.text}>Expense Tracker</Text>
           <CustTextInput
-            // ref={emailRef}
-            
             placeholderText="Email"
             iconType="mail"
             onChangeText={text => handleTextChange('email', text)}
-            // autoFocus={true}
-            // onSubmitEditing={() => {
-            //   passRef.current.focus();
-            // }}
-            keyboardType='email-address'
-            onFocus={()=>{setErrMsg('')}}
+            keyboardType="email-address"
+            onFocus={() => {
+              setErrMsg('');
+            }}
+            autoCapitalize="none"
           />
           <CustTextInput
-            // ref={passRef}
+            autoCapitalize="none"
             placeholderText="Password"
             iconType="lock"
             onChangeText={text => handleTextChange('password', text)}
-            secureTextEntry={true}
-            onFocus={()=>{setErrMsg('')}}
+            secureTextEntry={secureText}
+            onFocus={() => {
+              setErrMsg('');
+            }}
+            rightIcon={secureText ? 'visibility-off' : 'visibility'}
+            rightIconOnPress={handleSecureText}
+            rightIconStyle={styles.rightIconStyle}
           />
           {errMsg.trim().length !== 0 && (
             <Text style={globalStyle.error}>{errMsg}</Text>
           )}
-          <CustButton title="Sign In" onPress={() => handleSubmit()} />
-          <TouchableOpacity
-            onPress={() => navigation.navigate(screenNames.Register)}
-            style={styles.forgotButton}>
-            <Text style={styles.navButtonText}>
-              Don't have an acount ? Create here
-            </Text>
-          </TouchableOpacity>
+          {}
+          <CustButton
+            title="Sign In"
+            onPress={() => handleSubmit()}
+            disabled={disable}
+          />
+          <View
+            style={{
+              flexDirection: 'row',
+              justifyContent: 'space-between',
+              alignItems: 'center',
+            }}>
+            <Text style={{fontFamily:'EduSABeginner-SemiBold',fontSize:18}}>Don't have an account ?</Text>
+            <TouchableOpacity
+              onPress={() => navigation.navigate(screenNames.Register)}
+              style={styles.forgotButton}>
+              <Text style={styles.navButtonText}>Create here</Text>
+            </TouchableOpacity>
+            <TouchableOpacity
+              onPress={() => navigation.navigate(screenNames.Forgot_Password)}
+              style={styles.forgotPassword}>
+              <Text style={styles.forgotPswText}>Forgot Password ?</Text>
+            </TouchableOpacity>
+          </View>
         </View>
       )}
     </>
@@ -137,13 +166,29 @@ const styles = StyleSheet.create({
     marginTop: 15,
   },
   forgotButton: {
-    marginVertical: 35,
+    marginVertical: 15,
+    marginHorizontal: 5,
   },
   navButtonText: {
     fontSize: 18,
-    fontWeight: '500',
     color: primaryColor,
     fontFamily: 'EduSABeginner-SemiBold',
-    textDecorationLine:"underline"
+    textDecorationLine: 'underline',
   },
+  rightIconStyle: {
+    paddingRight: 10,
+  },
+  forgotPswText: {
+    fontSize: 18,
+    color: primaryColor,
+    fontFamily: 'EduSABeginner-SemiBold',
+    textDecorationLine: 'underline',
+  },
+  forgotPassword: {
+    margin: screenWidth - 290,
+  },
+  placeholderText :{
+    fontFamily:"EduSABeginner-Regular",
+    fontSize:16
+  }
 });

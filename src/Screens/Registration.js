@@ -1,25 +1,25 @@
 import fireStore from '@react-native-firebase/firestore';
-import { useNavigation } from '@react-navigation/native';
-import React, { useState } from 'react';
+import {useNavigation} from '@react-navigation/native';
+import React, {useState} from 'react';
 import {
   ScrollView,
   StyleSheet,
   Text,
   TouchableOpacity,
-  View
+  View,
 } from 'react-native';
 import toast from 'react-native-simple-toast';
 import AntDesign from 'react-native-vector-icons/AntDesign';
 import CustButton from '../Components/CustButton';
 import CustTextInput from '../Components/CustTextInput';
 import Loading from '../Components/Loader';
-import { globalStyle, screenNames } from '../Constants/constant';
-import { primaryColor } from '../Utils/CustomColors';
+import {globalStyle, screenNames} from '../Constants/constant';
+import {primaryColor} from '../Utils/CustomColors';
 
 export default function Registration() {
   const navigation = useNavigation();
   // Generating Unique UserId
-  
+
   const generateUUID = () => {
     let uuid = '';
 
@@ -33,7 +33,6 @@ export default function Registration() {
 
     return uuid;
   };
-
 
   let initialState = {
     firstname: '',
@@ -89,7 +88,7 @@ export default function Registration() {
       return false;
     }
 
-    if(data.password !== data.confirm_password){
+    if (data.password !== data.confirm_password) {
       setConfirmPasswordError('Confirm password does not match');
       return false;
     }
@@ -110,8 +109,6 @@ export default function Registration() {
     }
   };
 
-
-
   return (
     <>
       {isLoading ? (
@@ -127,23 +124,27 @@ export default function Registration() {
           <CustTextInput
             placeholderText="First Name"
             iconType="form"
-            autoCapitalize={true}
+            autoCapitalize="words"
             autoCorrect={false}
             onChangeText={text => handleTextChange('firstname', text)}
-            onFocus={()=>{setFirstnameErr(null)}}
+            onFocus={() => {
+              setFirstnameErr(null);
+            }}
           />
           {firstnameErr !== 0 && (
-            <View style={{alignItems:"flex-start"}}>
+            <View style={{alignItems: 'flex-start'}}>
               <Text style={globalStyle.errorRegisteration}>{firstnameErr}</Text>
-            </View>  
+            </View>
           )}
           <CustTextInput
             placeholderText="Last Name"
             iconType="form"
-            autoCapitalize={true}
+            autoCapitalize="words"
             autoCorrect={false}
             onChangeText={text => handleTextChange('lastname', text)}
-            onFocus={()=>{setLastnameErr(null)}}
+            onFocus={() => {
+              setLastnameErr(null);
+            }}
           />
           {lastnameErr !== 0 && (
             <Text style={globalStyle.errorRegisteration}>{lastnameErr}</Text>
@@ -155,7 +156,9 @@ export default function Registration() {
             autoCorrect={false}
             keyboardType="email-address"
             onChangeText={text => handleTextChange('email', text)}
-            onFocus={()=>{setEmailErr(null)}}
+            onFocus={() => {
+              setEmailErr(null);
+            }}
           />
           {emailErr !== 0 && (
             <Text style={globalStyle.errorRegisteration}>{emailErr}</Text>
@@ -167,7 +170,9 @@ export default function Registration() {
             autoCorrect={false}
             secureTextEntry={true}
             onChangeText={text => handleTextChange('password', text)}
-            onFocus={()=>{setPasswordError(null)}}
+            onFocus={() => {
+              setPasswordError(null);
+            }}
           />
           {passwordError !== 0 && (
             <Text style={globalStyle.errorRegisteration}>{passwordError}</Text>
@@ -178,7 +183,9 @@ export default function Registration() {
             autoCapitalize="none"
             autoCorrect={false}
             secureTextEntry={true}
-            onFocus={()=>{setConfirmPasswordError(null)}}
+            onFocus={() => {
+              setConfirmPasswordError(null);
+            }}
             onChangeText={text => handleTextChange('confirm_password', text)}
           />
           {conpasswordError !== 0 && (
@@ -187,11 +194,16 @@ export default function Registration() {
             </Text>
           )}
           <CustButton title="Register" onPress={handleRegister} />
-          <TouchableOpacity
-            style={styles.navButton}
-            onPress={() => navigation.goBack()}>
-            <Text style={styles.navButtonText}>Have an account? Sign In</Text>
-          </TouchableOpacity>
+          <View style={{flexDirection:"row",marginVertical:10}}>
+            <Text style={{fontFamily: 'EduSABeginner-SemiBold', fontSize: 18}}>
+              Have an account ?
+            </Text>
+            <TouchableOpacity
+              onPress={() => navigation.navigate(screenNames.Register)}
+              style={styles.forgotButton}>
+              <Text style={styles.navButtonText}>Sign In</Text>
+            </TouchableOpacity>
+          </View>
         </ScrollView>
       )}
     </>
@@ -225,6 +237,9 @@ const styles = StyleSheet.create({
     fontWeight: '500',
     color: primaryColor,
     fontFamily: 'EduSABeginner-SemiBold',
-    textDecorationLine:"underline"
+    textDecorationLine: 'underline',
+  },
+  forgotButton: {
+    marginHorizontal: 5,
   },
 });

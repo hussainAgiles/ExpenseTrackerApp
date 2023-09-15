@@ -1,8 +1,6 @@
-import AsyncStorage from '@react-native-async-storage/async-storage';
-import fireStore from '@react-native-firebase/firestore';
-import {useNavigation} from '@react-navigation/native';
+import { useNavigation } from '@react-navigation/native';
 import Moment from 'moment';
-import React, {useEffect, useState} from 'react';
+import React, { useEffect, useState } from 'react';
 import {
   Alert,
   Dimensions,
@@ -11,19 +9,27 @@ import {
   Text,
   TouchableOpacity,
   View,
+  ActivityIndicator
 } from 'react-native';
 
+import Lottie from 'lottie-react-native';
+import moment from 'moment';
+import DatePicker from 'react-native-date-picker';
 import RNFS from 'react-native-fs';
 import toast from 'react-native-simple-toast';
+import FontAwesome from 'react-native-vector-icons/FontAwesome';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import Icons from 'react-native-vector-icons/MaterialIcons';
-import FontAwesome from 'react-native-vector-icons/FontAwesome';
 import XLSX from 'xlsx';
-import {categoryColors, screenNames} from '../Constants/constant';
-import {primaryColor} from '../Utils/CustomColors';
-import DateTimePicker from '@react-native-community/datetimepicker';
-import DatePicker from 'react-native-date-picker';
-import Lottie from 'lottie-react-native';
+import { screenNames } from '../Constants/constant';
+import {
+  UpdateTransaction,
+  deleteTransaction,
+  downloadExcelSheet,
+  fetchTransactionHistory,
+} from '../Helpers/helpers';
+import { primaryColor } from '../Utils/CustomColors';
+import Loader from '../Components/Loader';
 
 const screenWidth = Dimensions.get('window').width - 90;
 
@@ -33,6 +39,7 @@ export default function Transaction() {
 
   const [isLoading, setIsLoading] = useState(false);
 
+
   useEffect(() => {
     setIsLoading(true);
     fetchtransaction();
@@ -41,31 +48,12 @@ export default function Transaction() {
 
   // Fetch all the transaction
   const fetchtransaction = async () => {
-    const userId = await AsyncStorage.getItem('userId');
-    const collectionRef = fireStore()
-      .collection('Transaction')
-      .where('user_id', '==', userId);
-    const snapshot = await collectionRef.get();
-    const fetcheddata = snapshot.docs.map(doc => doc.data());
-    // adding icons to categories
-    const datawithColors = handleCategorieswithImage(fetcheddata);
-    // console.log("data with colors === ",datawithColors)
-    const sortedData = datawithColors.sort((a, b) =>
-      a.category_name.localeCompare(b.category_name),
-    );
-    setData(sortedData);
+    const fetcheddata = await fetchTransactionHistory();
+    // console.log("Transaction fetched  ==== ",fetcheddata)
+    setData(fetcheddata);
   };
 
-  const fetchtransactionUpdation = async trnsactionId => {
-    const collectionRef = fireStore()
-      .collection('Transaction')
-      .where('id', '==', trnsactionId);
-    const snapshot = await collectionRef.get();
-    const fetcheddata = snapshot.docs.map(doc => doc.data());
-    setIsLoading(false);
-    return fetcheddata[0];
-  };
-
+  // Deleting transaction
   const deleteTrxn = async transaction => {
     Alert.alert(
       'Confirm',
@@ -73,23 +61,20 @@ export default function Transaction() {
       [
         {
           text: 'Delete',
-          onPress: () => {
-            var query = fireStore()
-              .collection('Transaction')
-              .where('id', '==', transaction.id);
-            query.get().then(querySnapshot => {
-              querySnapshot.forEach(doc => {
-                doc.ref.delete();
-              });
-            });
-            toast.show('Transaction deleted successfully', toast.CENTER);
+          onPress: async () => {
+            const response = await deleteTransaction(transaction.id);
+            if (response.status === 200) {
+              toast.show('Transaction deleted successfully', toast.CENTER);
+              fetchtransaction();
+            } else {
+              toast.show(response.data.message, toast.SHORT);
+            }
           },
         },
         {text: 'Cancel', style: 'cancel'},
       ],
       {cancelable: false},
     );
-    fetchtransaction();
   };
 
   const capitalize = str => {
@@ -104,136 +89,136 @@ export default function Transaction() {
     return new Date(transactionDate);
   };
 
-  const handleCategorieswithImage = data => {
-    data.map((item, index) => {
-      data[index].note = capitalize(item.note);
-      data[index].color = categoryColors[index % categoryColors.length];
-      data[index].transactionDate = timeStampToDate(item.transactionDate);
+  // const handleCategorieswithImage = data => {
+  //   data.map((item, index) => {
+  //     data[index].transactions_description = capitalize(item.transactions_description);
+  //     data[index].color = categoryColors[index % categoryColors.length];
+  //     data[index].transaction_date = timeStampToDate(item.transactionDate);
 
-      if (
-        data[index].category_name === 'Dining' ||
-        data[index].category_name === 'dining'
-      ) {
-        data[index].icon_name = 'local-dining';
-      }
-      if (
-        data[index].category_name === 'Travel' ||
-        data[index].category_name === 'travel'
-      ) {
-        data[index].icon_name = 'directions-bus';
-      }
-      if (
-        data[index].category_name === 'Telephone' ||
-        data[index].category_name === 'telephone'
-      ) {
-        data[index].icon_name = 'phone';
-      }
-      if (
-        data[index].category_name === 'Others' ||
-        data[index].category_name === 'others'
-      ) {
-        data[index].icon_name = 'miscellaneous-services';
-      }
-      if (
-        data[index].category_name === 'Emi' ||
-        data[index].category_name === 'emi'
-      ) {
-        data[index].icon_name = 'calculate';
-      }
-      if (
-        data[index].category_name === 'Fuel' ||
-        data[index].category_name === 'fuel'
-      ) {
-        data[index].icon_name = 'local-gas-station';
-      }
-      if (
-        data[index].category_name === 'Groceries' ||
-        data[index].category_name === 'groceries'
-      ) {
-        data[index].icon_name = 'shopping-cart';
-      }
-      if (
-        data[index].category_name === 'Loans' ||
-        data[index].category_name === 'loans'
-      ) {
-        data[index].icon_name = 'calendar-month';
-      }
-      if (
-        data[index].category_name === 'Health' ||
-        data[index].category_name === 'health'
-      ) {
-        data[index].icon_name = 'health-and-safety';
-      }
-      if (
-        data[index].category_name === 'Shopping' ||
-        data[index].category_name === 'shopping'
-      ) {
-        data[index].icon_name = 'shopping-bag';
-      }
-      if (
-        data[index].category_name === 'House rent' ||
-        data[index].category_name === 'house rent'
-      ) {
-        data[index].icon_name = 'add-home';
-      }
-      if (
-        data[index].category_name === 'Office ' ||
-        data[index].category_name === 'office '
-      ) {
-        data[index].icon_name = 'business';
-      }
-      if (
-        data[index].category_name === 'Gadgets' ||
-        data[index].category_name === 'gadgets'
-      ) {
-        data[index].icon_name = 'gamepad';
-      }
-      if (
-        data[index].category_name === 'Bills' ||
-        data[index].category_name === 'bills'
-      ) {
-        data[index].icon_name = 'margin';
-      }
-      if (
-        data[index].category_name === 'Entertainment ' ||
-        data[index].category_name === 'entertainment '
-      ) {
-        data[index].icon_name = 'emergency-recording';
-      }
-      if (
-        data[index].category_name === 'Education ' ||
-        data[index].category_name === 'education '
-      ) {
-        data[index].icon_name = 'school';
-      }
-    });
-    return data;
-  };
+  //     if (
+  //       data[index].category_name === 'Dining' ||
+  //       data[index].category_name === 'dining'
+  //     ) {
+  //       data[index].icon_name = 'local-dining';
+  //     }
+  //     if (
+  //       data[index].category_name === 'Travel' ||
+  //       data[index].category_name === 'travel'
+  //     ) {
+  //       data[index].icon_name = 'directions-bus';
+  //     }
+  //     if (
+  //       data[index].category_name === 'Telephone' ||
+  //       data[index].category_name === 'telephone'
+  //     ) {
+  //       data[index].icon_name = 'phone';
+  //     }
+  //     if (
+  //       data[index].category_name === 'Others' ||
+  //       data[index].category_name === 'others'
+  //     ) {
+  //       data[index].icon_name = 'miscellaneous-services';
+  //     }
+  //     if (
+  //       data[index].category_name === 'Emi' ||
+  //       data[index].category_name === 'emi'
+  //     ) {
+  //       data[index].icon_name = 'calculate';
+  //     }
+  //     if (
+  //       data[index].category_name === 'Fuel' ||
+  //       data[index].category_name === 'fuel'
+  //     ) {
+  //       data[index].icon_name = 'local-gas-station';
+  //     }
+  //     if (
+  //       data[index].category_name === 'Groceries' ||
+  //       data[index].category_name === 'groceries'
+  //     ) {
+  //       data[index].icon_name = 'shopping-cart';
+  //     }
+  //     if (
+  //       data[index].category_name === 'Loans' ||
+  //       data[index].category_name === 'loans'
+  //     ) {
+  //       data[index].icon_name = 'calendar-month';
+  //     }
+  //     if (
+  //       data[index].category_name === 'Health' ||
+  //       data[index].category_name === 'health'
+  //     ) {
+  //       data[index].icon_name = 'health-and-safety';
+  //     }
+  //     if (
+  //       data[index].category_name === 'Shopping' ||
+  //       data[index].category_name === 'shopping'
+  //     ) {
+  //       data[index].icon_name = 'shopping-bag';
+  //     }
+  //     if (
+  //       data[index].category_name === 'House rent' ||
+  //       data[index].category_name === 'house rent'
+  //     ) {
+  //       data[index].icon_name = 'add-home';
+  //     }
+  //     if (
+  //       data[index].category_name === 'Office ' ||
+  //       data[index].category_name === 'office '
+  //     ) {
+  //       data[index].icon_name = 'business';
+  //     }
+  //     if (
+  //       data[index].category_name === 'Gadgets' ||
+  //       data[index].category_name === 'gadgets'
+  //     ) {
+  //       data[index].icon_name = 'gamepad';
+  //     }
+  //     if (
+  //       data[index].category_name === 'Bills' ||
+  //       data[index].category_name === 'bills'
+  //     ) {
+  //       data[index].icon_name = 'margin';
+  //     }
+  //     if (
+  //       data[index].category_name === 'Entertainment ' ||
+  //       data[index].category_name === 'entertainment '
+  //     ) {
+  //       data[index].icon_name = 'emergency-recording';
+  //     }
+  //     if (
+  //       data[index].category_name === 'Education ' ||
+  //       data[index].category_name === 'education '
+  //     ) {
+  //       data[index].icon_name = 'school';
+  //     }
+  //   });
+  //   return data;
+  // };
 
   const handleUpdate = async item => {
-    const transactionId = item.id;
-    const payloadToSend = await fetchtransactionUpdation(transactionId);
+    const payloadToSend = await UpdateTransaction(item.slug);
+    // console.log('Payload to send ===== ', payloadToSend);
     navigation.navigate(screenNames.AddTransactions, {
       showFutureDates: false,
       payload: payloadToSend,
     });
   };
 
+  // handling download Excel Sheet
   const handleClick = async () => {
     try {
-      const userId = await AsyncStorage.getItem('userId');
-      const collectionRef = fireStore()
-        .collection('Transaction')
-        .where('user_id', '==', userId)
-        .where('transactionDate', '>=', startDate)
-        .where('transactionDate', '<=', endDate);
-      const snapshot = await collectionRef.get();
-      const fetcheddata = snapshot.docs.map(doc => doc.data());
-      const data = fetcheddata.map(item => [
+      let request ={
+        start_Date : moment(startDate).format('YYYY-MM-DD'),
+        end_Date : moment(endDate).format('YYYY-MM-DD')
+      }
+      const response = await downloadExcelSheet(request)
+      // console.log("respone ==== ",response)
+      
+      const data = response.map(item => [
         item.amount,
-        item.category_name,
-        item.note,
-        timeStampToDate(item.transactionDate).toLocaleString(), // Convert the date to a readable format
+        item.longname,
+        item.transactions_description,
+        item.transaction_date
       ]);
 
       // console.log("data === ",data)
@@ -264,7 +249,7 @@ export default function Transaction() {
       await RNFS.writeFile(filePath, excelFileBinary, 'ascii');
 
       // Show a message to the user indicating successful export
-      toast.show('Excel file exported successfully!', toast.CENTER);
+      toast.show('Downloaded successfully!', toast.CENTER);
 
       // You can also open the file using the 'filePath' variable if needed
       // RNFS.readFile(filePath, 'base64').then(fileData => console.log(fileData));
@@ -277,9 +262,6 @@ export default function Transaction() {
 
   const [open, setOpen] = useState(false);
   const [endDateOpen, setEndDateOpen] = useState(false);
-
-  // const [date, setDate] = useState(new Date())
-
   const [startDate, setStartDate] = useState(new Date());
   const [mode, setMode] = useState('date');
   const [showDatePicker, setShowDatePicker] = useState(false);
@@ -300,6 +282,7 @@ export default function Transaction() {
     <>
       {data?.length > 0 ? (
         <View style={{marginBottom: '27%', backgroundColor: '#fff'}}>
+          {/* Download Excel Sheet */}
           <View
             style={{
               flexDirection: 'row',
@@ -469,14 +452,13 @@ export default function Transaction() {
                       justifyContent: 'center',
                       alignItems: 'flex-start',
                     }}>
-                    <Icons size={30} color="#0096FF" name={item.icon_name} />
+                    <Icons size={30} color={primaryColor} name={item.categories_datails.icon_name} />
                     <Text
                       style={{
-                        textAlign: 'left',
                         fontSize: 14,
                         fontFamily: 'EduSABeginner-SemiBold',
                       }}>
-                      {item.category_name}
+                      {item.categories_datails.shortname}
                     </Text>
                   </View>
                   {/* description and date */}
@@ -500,7 +482,7 @@ export default function Transaction() {
                             fontSize: 17,
                           },
                         ]}>
-                        {item.note}
+                        {item.transactions_description}
                       </Text>
                       <Text
                         style={[
@@ -512,14 +494,14 @@ export default function Transaction() {
                             fontFamily: 'EduSABeginner-Regular',
                           },
                         ]}>
-                        {Moment(item.transactionDate.toString()).format('ddd')},
+                        {Moment(item.transaction_date).format('ddd')},
                         <Text
                           style={{
                             fontFamily: 'EduSABeginner-SemiBold',
                             fontSize: 12,
                           }}>
                           {' '}
-                          {Moment(item.transactionDate.toString()).format(
+                          {Moment(item.transaction_date).format(
                             'DD MMM YYYY',
                           )}
                         </Text>
@@ -545,7 +527,7 @@ export default function Transaction() {
                       }}>
                       <Icon
                         size={25}
-                        color="#0096FF"
+                        color={primaryColor}
                         name="square-edit-outline"
                         onPress={() => handleUpdate(item)}
                       />
@@ -570,12 +552,13 @@ export default function Transaction() {
         </View>
       ) : (
         <View style={{flex: 1, justifyContent: 'center', alignItems: 'center'}}>
-          <Lottie
+          {/* <Lottie
             source={require('../../assets/Animation/no_data.json')}
             autoPlay
             loop
             style={{width: 300, height: 300}}
-          />
+          /> */}
+          <Loader message="Please wait ..." />
         </View>
       )}
     </>

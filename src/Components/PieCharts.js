@@ -1,29 +1,31 @@
 import React from 'react';
-import {Dimensions, StyleSheet, Text, View} from 'react-native';
+import {Dimensions, FlatList, StyleSheet, Text, View} from 'react-native';
 import {PieChart} from 'react-native-gifted-charts';
 import {textColor} from '../Utils/CustomColors';
-import Loader from './Loader';
+import { categoryColors } from '../Constants/constant';
 
 const screenWidth = Dimensions.get('window').width - 10;
 
 const PieCharts = ({categories, total}) => {
+  // console.log('Categories in pie chart === ', categories);
   const rupeesSymbol = '\u20B9';
   const gaugeText = `${rupeesSymbol} ${total}`;
   // const [peiData, setPieData] = useState([]);
 
   let data = [];
-  let color = ['#C70039', '#44CD40', '#404FCD', '#EBD22F', '#EC407A'];
+  // let color = ['#C70039', '#44CD40', '#404FCD', '#EBD22F', '#EC407A'];
   if (categories !== null) {
     categories?.map((item, index) => {
       data.push({
         value: Number(item.percentage),
         text: item.categoryData,
+        color: categoryColors[index % categoryColors.length]
       });
     });
   }
 
+  // console.log('dstttttttt ==', data);
   const modifiedData = data?.map(item => {
-    // console.log("this is the item",item)
     const newItem = {};
     Object.keys(item).forEach(key => {
       // Remove all double quotes from the key
@@ -33,9 +35,18 @@ const PieCharts = ({categories, total}) => {
     return newItem;
   });
 
-  // console.log('data in Pie chart ===', data);
+  const renderLengend = ({item,index}) => {
+    return (
+      <View style={{flexDirection:"row",justifyContent:"flex-start",alignItems:"center"}}>
+        <View style={[styles.color, {backgroundColor: item.color}]} />
+        <Text>{item.text}</Text>
+      </View>
+    );
+  };
 
-  // const data=[ {value:50}, {value:80}, {value:90}, {value:70} ]
+  const handlePieSelect = (item) =>{
+    console.log("Items ===== ",item)
+  }
 
   return (
     <>
@@ -44,19 +55,32 @@ const PieCharts = ({categories, total}) => {
           <Text style={{textAlign: 'center'}}>No Data to Display</Text>
         </View>
       ) : (
-        <View style={styles.container}>
-          <PieChart
-            data={modifiedData}
-            donut={true}
-            labelsPosition="outward"
-            textSize={6}
-            textColor='#000000'
-            focusOnPress={true}
-            showValuesAsLabels={true}
-          />
-          <View style={styles.gauge}>
-            <Text style={styles.gaugeText}>{gaugeText} </Text>
+        <View style={{flexDirection: 'row'}}>
+          <View style={styles.container}>
+            <PieChart
+              data={modifiedData}
+              donut={true}
+              textSize={8}
+              textColor="#fff"
+              focusOnPress={true}
+              showValuesAsLabels={true}
+              labelsPosition="outward"
+              innerCircleColor="lightblue"
+              onPress={item=>{handlePieSelect(item)}}
+              // showText={true}
+            />
+            <View style={styles.gauge}>
+              <Text style={styles.gaugeText}>{gaugeText} </Text>
+            </View>
           </View>
+
+          <FlatList
+            data={data}
+            renderItem={renderLengend}
+            keyExtractor={item => item.index}
+            contentContainerStyle={{padding:'15%'}}
+            
+          />
         </View>
       )}
     </>
@@ -67,9 +91,10 @@ export default PieCharts;
 
 const styles = StyleSheet.create({
   container: {
-    width: 175,
+    width: '70%',
     alignItems: 'center',
-    // marginTop: 10,
+    marginTop: 10,
+    paddingLeft:30
   },
   gauge: {
     position: 'absolute',
@@ -77,7 +102,6 @@ const styles = StyleSheet.create({
     height: 230,
     alignItems: 'center',
     justifyContent: 'center',
-    paddingRight: 20,
     paddingTop: 10,
   },
   gaugeText: {
@@ -85,5 +109,11 @@ const styles = StyleSheet.create({
     color: textColor,
     fontSize: 20,
     fontFamily: 'EduSABeginner-SemiBold',
+  },
+  color: {
+    marginRight:10,
+    width: 7,
+    height: 7,
+    borderRadius: 15 / 2,
   },
 });

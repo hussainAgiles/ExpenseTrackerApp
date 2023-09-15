@@ -22,10 +22,15 @@ import Loader from '../Components/Loader';
 import PieCharts from '../Components/PieCharts';
 import {screenNames} from '../Constants/constant';
 import {textColor} from '../Utils/CustomColors';
+import { fetchTransactionHistory } from '../Helpers/helpers';
+// import * as ImagePicker from 'react-native-image-picker';
+// import  storage  from '@react-native-firebase/storage';
+
 
 const screenWidth = Dimensions.get('window').width - 90;
 
 export default function Home() {
+
   useEffect(() => {
     let isMounted = true;
     if (isMounted) {
@@ -53,6 +58,7 @@ export default function Home() {
     return str.charAt(0).toUpperCase() + lower.slice(1);
   };
 
+  // Calculating Amount category wise
   const calculateCategoryWiseExpense = categories => {
     const categoryTotals = categoriseAmount(categories);
     return categoryTotals;
@@ -62,45 +68,44 @@ export default function Home() {
     const categoryTotals = {};
     let totalAmount = 0;
 
-    categories.forEach(expense => {
-      const {category_name, amount} = expense;
+    categories.forEach((expense) => {
+      const {amount, categories_datails} = expense;
+      const {longname} = categories_datails
+
+      if (!categoryTotals[longname]) {
+        categoryTotals[longname] = 0;
+      }
+
       totalAmount += Number(amount);
-      categoryTotals[category_name] =
-        (categoryTotals[category_name] || 0) + Number(amount);
+      categoryTotals[longname] =
+        (categoryTotals[longname] || 0) + Number(amount);
     });
 
+    // console.log("category in total ==== ",categoryTotals)
     // Calculating percentage CategoryWise transaction
     const result = Object.keys(categoryTotals).map(categoryData => {
       const amount = categoryTotals[categoryData];
       const percentage = Number((amount / totalAmount) * 100).toFixed(2);
       return {categoryData, amount, percentage};
     });
-
     // console.log("Category wise result ===",result)
     return result;
   };
 
   const calculateTotalExpense = categories => {
-    // console.log('Calculating at Home === ', categories);
     let total = 0;
     categories.map((item, index) => {
       total = total + Number(item.amount);
     });
-    const totalExpense = total;
-    // console.log('Total amount spent', totalExpense);
     return total;
   };
 
+
   const fetchTransactionCategryBased = async () => {
     setLoading(true);
-    const userId = await AsyncStorage.getItem('userId');
-    const collectionRef = fireStore().collection('Transaction');
-    const snapShot = await collectionRef
-      .where('user_id', '==', userId)
-      .orderBy('category_name')
-      .get();
-    const fetcheddata = snapShot.docs.map(doc => doc.data());
+    const fetcheddata = await fetchTransactionHistory();
     const totalExpense = calculateTotalExpense(fetcheddata);
+    // console.log("Total Expense ==== ",totalExpense)
     const categoryWiseExpense = calculateCategoryWiseExpense(fetcheddata);
     // console.log('categoryWiseExpense ==== ', categoryWiseExpense);
     setCategoryWiseTrxn(categoryWiseExpense);
@@ -109,11 +114,13 @@ export default function Home() {
     setLoading(false);
   };
 
+  // handling date selection
   const handleDateFilter = (type, value) => {
     let filteredCategories = dateFilter(type, value, transaction);
     setCategoryWiseTrxn(calculateCategoryWiseExpense(filteredCategories));
   };
 
+  // Calculating total amount for the date, month and year selected.
   const dateFilter = (type, value, transaction) => {
     let result = [];
     for (let category of transaction) {
@@ -121,10 +128,8 @@ export default function Home() {
       let tempTransactions = [];
       let total = 0;
       for (let txn of transaction) {
-        const timeStamp = txn.transactionDate;
-        const miliseconds =
-          timeStamp.seconds * 1000 + timeStamp.nanoseconds / 1000000;
-        let date = new Date(miliseconds);
+        const timeStamp = txn.transaction_date;
+        let date = new Date(timeStamp);
         switch (type) {
           case 'Day':
             if (date.toLocaleDateString() === value.toLocaleDateString()) {
@@ -173,7 +178,7 @@ export default function Home() {
   const rupeesSymbol = '\u20B9';
   const [recentTransaction, setRecentTransaction] = useState();
 
-  // setting Charts constants
+  // setting Charts state value
   const [chartType, setChartType] = useState('PieChart');
   const handleNext = () => {
     // Define an array of chart types
@@ -195,28 +200,20 @@ export default function Home() {
   };
 
   // Fetching Latest transaction
-
   const [value, setValue] = useState(null);
   const [backendData, setBackendData] = useState([]);
 
   const fetchRecentTrxn = async () => {
-    // console.log("Fetching eachtime")
     setLoading(true);
-    const userId = await AsyncStorage.getItem('userId');
-    const collectionRef = fireStore().collection('Transaction');
-    const querySnapshot = await collectionRef
-      .where('user_id', '==', userId)
-      .orderBy('transactionDate')
-      .limit(5)
-      .get();
-
-    const recentTransactions = querySnapshot.docs.map(doc => doc.data());
-    setRecentTransaction(recentTransactions);
+    const fetcheddata = await fetchTransactionHistory();
+    fetcheddata.sort((a,b) => b.id - a.id )
+    const latestTransactions = fetcheddata.slice(0, 5);
+    // console.log("altest trnxn === ",latestTransactions)
+    setRecentTransaction(latestTransactions);
     setLoading(false);
   };
 
   const handleChildResponse = response => {
-    // console.log('Response ==== ', response);
     setRecentTransaction(response);
   };
 
@@ -224,13 +221,18 @@ export default function Home() {
 
   const [refreshing, setRefreshing] = React.useState(false);
 
-  const onRefresh = React.useCallback(() => {
-    setRefreshing(true);
-    setTimeout(() => {
-      setRefreshing(false);
-    }, 2000);
-  }, []);
+  // const onRefresh = React.useCallback(() => {
+  //   setRefreshing(true);
+  //   setTimeout(() => {
+  //     setRefreshing(false);
+  //   }, 2000);
+  // }, []);
 
+  // refreshControl={
+  //   <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
+  // }
+
+  
   return (
     <>
       {isLoading ? (
@@ -238,9 +240,7 @@ export default function Home() {
       ) : (
         <ScrollView
           contentContainerStyle={styles.container}
-          refreshControl={
-            <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
-          }>
+          >
           {/* <Header /> */}
           <View style={[styles.dateContainer]}>
             <DateTypeSelection date={date} sendDateToHome={handleDateFilter} />
@@ -255,7 +255,10 @@ export default function Home() {
                     justifyContent: 'center',
                     alignItems: 'center',
                   }}>
-                  <Text>NO Data Available</Text>
+                  <Text style={{fontSize: 18,
+                  marginLeft: 10,
+                  fontFamily: 'EduSABeginner-Regular',
+                  borderBottomColor: '#616161',}}>No Data Available</Text>
                 </View>
               ) : (
                 <>
@@ -263,7 +266,7 @@ export default function Home() {
                     style={{
                       justifyContent: 'center',
                       alignItems: 'center',
-                      marginTop: '5%',
+                      marginTop: '3%',
                     }}>
                     {chartType === 'PieChart' && (
                       <PieCharts categories={categoryWiseTrxn} total={total} />
@@ -303,29 +306,32 @@ export default function Home() {
                 </>
               )}
             </>
-            <View
-              style={{
-                width: '90%',
-                backgroundColor: '#03707a',
-                borderRadius: 20,
-                padding: 8,
-                height: 40,
-                marginLeft: '5%',
-              }}>
-              <TouchableOpacity
-                onPress={handleButtonPress}
-                style={{width: '90%', height: 30}}>
-                <Text
-                  style={{
-                    textAlign: 'center',
-                    color: '#fff',
-                    fontSize: 18,
-                    fontFamily: 'EduSABeginner-Medium',
-                  }}>
-                  + Add Transaction
-                </Text>
-              </TouchableOpacity>
-            </View>
+              <View
+                style={{
+                  width: '90%',
+                  backgroundColor: '#03707a',
+                  borderRadius: 20,
+                  height: 40,
+                  marginLeft: '5%',
+                  justifyContent: 'center',
+                  alignItems: 'center',
+                  paddingTop:10
+                }}>
+                <TouchableOpacity
+                  onPress={handleButtonPress}
+                  style={{width: '60%', height: 30}}>
+                  <Text
+                    style={{
+                      textAlign: 'center',
+                      color: '#fff',
+                      fontSize: 18,
+                      fontFamily: 'EduSABeginner-Medium',
+                    }}>
+                    + Add Transaction
+                  </Text>
+                </TouchableOpacity>
+              </View>
+            
           </View>
 
           {/* Latest Transaction View */}
@@ -341,7 +347,7 @@ export default function Home() {
                 style={{
                   fontSize: 20,
                   marginLeft: 10,
-                  fontFamily: 'EduSABeginner-Medium',
+                  fontFamily: 'EduSABeginner-Regular',
                   borderBottomWidth: 0.5,
                   borderBottomColor: '#616161',
                 }}>
@@ -357,7 +363,10 @@ export default function Home() {
                     justifyContent: 'center',
                     alignItems: 'center',
                   }}>
-                  <Text>No Transactions to show</Text>
+                  <Text style={{fontSize: 18,
+                  marginLeft: 10,
+                  fontFamily: 'EduSABeginner-Regular',
+                  borderBottomColor: '#616161',}}>No Transactions to show</Text>
                 </View>
               ) : (
                 <FlatList
@@ -366,9 +375,9 @@ export default function Home() {
                     <View style={styles.bottomCardContent}>
                       <View style={styles.leftContent}>
                         <Text style={styles.CategoryText}>
-                          {item.category_name}
+                          {item.categories_datails.longname}
                         </Text>
-                        <Text style={styles.descText}>{item.note}</Text>
+                        <Text style={styles.descText}>{item.transactions_description}</Text>
                       </View>
                       <View
                         style={{

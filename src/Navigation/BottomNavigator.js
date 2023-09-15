@@ -8,6 +8,8 @@ import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import {createBottomTabNavigator} from '@react-navigation/bottom-tabs';
 import {primaryColor} from '../Utils/CustomColors';
 import SignOut from '../Screens/SignOut';
+import Profile from '../Screens/Profile';
+import OnBoarding from '../Screens/OnBoarding';
 
 const Tab = createBottomTabNavigator();
 
