@@ -1,5 +1,3 @@
-import AsyncStorage from '@react-native-async-storage/async-storage';
-import fireStore from '@react-native-firebase/firestore';
 import moment from 'moment';
 import React, {useLayoutEffect, useState} from 'react';
 import {
@@ -11,6 +9,7 @@ import {
   TextInput,
   TouchableOpacity,
   View,
+  ActivityIndicator,
 } from 'react-native';
 import toast from 'react-native-simple-toast';
 import uuid from 'react-native-uuid';
@@ -20,14 +19,15 @@ import Loader from '../Components/Loader';
 import {globalStyle, screenNames} from '../Constants/constant';
 import {primaryColor, secondaryColor, textColor} from '../Utils/CustomColors';
 import {handleCategories} from '../Utils/TransactionUpdates';
-// import * as ImagePicker from 'react-native-image-picker';
-import ImagePicker from 'react-native-image-crop-picker';
+import * as ImagePicker from 'react-native-image-picker';
+import GalleryPicker from 'react-native-image-crop-picker';
 import {
   add_Transaction,
   fetchCategories,
   imageUpload,
+  multiImageUpload,
 } from '../Helpers/helpers';
-import RNFS from 'react-native-fs';
+import {imageBaseUrl} from '../API/Endpoints';
 
 export default function AddTransaction({route, navigation}) {
   const oldTransaction = route.params.payload;
@@ -45,12 +45,16 @@ export default function AddTransaction({route, navigation}) {
   const prepopulateDataForUpdate = () => {
     setCategoryId(oldTransaction.categories_id);
     setSelectedDate(new Date(oldTransaction.transaction_date));
+    // console.log("preImage",oldTransaction.transactions_image)
+    setImageUri(imageBaseUrl + oldTransaction.transactions_image);
+    setMultipleImages(JSON.parse(oldTransaction.json_image));
     setPayload({
       amount: oldTransaction.amount,
       transactions_description: oldTransaction.transactions_description,
       transaction_date: oldTransaction.transaction_date,
       id: oldTransaction.id,
       categories_id: oldTransaction.categories_id,
+      transactions_image: oldTransaction.transactions_image,
     });
     // setisLoading(false)
   };
@@ -62,7 +66,7 @@ export default function AddTransaction({route, navigation}) {
     amount: 0,
     transactions_description: '',
     transaction_date: moment(selectedDate).format('YYYY-MM-DD'),
-    transactions_image: '',
+    transactions_image: null,
   };
 
   const today = new Date();
@@ -81,6 +85,8 @@ export default function AddTransaction({route, navigation}) {
   const [category, setCategory] = useState([]);
   const [imageUri, setImageUri] = useState();
   const [multipleImages, setMultipleImages] = useState([]);
+  const [loaderValue, setLoaderValue] = useState(false);
+  const [multiImageModal, setMultiImageModal] = useState();
 
   // Fetching all the categories to display for addding transaction.
   const fetchAllCategories = async () => {
@@ -166,6 +172,7 @@ export default function AddTransaction({route, navigation}) {
 
   // handle add Transaction
   const addTransaction = async () => {
+    // console.log("payload on add trnxn === ",payload)
     const response = await add_Transaction(payload);
     if (response.status === 200) {
       toast.show(response.data.message, toast.SHORT);
@@ -192,35 +199,70 @@ export default function AddTransaction({route, navigation}) {
     if (oldTransaction !== undefined) prepopulateDataForUpdate();
   }, []);
 
-  const openCamera = async () => {
-    ImagePicker.openCamera({
-      width: 100,
-      height: 100,
-      cropping: true,
-    }).then(async image => {
-      setImageUri(image.path);
+  const openCamera = () => {
+    setLoaderValue(true);
+    ImagePicker.launchCamera(
+      {
+        mediaType: 'any',
+        includeBase64: true,
+      },
+      async response => {
+        const payloadRequest = {
+          image: response.assets[0],
+        };
+        const responseData = await imageUpload(payloadRequest);
+        let ImageUrl = imageBaseUrl + responseData.filepath;
+        // console.log('single image url === ', ImageUrl);
+        setImageUri(ImageUrl);
+        setPayload({
+          ...payload,
+          transactions_image: responseData.filepath,
+        });
+
+        setLoaderValue(false);
+      },
+    );
+  };
+
+  const openGallery = () => {
+    setLoaderValue(true);
+    GalleryPicker.openPicker({
+      multiple: true,
+      mediaType: 'photo',
+    }).then(async imageData => {
+      var selectedImages = [];
+      for (let i = 0; i < imageData.length; i++) {
+        // console.log('Image ==== ', imageData[i].path); //image[i].data=>base64 string
+        let data = {
+          id: Math.random(),
+          path: imageData[i].path,
+        };
+        selectedImages.push(data);
+      }
       const payloadRequest = {
-        image: image,
-        folder: 'ExpenseBills',
+        imageload: selectedImages,
       };
-      const response = await imageUpload(payloadRequest);
+      const responseData = await multiImageUpload(payloadRequest);
+      // console.log('Storing this path', responseData.filepath);
       setPayload({
         ...payload,
-        transactions_image: response.filepath,
+        json_image: responseData.filepath,
       });
+      setLoaderValue(false);
+      setMultipleImages(responseData.filepath);
     });
   };
 
-  const data = [];
-  const openGallery = async () => {
-    ImagePicker.openPicker({
-      multiple: true,
-    }).then(image => {
-      // console.log(image);
-      setMultipleImages(image);
-    });
+  const handleMultiImageModal = sourceData => {
+    const url = imageBaseUrl + sourceData;
+    setMultiImageModal(url);
+    setModalVisible(true);
   };
 
+  const handleSingleImageModal = sourceData => {
+    setMultiImageModal(sourceData);
+    setModalVisible(true);
+  };
 
   const [modalVisible, setModalVisible] = useState(false);
 
@@ -262,7 +304,7 @@ export default function AddTransaction({route, navigation}) {
                 }}
                 style={[
                   styles.categoryBox,
-                  categoryId === item.id && {backgroundColor: '#44CD40'},
+                  categoryId === item.id && {backgroundColor: secondaryColor},
                 ]}>
                 {item.longname.length > 10 ? (
                   <Text style={styles.categoryText}>
@@ -488,6 +530,7 @@ export default function AddTransaction({route, navigation}) {
                     style={{flexDirection: 'row', justifyContent: 'center'}}>
                     <TouchableOpacity
                       onPress={() => {
+                        setLoaderValue(true);
                         openCamera();
                       }}
                       style={{paddingHorizontal: 10}}>
@@ -509,49 +552,64 @@ export default function AddTransaction({route, navigation}) {
                     </TouchableOpacity>
                   </View>
 
-                  {imageUri ? (
-                    <TouchableOpacity onPress={() => setModalVisible(true)}>
-                      <Image
-                        source={{uri: imageUri}}
-                        style={{width: 70, height: 120, marginHorizontal: 10}}
+                  <View style={{flexDirection: 'row'}}>
+                    {loaderValue && (
+                      <ActivityIndicator
+                        style={{
+                          position: 'absolute',
+                          top: 0,
+                          bottom: 0,
+                          left: 0,
+                          right: 0,
+                        }}
+                        size="large"
                       />
-                    </TouchableOpacity>
-                  ) : (
-                    <Text
-                      style={{
-                        marginHorizontal: 10,
-                        fontFamily: 'EduSABeginner-Regular',
-                        fontSize: 18,
-                      }}></Text>
-                  )}
-                  {multipleImages?.length > 0 ? (
-                    <FlatList
-                      data={multipleImages}
-                      numColumns={2}
-                      renderItem={({item}) => (
-                        <View>
-                          <TouchableOpacity onPress={() => setModalVisible(true)}>
-                            <Image
-                              source={{uri: item.path}}
-                              style={{
-                                width: 50,
-                                height: 50,
-                                marginHorizontal: 10,
-                              }}
-                            />
-                          </TouchableOpacity>
-                        </View>
-                      )}
-                    />
-                  ) : (
-                    <Text></Text>
-                  )}
+                    )}
+                    {imageUri && (
+                      <TouchableOpacity
+                        onPress={() => {
+                          handleSingleImageModal(imageUri)
+                        }}>
+                        <Image
+                          source={{uri: imageUri}}
+                          style={{width: 70, height: 70, marginLeft: 5}}
+                        />
+                      </TouchableOpacity>
+                    )}
+                    {multipleImages && (
+                      <FlatList
+                        data={multipleImages}
+                        horizontal
+                        renderItem={({item}) => (
+                          <View>
+                            <TouchableOpacity
+                              onPress={() => {
+                                handleMultiImageModal(item.image_storage_path);
+                              }}>
+                              <Image
+                                source={{
+                                  uri: imageBaseUrl + item.image_storage_path,
+                                }}
+                                style={{
+                                  width: 60,
+                                  height: 70,
+                                  marginHorizontal: 5,
+                                }}
+                              />
+                            </TouchableOpacity>
+                          </View>
+                        )}
+                      />
+                    )}
+                  </View>
+
+                  {/* modal appears when image is clicked for preiew */}
                   <Modal visible={modalVisible} animationType="fade">
                     <View style={styles.modalContent}>
-                      <Image
-                        source={{uri: imageUri}}
-                        style={styles.modalImage}
-                      />
+                        <Image
+                          source={{uri: multiImageModal }}
+                          style={styles.modalImage}
+                        />
                       <TouchableOpacity onPress={() => setModalVisible(false)}>
                         <Text style={styles.closeButton}>Close</Text>
                       </TouchableOpacity>
@@ -682,7 +740,6 @@ const styles = StyleSheet.create({
     resizeMode: 'contain',
   },
   closeButton: {
-    marginTop: 20,
-    color: 'blue',
+    color: 'green',
   },
 });

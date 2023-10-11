@@ -1,8 +1,8 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import fireStore from '@react-native-firebase/firestore';
 import {useNavigation} from '@react-navigation/native';
 import React, {useLayoutEffect, useState} from 'react';
 import {
+  ActivityIndicator,
   Dimensions,
   Image,
   StyleSheet,
@@ -15,11 +15,11 @@ import CustButton from '../Components/CustButton';
 import CustTextInput from '../Components/CustTextInput';
 import Loading from '../Components/Loader';
 import {globalStyle, screenNames} from '../Constants/constant';
-import {primaryColor, textColor} from '../Utils/CustomColors';
-import {setClientToken} from '../API/Api';
 import {handleLogin} from '../Helpers/helpers';
+import {primaryColor, textColor} from '../Utils/CustomColors';
 
 const screenWidth = Dimensions.get('window').width - 90;
+const actualScreenWidth = Dimensions.get('screen').width;
 
 export default function Login() {
   const navigation = useNavigation();
@@ -40,30 +40,28 @@ export default function Login() {
 
   // handling Login functionality.
   const handleSubmit = async () => {
+    setDisable(true);
     const request = {
-      email: data.email,
+      auto_gen_emp_id: data.email,
       password: data.password,
     };
     if (data.email == '' || data.password == '') {
-      setErrMsg('All fields are mandatory');
+      setErrMsg('Field cannot be blank');
       setLoading(false);
+      setDisable(false);
       return;
     } else {
-      // setDisable(true)
       const response = await handleLogin(request);
-      if (response.status === 200) {
+      // console.log("response login == ",response.data);
+      if (response.request.status === 200) {
         AsyncStorage.setItem('User_Token', response.data.access_token);
         navigation.replace(screenNames.DashBoard);
+        console.log("Fetching Token after login", await AsyncStorage.getItem('User_Token'))
       } else {
-        toast.show(response.data.message, {
-          type: 'danger',
-          placement: 'top',
-          duration: 4000,
-          offset: 30,
-          animationType: 'slide-in',
-        });
+        toast.show(response.data.message, toast.LONG);
       }
     }
+    setDisable(false);
   };
 
   useLayoutEffect(() => {
@@ -88,8 +86,8 @@ export default function Login() {
           />
           <Text style={styles.text}>Expense Tracker</Text>
           <CustTextInput
-            placeholderText="Email"
-            iconType="mail"
+            placeholderText="Username"
+            iconType="user"
             onChangeText={text => handleTextChange('email', text)}
             keyboardType="email-address"
             onFocus={() => {
@@ -113,30 +111,35 @@ export default function Login() {
           {errMsg.trim().length !== 0 && (
             <Text style={globalStyle.error}>{errMsg}</Text>
           )}
-          {}
-          <CustButton
-            title="Sign In"
-            onPress={() => handleSubmit()}
-            disabled={disable}
-          />
+          {disable === true ? (
+            <View style={styles.buttonContainer}>
+              <ActivityIndicator />
+            </View>
+          ) : (
+            <CustButton title="Sign In" onPress={() => handleSubmit()} />
+          )}
           <View
             style={{
               flexDirection: 'row',
               justifyContent: 'space-between',
               alignItems: 'center',
+              width: actualScreenWidth,
+              paddingHorizontal: 20,
             }}>
-            <Text style={{fontFamily:'EduSABeginner-SemiBold',fontSize:18}}>Don't have an account ?</Text>
+            </View>
+          {/* <Text style={{fontFamily: 'EduSABeginner-SemiBold', fontSize: 16}}>
+              Don't have an account ?
+            </Text>
             <TouchableOpacity
               onPress={() => navigation.navigate(screenNames.Register)}
               style={styles.forgotButton}>
               <Text style={styles.navButtonText}>Create here</Text>
-            </TouchableOpacity>
-            <TouchableOpacity
-              onPress={() => navigation.navigate(screenNames.Forgot_Password)}
-              style={styles.forgotPassword}>
-              <Text style={styles.forgotPswText}>Forgot Password ?</Text>
-            </TouchableOpacity>
-          </View>
+            </TouchableOpacity> */}
+          <TouchableOpacity
+            onPress={() => navigation.navigate(screenNames.Forgot_Password)}
+            style={styles.forgotPassword}>
+            <Text style={styles.forgotPswText}>Forgot Password ?</Text>
+          </TouchableOpacity>
         </View>
       )}
     </>
@@ -150,6 +153,15 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     padding: 20,
     backgroundColor: '#fff',
+  },
+  buttonContainer: {
+    marginTop: 10,
+    width: '100%',
+    backgroundColor: primaryColor,
+    alignItems: 'center',
+    justifyContent: 'center',
+    borderRadius: 3,
+    padding: 5,
   },
   logo: {
     height: 120,
@@ -166,8 +178,7 @@ const styles = StyleSheet.create({
     marginTop: 15,
   },
   forgotButton: {
-    marginVertical: 15,
-    marginHorizontal: 5,
+    marginVertical: 10,
   },
   navButtonText: {
     fontSize: 18,
@@ -185,10 +196,12 @@ const styles = StyleSheet.create({
     textDecorationLine: 'underline',
   },
   forgotPassword: {
-    margin: screenWidth - 290,
+    paddingTop:10,
+    justifyContent: 'center',
+    alignItems: 'center',
   },
-  placeholderText :{
-    fontFamily:"EduSABeginner-Regular",
-    fontSize:16
-  }
+  placeholderText: {
+    fontFamily: 'EduSABeginner-Regular',
+    fontSize: 16,
+  },
 });

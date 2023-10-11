@@ -56,8 +56,8 @@ export default function OtpVerificationScreen({route}) {
     if (data.password === data.confirm_password) {
       const response = await handlechangePassword(request);
       if (response.status === 200) {
-        navigation.navigate(screenNames.Login);
         toast.show('Password has been changed successfully', toast.CENTER);
+        navigation.navigate(screenNames.Login);
       } else {
         toast.show('Something went wrong, Please try again!', toast.CENTER);
       }

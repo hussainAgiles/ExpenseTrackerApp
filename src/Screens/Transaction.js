@@ -1,6 +1,6 @@
-import { useNavigation } from '@react-navigation/native';
+import {useNavigation} from '@react-navigation/native';
 import Moment from 'moment';
-import React, { useEffect, useState } from 'react';
+import React, {useEffect, useState} from 'react';
 import {
   Alert,
   Dimensions,
@@ -9,10 +9,8 @@ import {
   Text,
   TouchableOpacity,
   View,
-  ActivityIndicator
 } from 'react-native';
 
-import Lottie from 'lottie-react-native';
 import moment from 'moment';
 import DatePicker from 'react-native-date-picker';
 import RNFS from 'react-native-fs';
@@ -21,15 +19,17 @@ import FontAwesome from 'react-native-vector-icons/FontAwesome';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import Icons from 'react-native-vector-icons/MaterialIcons';
 import XLSX from 'xlsx';
-import { screenNames } from '../Constants/constant';
+import Loader from '../Components/Loader';
+import {screenNames} from '../Constants/constant';
 import {
   UpdateTransaction,
   deleteTransaction,
   downloadExcelSheet,
   fetchTransactionHistory,
+  handleDelete,
 } from '../Helpers/helpers';
-import { primaryColor } from '../Utils/CustomColors';
-import Loader from '../Components/Loader';
+import {primaryColor} from '../Utils/CustomColors';
+import Lottie from 'lottie-react-native';
 
 const screenWidth = Dimensions.get('window').width - 90;
 
@@ -39,6 +39,16 @@ export default function Transaction() {
 
   const [isLoading, setIsLoading] = useState(false);
 
+  const [open, setOpen] = useState(false);
+  const [endDateOpen, setEndDateOpen] = useState(false);
+  const [startDate, setStartDate] = useState(new Date());
+  const [mode, setMode] = useState('date');
+  const [showDatePicker, setShowDatePicker] = useState(false);
+  const [text, setText] = useState('Empty');
+
+  const [endDate, setEndDate] = useState(new Date());
+
+  const [showPicker, setShowPicker] = useState(false);
 
   useEffect(() => {
     setIsLoading(true);
@@ -49,7 +59,6 @@ export default function Transaction() {
   // Fetch all the transaction
   const fetchtransaction = async () => {
     const fetcheddata = await fetchTransactionHistory();
-    // console.log("Transaction fetched  ==== ",fetcheddata)
     setData(fetcheddata);
   };
 
@@ -60,14 +69,14 @@ export default function Transaction() {
       'Are you sure you want to delete this record?',
       [
         {
-          text: 'Delete',
+          text: 'Ok',
           onPress: async () => {
-            const response = await deleteTransaction(transaction.id);
-            if (response.status === 200) {
-              toast.show('Transaction deleted successfully', toast.CENTER);
+            const response = await handleDelete(transaction.id);
+            if (response.request.status === 200) {
+              toast.show(response.data.message, toast.CENTER);
               fetchtransaction();
             } else {
-              toast.show(response.data.message, toast.SHORT);
+              toast.show(response.data.message, toast.LONG);
             }
           },
         },
@@ -206,19 +215,20 @@ export default function Transaction() {
 
   // handling download Excel Sheet
   const handleClick = async () => {
+    toast.show('Downloading....', toast.CENTER);
     try {
-      let request ={
-        start_Date : moment(startDate).format('YYYY-MM-DD'),
-        end_Date : moment(endDate).format('YYYY-MM-DD')
-      }
-      const response = await downloadExcelSheet(request)
+      let request = {
+        start_Date: moment(startDate).format('YYYY-MM-DD'),
+        end_Date: moment(endDate).format('YYYY-MM-DD'),
+      };
+      const response = await downloadExcelSheet(request);
       // console.log("respone ==== ",response)
-      
+
       const data = response.map(item => [
         item.amount,
         item.longname,
         item.transactions_description,
-        item.transaction_date
+        item.transaction_date,
       ]);
 
       // console.log("data === ",data)
@@ -255,21 +265,10 @@ export default function Transaction() {
       // RNFS.readFile(filePath, 'base64').then(fileData => console.log(fileData));
     } catch (error) {
       // Handle errors if any
-      console.log('Error', error);
-      // toast.show('Excel file could not be exported!',error);
+      // console.log('Error', error);
+      toast.show('Download failed, please try again', error);
     }
   };
-
-  const [open, setOpen] = useState(false);
-  const [endDateOpen, setEndDateOpen] = useState(false);
-  const [startDate, setStartDate] = useState(new Date());
-  const [mode, setMode] = useState('date');
-  const [showDatePicker, setShowDatePicker] = useState(false);
-  const [text, setText] = useState('Empty');
-
-  const [endDate, setEndDate] = useState(new Date());
-
-  const [showPicker, setShowPicker] = useState(false);
 
   const handleEndDate = inDate => {
     // console.log('indate ====', inDate);
@@ -280,7 +279,10 @@ export default function Transaction() {
 
   return (
     <>
-      {data?.length > 0 ? (
+      {isLoading ? (
+        // Display a loader when data is loading
+        <Loader message="Please wait ..." />  
+      ) : data ? (
         <View style={{marginBottom: '27%', backgroundColor: '#fff'}}>
           {/* Download Excel Sheet */}
           <View
@@ -452,7 +454,11 @@ export default function Transaction() {
                       justifyContent: 'center',
                       alignItems: 'flex-start',
                     }}>
-                    <Icons size={30} color={primaryColor} name={item.categories_datails.icon_name} />
+                    <Icons
+                      size={30}
+                      color={primaryColor}
+                      name={item.categories_datails.icon_name}
+                    />
                     <Text
                       style={{
                         fontSize: 14,
@@ -501,9 +507,7 @@ export default function Transaction() {
                             fontSize: 12,
                           }}>
                           {' '}
-                          {Moment(item.transaction_date).format(
-                            'DD MMM YYYY',
-                          )}
+                          {Moment(item.transaction_date).format('DD MMM YYYY')}
                         </Text>
                       </Text>
                     </View>
@@ -551,15 +555,13 @@ export default function Transaction() {
           />
         </View>
       ) : (
-        <View style={{flex: 1, justifyContent: 'center', alignItems: 'center'}}>
-          {/* <Lottie
+        // Display an image when data is not present
+        <Lottie
             source={require('../../assets/Animation/no_data.json')}
             autoPlay
             loop
             style={{width: 300, height: 300}}
-          /> */}
-          <Loader message="Please wait ..." />
-        </View>
+          />
       )}
     </>
   );

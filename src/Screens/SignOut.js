@@ -12,14 +12,17 @@ const SignOut = ({}) => {
 
   const [isLogoutModalVisible, setLogoutModalVisible] = useState(false);
 
-  const onLogout = () => {
+  const onLogout = async() => {
     // Implement your logout logic here
     // For example, clear user session, remove tokens, etc.
     AsyncStorage.removeItem('User_Token');
     AsyncStorage.removeItem('userId');
     setLogoutModalVisible(false);
     navigation.replace(screenNames.Login);
+    // console.log("Fetching Token after logout", await AsyncStorage.getItem('User_Token'))
   };
+
+  
 
   return (
     <Modal

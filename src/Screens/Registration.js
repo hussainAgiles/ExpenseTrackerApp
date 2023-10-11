@@ -199,7 +199,7 @@ export default function Registration() {
               Have an account ?
             </Text>
             <TouchableOpacity
-              onPress={() => navigation.navigate(screenNames.Register)}
+              onPress={() => navigation.navigate(screenNames.Login)}
               style={styles.forgotButton}>
               <Text style={styles.navButtonText}>Sign In</Text>
             </TouchableOpacity>

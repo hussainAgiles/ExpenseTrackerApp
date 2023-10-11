@@ -2,14 +2,17 @@
 
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import axios from 'axios';
-import {URL_CONSTANTS} from '../API/Endpoints';
+import { URL_CONSTANTS, baseUrl } from '../API/Endpoints';
+import mime from 'mime';
 
 // login
 export const handleLogin = async request => {
   try {
     const response = await axios.post(URL_CONSTANTS.login_URL, request);
+    // console.log("Error login helper = ",response)
     return response;
   } catch (error) {
+    // console.log("Error login helper = ",error.response)
     return error.response;
   }
 };
@@ -83,7 +86,6 @@ export const fetchCategoryDetails = async request => {
 
 // Add transacton
 export const add_Transaction = async request => {
-  console.log('request add ====', request);
   const bearer_token = await fetchBearerToken();
   try {
     const response = await axios.post(
@@ -91,8 +93,6 @@ export const add_Transaction = async request => {
       request,
       bearer_token,
     );
-    // console.log("Add trnxn 1111 === ",response.data)
-    console.log('Add trnxn === ', response.data.transaction_details);
     return response;
   } catch (error) {
     return error.response;
@@ -101,12 +101,12 @@ export const add_Transaction = async request => {
 };
 
 // Fetch Transaction History
-export const fetchTransactionHistory = async request => {
+export const fetchTransactionHistory = async () => {
   try {
     const bearer_Token = await fetchBearerToken();
+    // console.log("Tokenssss === ",bearer_Token)
     const Endpoints = `${URL_CONSTANTS.fetch_Transaction}`;
     const response = await axios.get(Endpoints, bearer_Token);
-    // console.log("response fetch transaction history === ",response.data.transaction_details)
     return response.data.transaction_details;
   } catch (error) {
     return error.response;
@@ -115,16 +115,28 @@ export const fetchTransactionHistory = async request => {
 };
 
 // delete transaction
-export const deleteTransaction = async request => {
-  try {
-    const bearer_Token = await fetchBearerToken();
-    const Endpoints = `${URL_CONSTANTS.delete_Transaction}?id=${request}`;
-    const response = await axios.post(Endpoints, bearer_Token);
-    return response;
-  } catch (error) {
-    return error.response;
-  }
-  return false;
+export const handleDelete = async (request) => {
+  return new Promise(async (resolve, reject) => {
+    const token = await AsyncStorage.getItem('User_Token');
+    axios({
+      method: "post",
+      url: `http://192.168.2.126:8000/api/delete_transaction`,
+      headers: {
+        Accept: "application/json",
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
+      },
+      data: {
+        id: request,
+      },
+    }).then((response) => {
+      resolve(response);
+    })
+      .catch((error) => {
+        reject(error);
+      });
+  });
+
 };
 
 // Update Transaction
@@ -141,24 +153,47 @@ export const UpdateTransaction = async request => {
 };
 
 // Uploading Image
-export const imageUpload = async request => {
+export const imageUpload = async payloadRequest => {
   try {
     const bearer_Token = await fetchBearerToken();
-    const Endpoints = `${URL_CONSTANTS.Upload_Image}`;
-    let data = new FormData();
-    const imageUri = 'file:///' + request.image.path.split('file:/').join('');
-    const name = imageUri.split('/').pop();
-    data.append('folder', request.folder);
-    data.append('image', {
-      uri: imageUri,
-      name: name,
-      type: request.image.mime,
-    });
-    const response = await axios.post(Endpoints, data, bearer_Token);
-    // console.log("Response === ",response.data)
+    const Endpoints = `${URL_CONSTANTS.upload_Image}`;
+    let formData = new FormData();
+    formData.append('image', JSON.stringify(payloadRequest.image.base64));
+    formData.append('folder', 'ExpenseBills');
+    formData.append('extension', 'png');
+    formData.append('filename', 'icon');
+    const response = await axios.post(Endpoints, formData, bearer_Token);
     return response.data;
   } catch (error) {
-    // console.log("Response Error=== ",error)
+    return error;
+  }
+  return false;
+};
+
+// Uploading image from Gallery (Multiple images)
+export const multiImageUpload = async payloadRequest => {
+  // console.log('Payload in helpers multi ===== ', payloadRequest.imageload);
+  try {
+    const bearer_Token = await fetchBearerToken();
+    const Endpoints = `${URL_CONSTANTS.multiImage}`;
+    const imageDataJSON = payloadRequest.imageload;
+    let formData = new FormData();
+    for (let i = 0; i < payloadRequest.imageload.length; i++) {
+      const imagePath = payloadRequest.imageload[i].path;
+      const newImageUri = 'file:/' + imagePath.split('file:/').join('');
+
+      formData.append('image_data[]', {
+        uri: newImageUri,
+        name: imagePath.split('/').pop(),
+        type: 'image/jpeg', // You may need to determine the correct MIME type
+      });
+    }
+    formData.append('folder', 'ExpenseBills');
+    formData.append('extension', 'png');
+    formData.append('filename', 'icon');
+    const response = await axios.post(Endpoints, formData, bearer_Token);
+    return response.data;
+  } catch (error) {
     return error;
   }
   return false;
@@ -182,7 +217,7 @@ export const downloadExcelSheet = async request => {
 // fetching token
 const fetchBearerToken = async () => {
   try {
-    // Retrieve the credentials
+    // fetching access token
     const token = await AsyncStorage.getItem('User_Token');
 
     if (token) {
@@ -190,6 +225,27 @@ const fetchBearerToken = async () => {
         headers: {
           Authorization: `Bearer ${token}`,
           'Content-Type': 'multipart/form-data',
+        },
+      };
+    } else {
+      console.log('No token stored');
+    }
+  } catch (error) {
+    console.log("token couldn't be accessed!", error);
+  }
+  return false;
+};
+
+const SimpleBearerToken = async () => {
+  try {
+    // Retrieve the credentials
+    const acesstoken = await AsyncStorage.getItem('User_Token');
+
+    if (acesstoken) {
+      return {
+        headers: {
+          Authorization: `Bearer ${acesstoken}`,
+          'Content-Type': 'application/json',
         },
       };
     } else {

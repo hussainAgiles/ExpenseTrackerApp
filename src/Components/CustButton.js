@@ -7,12 +7,12 @@ import { ActivityIndicator } from 'react-native-paper';
 const FormButton = ({title,onPress,disabled}) => {
   return (
     <TouchableOpacity disabled={disabled} style={styles.buttonContainer} onPress={onPress}>
-      {/* {
-        disabled !== false ?
+      {
+        disabled === true ?
         <ActivityIndicator/> : <Text style={styles.buttonText}>{title}</Text>
 
-      } */}
-     <Text style={styles.buttonText}>{title}</Text> 
+      }
+     {/* <Text style={styles.buttonText}>{title}</Text>  */}
     </TouchableOpacity>
   );
 };
