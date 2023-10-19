@@ -9,10 +9,8 @@ import mime from 'mime';
 export const handleLogin = async request => {
   try {
     const response = await axios.post(URL_CONSTANTS.login_URL, request);
-    // console.log("Error login helper = ",response)
     return response;
   } catch (error) {
-    // console.log("Error login helper = ",error.response)
     return error.response;
   }
 };
@@ -104,7 +102,6 @@ export const add_Transaction = async request => {
 export const fetchTransactionHistory = async () => {
   try {
     const bearer_Token = await fetchBearerToken();
-    // console.log("Tokenssss === ",bearer_Token)
     const Endpoints = `${URL_CONSTANTS.fetch_Transaction}`;
     const response = await axios.get(Endpoints, bearer_Token);
     return response.data.transaction_details;

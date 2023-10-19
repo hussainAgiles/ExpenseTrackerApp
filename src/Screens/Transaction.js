@@ -9,6 +9,7 @@ import {
   Text,
   TouchableOpacity,
   View,
+  ActivityIndicator,
 } from 'react-native';
 
 import moment from 'moment';
@@ -44,10 +45,8 @@ export default function Transaction() {
   const [startDate, setStartDate] = useState(new Date());
   const [mode, setMode] = useState('date');
   const [showDatePicker, setShowDatePicker] = useState(false);
-  const [text, setText] = useState('Empty');
 
   const [endDate, setEndDate] = useState(new Date());
-
   const [showPicker, setShowPicker] = useState(false);
 
   useEffect(() => {
@@ -58,8 +57,8 @@ export default function Transaction() {
 
   // Fetch all the transaction
   const fetchtransaction = async () => {
-    const fetcheddata = await fetchTransactionHistory();
-    setData(fetcheddata);
+    const response = await fetchTransactionHistory();
+    setData(response);
   };
 
   // Deleting transaction
@@ -85,124 +84,6 @@ export default function Transaction() {
       {cancelable: false},
     );
   };
-
-  const capitalize = str => {
-    const lower = str.toLowerCase();
-    return str.charAt(0).toUpperCase() + lower.slice(1);
-  };
-
-  const timeStampToDate = dateObj => {
-    const transactionDate =
-      dateObj.seconds * 1000 + dateObj.nanoseconds / 1000000;
-    // console.log(transactionDate)
-    return new Date(transactionDate);
-  };
-
-  // const handleCategorieswithImage = data => {
-  //   data.map((item, index) => {
-  //     data[index].transactions_description = capitalize(item.transactions_description);
-  //     data[index].color = categoryColors[index % categoryColors.length];
-  //     data[index].transaction_date = timeStampToDate(item.transactionDate);
-
-  //     if (
-  //       data[index].category_name === 'Dining' ||
-  //       data[index].category_name === 'dining'
-  //     ) {
-  //       data[index].icon_name = 'local-dining';
-  //     }
-  //     if (
-  //       data[index].category_name === 'Travel' ||
-  //       data[index].category_name === 'travel'
-  //     ) {
-  //       data[index].icon_name = 'directions-bus';
-  //     }
-  //     if (
-  //       data[index].category_name === 'Telephone' ||
-  //       data[index].category_name === 'telephone'
-  //     ) {
-  //       data[index].icon_name = 'phone';
-  //     }
-  //     if (
-  //       data[index].category_name === 'Others' ||
-  //       data[index].category_name === 'others'
-  //     ) {
-  //       data[index].icon_name = 'miscellaneous-services';
-  //     }
-  //     if (
-  //       data[index].category_name === 'Emi' ||
-  //       data[index].category_name === 'emi'
-  //     ) {
-  //       data[index].icon_name = 'calculate';
-  //     }
-  //     if (
-  //       data[index].category_name === 'Fuel' ||
-  //       data[index].category_name === 'fuel'
-  //     ) {
-  //       data[index].icon_name = 'local-gas-station';
-  //     }
-  //     if (
-  //       data[index].category_name === 'Groceries' ||
-  //       data[index].category_name === 'groceries'
-  //     ) {
-  //       data[index].icon_name = 'shopping-cart';
-  //     }
-  //     if (
-  //       data[index].category_name === 'Loans' ||
-  //       data[index].category_name === 'loans'
-  //     ) {
-  //       data[index].icon_name = 'calendar-month';
-  //     }
-  //     if (
-  //       data[index].category_name === 'Health' ||
-  //       data[index].category_name === 'health'
-  //     ) {
-  //       data[index].icon_name = 'health-and-safety';
-  //     }
-  //     if (
-  //       data[index].category_name === 'Shopping' ||
-  //       data[index].category_name === 'shopping'
-  //     ) {
-  //       data[index].icon_name = 'shopping-bag';
-  //     }
-  //     if (
-  //       data[index].category_name === 'House rent' ||
-  //       data[index].category_name === 'house rent'
-  //     ) {
-  //       data[index].icon_name = 'add-home';
-  //     }
-  //     if (
-  //       data[index].category_name === 'Office ' ||
-  //       data[index].category_name === 'office '
-  //     ) {
-  //       data[index].icon_name = 'business';
-  //     }
-  //     if (
-  //       data[index].category_name === 'Gadgets' ||
-  //       data[index].category_name === 'gadgets'
-  //     ) {
-  //       data[index].icon_name = 'gamepad';
-  //     }
-  //     if (
-  //       data[index].category_name === 'Bills' ||
-  //       data[index].category_name === 'bills'
-  //     ) {
-  //       data[index].icon_name = 'margin';
-  //     }
-  //     if (
-  //       data[index].category_name === 'Entertainment ' ||
-  //       data[index].category_name === 'entertainment '
-  //     ) {
-  //       data[index].icon_name = 'emergency-recording';
-  //     }
-  //     if (
-  //       data[index].category_name === 'Education ' ||
-  //       data[index].category_name === 'education '
-  //     ) {
-  //       data[index].icon_name = 'school';
-  //     }
-  //   });
-  //   return data;
-  // };
 
   const handleUpdate = async item => {
     const payloadToSend = await UpdateTransaction(item.slug);
@@ -270,19 +151,13 @@ export default function Transaction() {
     }
   };
 
-  const handleEndDate = inDate => {
-    // console.log('indate ====', inDate);
-    const currentDate = inDate || new Date();
-    setShowDatePicker(false);
-    setEndDate(currentDate);
-  };
-
   return (
     <>
       {isLoading ? (
-        // Display a loader when data is loading
-        <Loader message="Please wait ..." />  
-      ) : data ? (
+        <View style={{flex: 1, justifyContent: 'center', alignItems: 'center'}}>
+          <Loader message="Please wait ..." />
+        </View>
+      ) : (
         <View style={{marginBottom: '27%', backgroundColor: '#fff'}}>
           {/* Download Excel Sheet */}
           <View
@@ -292,13 +167,7 @@ export default function Transaction() {
               borderBottomWidth: 0.5,
             }}>
             <View
-              style={{
-                flexDirection: 'column',
-                justifyContent: 'space-evenly',
-                alignItems: 'center',
-                paddingVertical: 15,
-                paddingHorizontal: 15,
-              }}>
+              style={styles.dateContainer}>
               <View
                 style={{
                   flexDirection: 'row',
@@ -315,12 +184,7 @@ export default function Transaction() {
                   }}
                   style={{flexDirection: 'row'}}>
                   <Text
-                    style={{
-                      fontFamily: 'EduSABeginner-Medium',
-                      fontSize: 16,
-                      borderWidth: 0.5,
-                      padding: 6,
-                    }}>
+                    style={styles.dateText}>
                     {Moment(startDate).format('DD-MMM-YYYY')}
                   </Text>
 
@@ -368,12 +232,7 @@ export default function Transaction() {
                   }}
                   style={{flexDirection: 'row'}}>
                   <Text
-                    style={{
-                      fontFamily: 'EduSABeginner-Medium',
-                      fontSize: 16,
-                      borderWidth: 0.5,
-                      padding: 6,
-                    }}>
+                    style={styles.dateText}>
                     {Moment(endDate).format('DD-MMM YYYY')}
                   </Text>
 
@@ -404,18 +263,7 @@ export default function Transaction() {
               </View>
             </View>
             <View
-              style={{
-                flexDirection: 'row',
-                width: '30%',
-                // backgroundColor: '#78909C',
-                padding: 8,
-                height: 40,
-                alignItems: 'center',
-                position: 'absolute',
-                justifyContent: 'space-evenly',
-                right: 0,
-                top: 40,
-              }}>
+              style={styles.exportView}>
               <TouchableOpacity
                 onPress={() => handleClick()}
                 style={{flexDirection: 'row', alignItems: 'center'}}
@@ -426,13 +274,7 @@ export default function Transaction() {
                   backgroundColor: '#DCEDC8';
                 }}>
                 <Text
-                  style={{
-                    textAlign: 'center',
-                    color: '#000000',
-                    fontSize: 18,
-                    fontFamily: 'EduSABeginner-SemiBold',
-                    textDecorationStyle: 'solid',
-                  }}>
+                  style={styles.exportText}>
                   Export
                 </Text>
                 <Icon name="file-excel" size={25} color={primaryColor} />
@@ -554,26 +396,40 @@ export default function Transaction() {
             )}
           />
         </View>
-      ) : (
-        // Display an image when data is not present
-        <Lottie
-            source={require('../../assets/Animation/no_data.json')}
-            autoPlay
-            loop
-            style={{width: 300, height: 300}}
-          />
       )}
     </>
   );
 }
 
 const styles = StyleSheet.create({
+  dateContainer: {
+    flexDirection: 'column',
+    justifyContent: 'space-evenly',
+    alignItems: 'center',
+    paddingVertical: 15,
+    paddingHorizontal: 15,
+  },
+  dateText: {
+    fontFamily: 'EduSABeginner-Medium',
+    fontSize: 16,
+    borderWidth: 0.5,
+    padding: 6,
+  },
+  exportView: {
+    flexDirection: 'row',
+    width: '30%',
+    padding: 8,
+    height: 40,
+    alignItems: 'center',
+    position: 'absolute',
+    justifyContent: 'space-evenly',
+    right: 0,
+    top: 40,
+  },
   card: {
     marginHorizontal: 8,
     borderBottomWidth: 0.5,
     backgroundColor: '#fff',
-    // shadowOffset: {width: 1, height: 1},
-    // shadowOpacity: 0.5,
     borderColor: '#616161',
     height: 90,
   },
@@ -607,5 +463,12 @@ const styles = StyleSheet.create({
     flex: 1,
     flexDirection: 'column',
     justifyContent: 'space-between',
+  },
+  exportText: {
+    textAlign: 'center',
+    color: '#000000',
+    fontSize: 18,
+    fontFamily: 'EduSABeginner-SemiBold',
+    textDecorationStyle: 'solid',
   },
 });

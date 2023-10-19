@@ -26,7 +26,7 @@ const BarCharts = ({categories, total}) => {
     ],
   };
 
-  console.log("data ==== ",data)
+  // console.log("data ==== ",data)
 
   const chartConfig = {
     backgroundGradientFrom: '#E3F2FD',

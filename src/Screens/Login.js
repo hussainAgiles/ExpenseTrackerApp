@@ -1,6 +1,6 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import {useNavigation} from '@react-navigation/native';
-import React, {useLayoutEffect, useState} from 'react';
+import { useNavigation } from '@react-navigation/native';
+import React, { useLayoutEffect, useState } from 'react';
 import {
   ActivityIndicator,
   Dimensions,
@@ -14,16 +14,16 @@ import toast from 'react-native-simple-toast';
 import CustButton from '../Components/CustButton';
 import CustTextInput from '../Components/CustTextInput';
 import Loading from '../Components/Loader';
-import {globalStyle, screenNames} from '../Constants/constant';
-import {handleLogin} from '../Helpers/helpers';
-import {primaryColor, textColor} from '../Utils/CustomColors';
+import { globalStyle, screenNames } from '../Constants/constant';
+import { handleLogin } from '../Helpers/helpers';
+import { primaryColor, textColor } from '../Utils/CustomColors';
 
 const screenWidth = Dimensions.get('window').width - 90;
 const actualScreenWidth = Dimensions.get('screen').width;
 
 export default function Login() {
   const navigation = useNavigation();
-  let initialState = {email: '', password: ''};
+  let initialState = { email: '', password: '' };
   const [isLoading, setLoading] = useState(false);
   const [errMsg, setErrMsg] = useState('');
   const [data, setData] = useState(initialState);
@@ -35,7 +35,7 @@ export default function Login() {
 
   // handling the text change on TextInput
   const handleTextChange = async (key, value) => {
-    setData({...data, [key]: value});
+    setData({ ...data, [key]: value });
   };
 
   // handling Login functionality.
@@ -52,11 +52,9 @@ export default function Login() {
       return;
     } else {
       const response = await handleLogin(request);
-      // console.log("response login == ",response.data);
       if (response.request.status === 200) {
         AsyncStorage.setItem('User_Token', response.data.access_token);
         navigation.replace(screenNames.DashBoard);
-        console.log("Fetching Token after login", await AsyncStorage.getItem('User_Token'))
       } else {
         toast.show(response.data.message, toast.LONG);
       }
@@ -113,20 +111,14 @@ export default function Login() {
           )}
           {disable === true ? (
             <View style={styles.buttonContainer}>
-              <ActivityIndicator />
+              <ActivityIndicator  size='large' color='#fff' animating={true}/>
             </View>
           ) : (
             <CustButton title="Sign In" onPress={() => handleSubmit()} />
           )}
           <View
-            style={{
-              flexDirection: 'row',
-              justifyContent: 'space-between',
-              alignItems: 'center',
-              width: actualScreenWidth,
-              paddingHorizontal: 20,
-            }}>
-            </View>
+            style={styles.forgotPswView}>
+          </View>
           {/* <Text style={{fontFamily: 'EduSABeginner-SemiBold', fontSize: 16}}>
               Don't have an account ?
             </Text>
@@ -189,6 +181,13 @@ const styles = StyleSheet.create({
   rightIconStyle: {
     paddingRight: 10,
   },
+  forgotPswView: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    width: actualScreenWidth,
+    paddingHorizontal: 20,
+  },
   forgotPswText: {
     fontSize: 18,
     color: primaryColor,
@@ -196,9 +195,9 @@ const styles = StyleSheet.create({
     textDecorationLine: 'underline',
   },
   forgotPassword: {
-    paddingTop:10,
-    justifyContent: 'center',
-    alignItems: 'center',
+    paddingTop: 10,
+    justifyContent: 'flex-end',
+    alignItems: 'flex-end',
   },
   placeholderText: {
     fontFamily: 'EduSABeginner-Regular',

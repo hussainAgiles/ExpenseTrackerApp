@@ -85,29 +85,5 @@ const styles = StyleSheet.create({
     fontSize: 28,
     marginBottom: 10,
     color: textColor,
-  },
-  navButton: {
-    marginTop: 15,
-  },
-  forgotButton: {
-    marginVertical: 15,
-  },
-  navButtonText: {
-    fontSize: 18,
-    color: primaryColor,
-    fontFamily: 'EduSABeginner-SemiBold',
-    textDecorationLine:"underline"
-  },
-  rightIconStyle:{
-    paddingRight:10
-  },
-  forgotPswText: {
-    fontSize: 18,
-    color: primaryColor,
-    fontFamily: 'EduSABeginner-SemiBold',
-    textDecorationLine:"underline"
-  },
-  forgotPassword: {
-    margin: screenWidth-290,
-  },
+  }
 });

@@ -1,9 +1,10 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import {useDeviceOrientation} from '@react-native-community/hooks';
+import { useDeviceOrientation } from '@react-native-community/hooks';
 import fireStore from '@react-native-firebase/firestore';
-import {useNavigation} from '@react-navigation/native';
-import React, {useEffect, useState} from 'react';
+import { useNavigation } from '@react-navigation/native';
+import React, { useEffect, useState } from 'react';
 import {
+  ActivityIndicator,
   Dimensions,
   FlatList,
   RefreshControl,
@@ -20,8 +21,8 @@ import DropdownComponent from '../Components/DropdownComponent';
 import LineCharts from '../Components/LineCharts';
 import Loader from '../Components/Loader';
 import PieCharts from '../Components/PieCharts';
-import {screenNames} from '../Constants/constant';
-import {textColor} from '../Utils/CustomColors';
+import { screenNames } from '../Constants/constant';
+import { textColor } from '../Utils/CustomColors';
 import { fetchTransactionHistory } from '../Helpers/helpers';
 // import * as ImagePicker from 'react-native-image-picker';
 // import  storage  from '@react-native-firebase/storage';
@@ -51,7 +52,8 @@ export default function Home() {
   const [transaction, setTransaction] = useState([]);
   const [categoryWiseTrxn, setCategoryWiseTrxn] = useState();
   const [total, setTotal] = useState(0);
-  const {portrait} = useDeviceOrientation();
+  const { portrait } = useDeviceOrientation();
+  const [disable, setDisable] = useState(false);
 
   const capitalize = str => {
     const lower = str.toLowerCase();
@@ -69,8 +71,8 @@ export default function Home() {
     let totalAmount = 0;
 
     categories.forEach((expense) => {
-      const {amount, categories_datails} = expense;
-      const {longname} = categories_datails
+      const { amount, categories_datails } = expense;
+      const { longname } = categories_datails
 
       if (!categoryTotals[longname]) {
         categoryTotals[longname] = 0;
@@ -86,7 +88,7 @@ export default function Home() {
     const result = Object.keys(categoryTotals).map(categoryData => {
       const amount = categoryTotals[categoryData];
       const percentage = Number((amount / totalAmount) * 100).toFixed(2);
-      return {categoryData, amount, percentage};
+      return { categoryData, amount, percentage };
     });
     // console.log("Category wise result ===",result)
     return result;
@@ -167,11 +169,14 @@ export default function Home() {
   };
 
   const handleButtonPress = () => {
+    setDisable(true)
     navigation.navigate(screenNames.AddTransactions, {
       name: 'Add Transaction',
       showFutureDates: false,
     });
+    setDisable(false)
   };
+
 
   // Recent transaction
 
@@ -206,9 +211,8 @@ export default function Home() {
   const fetchRecentTrxn = async () => {
     setLoading(true);
     const fetcheddata = await fetchTransactionHistory();
-    fetcheddata.sort((a,b) => b.id - a.id )
+    fetcheddata.sort((a, b) => b.id - a.id)
     const latestTransactions = fetcheddata.slice(0, 5);
-    // console.log("altest trnxn === ",latestTransactions)
     setRecentTransaction(latestTransactions);
     setLoading(false);
   };
@@ -232,15 +236,14 @@ export default function Home() {
   //   <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
   // }
 
-  
   return (
     <>
       {isLoading ? (
         <Loader message="Please wait..." />
       ) : (
-        <ScrollView
-          contentContainerStyle={styles.container}
-          >
+        <View
+          style={styles.container}
+        >
           {/* <Header /> */}
           <View style={[styles.dateContainer]}>
             <DateTypeSelection date={date} sendDateToHome={handleDateFilter} />
@@ -255,10 +258,7 @@ export default function Home() {
                     justifyContent: 'center',
                     alignItems: 'center',
                   }}>
-                  <Text style={{fontSize: 18,
-                  marginLeft: 10,
-                  fontFamily: 'EduSABeginner-Regular',
-                  borderBottomColor: '#616161',}}>No Data Available</Text>
+                  <Text style={styles.regularText}>No Data Available</Text>
                 </View>
               ) : (
                 <>
@@ -306,20 +306,12 @@ export default function Home() {
                 </>
               )}
             </>
-              <View
-                style={{
-                  width: '90%',
-                  backgroundColor: '#03707a',
-                  borderRadius: 20,
-                  height: 40,
-                  marginLeft: '5%',
-                  justifyContent: 'center',
-                  alignItems: 'center',
-                  paddingTop:10
-                }}>
+            <View
+              style={styles.addBtnView}>
+              {disable === true ? (<ActivityIndicator size='small' color='#fff' style={{ alignItems: 'center', justifyContent: 'center' }} />) : (
                 <TouchableOpacity
                   onPress={handleButtonPress}
-                  style={{width: '60%', height: 30}}>
+                  style={{ width: '60%', height: 30 }}>
                   <Text
                     style={{
                       textAlign: 'center',
@@ -330,8 +322,9 @@ export default function Home() {
                     + Add Transaction
                   </Text>
                 </TouchableOpacity>
-              </View>
-            
+              )}
+            </View>
+
           </View>
 
           {/* Latest Transaction View */}
@@ -344,13 +337,8 @@ export default function Home() {
                 justifyContent: 'space-between',
               }}>
               <Text
-                style={{
-                  fontSize: 20,
-                  marginLeft: 10,
-                  fontFamily: 'EduSABeginner-Regular',
-                  borderBottomWidth: 0.5,
-                  borderBottomColor: '#616161',
-                }}>
+                style={[styles.regularText,{
+                  borderBottomWidth: 0.5}]}>
                 Latest Transaction
               </Text>
               <DropdownComponent onResponse={handleChildResponse} />
@@ -363,16 +351,13 @@ export default function Home() {
                     justifyContent: 'center',
                     alignItems: 'center',
                   }}>
-                  <Text style={{fontSize: 18,
-                  marginLeft: 10,
-                  fontFamily: 'EduSABeginner-Regular',
-                  borderBottomColor: '#616161',}}>No Transactions to show</Text>
+                  <Text style={styles.regularText}>No Transactions to show</Text>
                 </View>
               ) : (
                 <FlatList
                   data={recentTransaction}
-                  renderItem={({item}) => (
-                    <View style={styles.bottomCardContent}>
+                  renderItem={({ item }) => (
+                    <View key={item.id} style={styles.bottomCardContent}>
                       <View style={styles.leftContent}>
                         <Text style={styles.CategoryText}>
                           {item.categories_datails.longname}
@@ -385,30 +370,23 @@ export default function Home() {
                           justifyContent: 'center',
                         }}>
                         <Text
-                          style={{
-                            fontSize: 15,
-                            fontFamily: 'EduSABeginner-Bold',
-                            color: '#C70039',
-                          }}>
+                          style={[styles.amtText,{color: '#C70039',}]}>
                           {rupeesSymbol}
                           <Text
-                            style={{
-                              fontSize: 15,
-                              color: '#000000',
-                              fontFamily: 'EduSABeginner-Bold',
-                            }}>
+                            style={[styles.amtText,{color: '#000000',}]}>
                             {item.amount}
                           </Text>
                         </Text>
                       </View>
                     </View>
                   )}
+                  keyExtractor={item => `${item.id}`}
                   showsVerticalScrollIndicator={false}
                 />
               )}
             </>
           </View>
-        </ScrollView>
+        </View>
       )}
     </>
   );
@@ -417,6 +395,16 @@ export default function Home() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+  },
+  regularText: {
+    fontSize: 18,
+    marginLeft: 10,
+    fontFamily: 'EduSABeginner-Regular',
+    borderBottomColor: '#616161',
+  },
+  amtText:{
+    fontSize: 15,
+    fontFamily: 'EduSABeginner-Bold',
   },
   dateContainer: {
     flex: 1.5,
@@ -452,7 +440,7 @@ const styles = StyleSheet.create({
     flex: 4,
     marginVertical: 5,
     backgroundColor: '#fff',
-    shadowOffset: {width: 1, height: 1},
+    shadowOffset: { width: 1, height: 1 },
     shadowOpacity: 0.5,
     shadowRadius: 2,
     shadowColor: 'black',
@@ -474,4 +462,14 @@ const styles = StyleSheet.create({
     paddingHorizontal: 10,
     fontSize: 18,
   },
+  addBtnView: {
+    width: '90%',
+    backgroundColor: '#03707a',
+    borderRadius: 20,
+    height: 40,
+    marginLeft: '5%',
+    justifyContent: 'center',
+    alignItems: 'center',
+    paddingTop: 10
+  }
 });

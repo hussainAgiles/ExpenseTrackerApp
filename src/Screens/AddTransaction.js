@@ -45,7 +45,6 @@ export default function AddTransaction({route, navigation}) {
   const prepopulateDataForUpdate = () => {
     setCategoryId(oldTransaction.categories_id);
     setSelectedDate(new Date(oldTransaction.transaction_date));
-    // console.log("preImage",oldTransaction.transactions_image)
     setImageUri(imageBaseUrl + oldTransaction.transactions_image);
     setMultipleImages(JSON.parse(oldTransaction.json_image));
     setPayload({
@@ -212,7 +211,6 @@ export default function AddTransaction({route, navigation}) {
         };
         const responseData = await imageUpload(payloadRequest);
         let ImageUrl = imageBaseUrl + responseData.filepath;
-        // console.log('single image url === ', ImageUrl);
         setImageUri(ImageUrl);
         setPayload({
           ...payload,
