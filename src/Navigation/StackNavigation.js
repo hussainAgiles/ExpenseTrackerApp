@@ -7,11 +7,17 @@ import BottomNavigation from './BottomNavigator';
 import AddTransaction from '../Screens/AddTransaction';
 import TransactionModal from '../Components/TransactionModal';
 import ForgotPassword from '../Screens/ForgotPassword';
-import OtpVerification from '../Screens/OtpVerification'
+import OtpVerification from '../Screens/OtpVerification';
 import Profile from '../Screens/Profile';
 import PackagesData from '../Screens/PackagesData';
 import OnBoarding from '../Screens/OnBoarding';
+import EditPass from '../Screens/EditPass';
+import StarRating from '../Components/StarRating';
+import Details from '../Screens/Details';
+import ComparisionScreen from '../Screens/ComparisionScreen';
 
+
+StarRating;
 
 const transaction = () => {
   return console.log('hello');
@@ -37,7 +43,7 @@ export const StackNavigation = () => {
         component={AddTransaction}
         options={{
           headerShown: true,
-          headerTitleAlign: 'center'
+          headerTitleAlign: 'center',
         }}
       />
       <Stack.Screen
@@ -54,17 +60,29 @@ export const StackNavigation = () => {
         component={OtpVerification}
         options={{headerShown: true, headerTitleAlign: 'center'}}
       />
-       {/* <Stack.Screen
+      <Stack.Screen
+        name={screenNames.Edit_Password}
+        component={EditPass}
+        options={{headerShown: false, headerTitleAlign: 'center'}}
+      />
+      {/* <Stack.Screen
         name={screenNames.Profile}
         component={Profile}
         options={{headerShown: true, headerTitleAlign: 'center'}}
       /> */}
-     {/* <Stack.Screen
+      {/* <Stack.Screen
         name={'onBoarding'}
         component={OnBoarding}
         options={{headerShown: true, headerTitleAlign: 'center'}}
       /> */}
+      <Stack.Screen
+        name={'Star Rating'}
+        component={StarRating}
+        options={{headerShown: true, headerTitleAlign: 'center'}}
+      />
+      <Stack.Screen name={screenNames.Details} component={Details} />
 
+      <Stack.Screen name={'ComparisionScreen'} component={ComparisionScreen} />
     </Stack.Navigator>
   );
 };

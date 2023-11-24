@@ -6,6 +6,7 @@ import Loader from './Loader';
 const screenWidth = Dimensions.get('window').width - 30;
 
 const BarCharts = ({categories, total}) => {
+  console.log("Dtata here === ",categories.percentage)
   const rupeesSymbol = '\u20B9';
 
   const {labels, data: amounts} = categories.reduce(
@@ -26,7 +27,6 @@ const BarCharts = ({categories, total}) => {
     ],
   };
 
-  // console.log("data ==== ",data)
 
   const chartConfig = {
     backgroundGradientFrom: '#E3F2FD',

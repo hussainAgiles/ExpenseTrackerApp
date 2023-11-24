@@ -26,6 +26,7 @@ export default function ForgotPassword() {
 
   // handling Forgot password functionality.
   const handleSubmit = async () => {
+    setLoading(true);
     const request ={
       email : data.email
     }
@@ -35,6 +36,7 @@ export default function ForgotPassword() {
     } else {
       toast.show('Invalid Data', toast.CENTER);
     }
+    setLoading(false);
   };
 
  

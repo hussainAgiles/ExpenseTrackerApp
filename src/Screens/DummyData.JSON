@@ -1,501 +1,354 @@
-{
-    "config": {
-        "adapter": "xhr",
-        "data": "{\"auto_gen_emp_id\":\"ag121\",\"password\":\"123456\"}",
-        "env": {
-            "Blob": [Function Blob
-            ],
-            "FormData": [Function FormData
-            ]
-        },
-        "headers": [Object
-        ],
-        "maxBodyLength": -1,
-        "maxContentLength": -1,
-        "method": "post",
-        "timeout": 0,
-        "transformRequest": [
-            [Function transformRequest
-            ]
-        ],
-        "transformResponse": [
-            [Function transformResponse
-            ]
-        ],
-        "transitional": {
-            "clarifyTimeoutError": false,
-            "forcedJSONParsing": true,
-            "silentJSONParsing": true
-        },
-        "url": "http://192.168.2.126:8000/api/login",
-        "validateStatus": [Function validateStatus
-        ],
-        "xsrfCookieName": "XSRF-TOKEN",
-        "xsrfHeaderName": "X-XSRF-TOKEN"
-    },
-    "data": {
-        "access_token": "eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiJ9.eyJhdWQiOiIzIiwianRpIjoiMmFhZTRjY2I5ZTQ0OTA2NGViM2UxYzVhYmMwNGJmMjdlOTFiOTgxYTFkYzQ1MmQ5ZjdlMWNjMDhlMmI4MTRlZWI5MGExZTMzMTI4ZjNkNDAiLCJpYXQiOjE2OTY5MjIxOTMuNTU0NjQ2LCJuYmYiOjE2OTY5MjIxOTMuNTU0NjQ5LCJleHAiOjE3Mjg1NDQ1OTMuNTQ1MzQ2LCJzdWIiOiI0NSIsInNjb3BlcyI6W119.nLDFiovZ-DzgrG-XipgikrlWTHXz0fEajFLHzhWcYBvkOIXh1yjutDCTLlO1VVzBAYT0sqrhERShwP4oHFINPYV6oz9MopethXtNJudWg5UF6Qa0Tc-xTqHpmobCQTjp8eUZH9a1ofs2gLvIKpdLVMYuq93IkuVfCoaWFEVNwOjMF5uhfQBxCQPuM_W1ggSJgIGS0fW5Yd_UOU-n3-KFKYD-hRApRRM-1PQXLwbg1mcm48flSENl6VT4QBr8pRvCDaNBB0H7ArDrwejUKJTUilSOIHoOuOum9XCX6T6M2roO7sdPZPWb9v77AN6KkypwRVzp4m1EcnDImFJ8VMZF4aBg17d-rAalWS6XVAy3mOGciQCgD2YMfgsE7aplO2l680x5bRGtA_ZGbwAQQBF_Nsdg6UuE1AlYjCVGpWVoRe2Wr0g37QEhwegznYIiN5oOK7G124SEt3oRwAR9yMKnFiUeND8pn-23eZV-rAwN9cEFwsfsymQ6Rvee9UXqS4kBqjm2KbjSvqSpc6dugrJqCZbhXg57tfTrMBRi-ODm2dA1Xm3Ivb4dfUx5Wa7kI3DIJWBr4J3o1ut4lp8Mq5R6NmOp-248y926x7USHiYlL5tqJDOz1g7NHiGih3uPwsIQw6j0Cg2mOrGUu19dxXJyNqCYwreOLAaeovYpsWLsXDg",
-        "expires_at": "2024-10-10 07:16:33",
-        "token_type": "Bearer",
-        "userdata": {
-            "auto_gen_emp_id": "AG121",
-            "created_at": "2023-09-27T15:55:31.000000Z",
+[
+    {
+        "amount": 600,
+        "categories_datails": {
+            "created_at": null,
             "created_by": null,
-            "email": "varananda.bm@agileidc.com",
-            "email_verified_at": null,
-            "emp_id": 45,
-            "hr_employee": [Object
-            ],
-            "id": 45,
-            "is_otp_validated": 1,
-            "otp": null,
-            "otp_valid_until": null,
-            "rolename": "",
+            "icon_name": "margin",
+            "id": 14,
+            "is_default": 0,
+            "longname": "Bills",
+            "org_id": null,
+            "shortname": "Bills",
+            "site_id": null,
+            "slug": "bills",
             "status": 1,
-            "updated_at": "2023-10-05T06:37:11.000000Z",
+            "updated_at": "2023-10-31T06:24:54.000000Z",
+            "updated_by": 7
+        },
+        "categories_id": 14,
+        "created_at": "2023-09-05T13:18:52.000000Z",
+        "created_by": null,
+        "emp_id": 8,
+        "id": 23,
+        "json_image": null,
+        "org_id": 1,
+        "site_id": 1,
+        "slug": "600-2",
+        "transaction_date": "2023-09-05",
+        "transactions_description": "Electric",
+        "transactions_image": "/storage/ExpenseBills/7ac33de8-bd50-476c-bbbe-13dd60888350.png",
+        "updated_at": "2023-09-25T15:43:49.000000Z",
+        "updated_by": null
+    },
+    {
+        "amount": 250,
+        "categories_datails": {
+            "created_at": null,
+            "created_by": null,
+            "icon_name": "shopping-cart",
+            "id": 7,
+            "is_default": 0,
+            "longname": "Groceries",
+            "org_id": null,
+            "shortname": "Groceries",
+            "site_id": null,
+            "slug": "groceries",
+            "status": 1,
+            "updated_at": null,
             "updated_by": null
-        }
+        },
+        "categories_id": 7,
+        "created_at": "2023-09-11T13:01:18.000000Z",
+        "created_by": null,
+        "emp_id": 8,
+        "id": 26,
+        "json_image": "null",
+        "org_id": 1,
+        "site_id": 1,
+        "slug": "250",
+        "transaction_date": "2023-09-11",
+        "transactions_description": "Groceries",
+        "transactions_image": "/storage/ExpenseBills/08ebade8-ecfb-43a0-b5b1-14519523fda6.png",
+        "updated_at": "2023-11-08T07:03:24.000000Z",
+        "updated_by": null
     },
-    "headers": {
-        "cache-control": "no-cache, private",
-        "connection": "close",
-        "content-type": "application/json",
-        "date": "Tue, 10 Oct 2023 07:16:33 GMT, Tue, 10 Oct 2023 07:16:33 GMT",
-        "host": "192.168.2.126:8000",
-        "x-powered-by": "PHP/7.4.30",
-        "x-ratelimit-limit": "200",
-        "x-ratelimit-remaining": "199"
+    {
+        "amount": 680,
+        "categories_datails": {
+            "created_at": null,
+            "created_by": null,
+            "icon_name": "phone",
+            "id": 3,
+            "is_default": 0,
+            "longname": "Telephone",
+            "org_id": null,
+            "shortname": "Telephone",
+            "site_id": null,
+            "slug": "telephone",
+            "status": 1,
+            "updated_at": null,
+            "updated_by": null
+        },
+        "categories_id": 3,
+        "created_at": "2023-09-11T13:03:32.000000Z",
+        "created_by": null,
+        "emp_id": 8,
+        "id": 28,
+        "json_image": null,
+        "org_id": 1,
+        "site_id": 1,
+        "slug": "680",
+        "transaction_date": "2023-09-11",
+        "transactions_description": "Bills paid telephone",
+        "transactions_image": "/storage/ExpenseBills/ee64d6a4-9370-4daa-9d36-31834cf9032f.png",
+        "updated_at": "2023-09-20T18:04:55.000000Z",
+        "updated_by": null
     },
-    "request": {
-        "DONE": 4,
-        "HEADERS_RECEIVED": 2,
-        "LOADING": 3,
-        "OPENED": 1,
-        "UNSENT": 0,
-        "_aborted": false,
-        "_cachedResponse": undefined,
-        "_hasError": false,
-        "_headers": {
-            "accept": "application/json, text/plain, */*",
-            "content-type": "application/json"
+    {
+        "amount": 700,
+        "categories_datails": {
+            "created_at": null,
+            "created_by": null,
+            "icon_name": "emergency-recording",
+            "id": 15,
+            "is_default": 0,
+            "longname": "Entertainment",
+            "org_id": null,
+            "shortname": "Entertainment",
+            "site_id": null,
+            "slug": "entertainment",
+            "status": 1,
+            "updated_at": null,
+            "updated_by": null
         },
-        "_incrementalEvents": false,
-        "_lowerCaseResponseHeaders": {
-            "cache-control": "no-cache, private",
-            "connection": "close",
-            "content-type": "application/json",
-            "date": "Tue, 10 Oct 2023 07:16:33 GMT, Tue, 10 Oct 2023 07:16:33 GMT",
-            "host": "192.168.2.126:8000",
-            "x-powered-by": "PHP/7.4.30",
-            "x-ratelimit-limit": "200",
-            "x-ratelimit-remaining": "199"
-        },
-        "_method": "POST",
-        "_perfKey": "network_XMLHttpRequest_http://192.168.2.126:8000/api/login",
-        "_performanceLogger": {
-            "_closed": false,
-            "_extras": [Object
-            ],
-            "_isLoggingForWebPerformance": false,
-            "_pointExtras": [Object
-            ],
-            "_points": [Object
-            ],
-            "_timespans": [Object
-            ]
-        },
-        "_requestId": null,
-        "_response": "{\"access_token\":\"eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiJ9.eyJhdWQiOiIzIiwianRpIjoiMmFhZTRjY2I5ZTQ0OTA2NGViM2UxYzVhYmMwNGJmMjdlOTFiOTgxYTFkYzQ1MmQ5ZjdlMWNjMDhlMmI4MTRlZWI5MGExZTMzMTI4ZjNkNDAiLCJpYXQiOjE2OTY5MjIxOTMuNTU0NjQ2LCJuYmYiOjE2OTY5MjIxOTMuNTU0NjQ5LCJleHAiOjE3Mjg1NDQ1OTMuNTQ1MzQ2LCJzdWIiOiI0NSIsInNjb3BlcyI6W119.nLDFiovZ-DzgrG-XipgikrlWTHXz0fEajFLHzhWcYBvkOIXh1yjutDCTLlO1VVzBAYT0sqrhERShwP4oHFINPYV6oz9MopethXtNJudWg5UF6Qa0Tc-xTqHpmobCQTjp8eUZH9a1ofs2gLvIKpdLVMYuq93IkuVfCoaWFEVNwOjMF5uhfQBxCQPuM_W1ggSJgIGS0fW5Yd_UOU-n3-KFKYD-hRApRRM-1PQXLwbg1mcm48flSENl6VT4QBr8pRvCDaNBB0H7ArDrwejUKJTUilSOIHoOuOum9XCX6T6M2roO7sdPZPWb9v77AN6KkypwRVzp4m1EcnDImFJ8VMZF4aBg17d-rAalWS6XVAy3mOGciQCgD2YMfgsE7aplO2l680x5bRGtA_ZGbwAQQBF_Nsdg6UuE1AlYjCVGpWVoRe2Wr0g37QEhwegznYIiN5oOK7G124SEt3oRwAR9yMKnFiUeND8pn-23eZV-rAwN9cEFwsfsymQ6Rvee9UXqS4kBqjm2KbjSvqSpc6dugrJqCZbhXg57tfTrMBRi-ODm2dA1Xm3Ivb4dfUx5Wa7kI3DIJWBr4J3o1ut4lp8Mq5R6NmOp-248y926x7USHiYlL5tqJDOz1g7NHiGih3uPwsIQw6j0Cg2mOrGUu19dxXJyNqCYwreOLAaeovYpsWLsXDg\",\"token_type\":\"Bearer\",\"expires_at\":\"2024-10-10 07:16:33\",\"userdata\":{\"id\":45,\"emp_id\":45,\"auto_gen_emp_id\":\"AG121\",\"email\":\"varananda.bm@agileidc.com\",\"status\":1,\"email_verified_at\":null,\"otp\":null,\"otp_valid_until\":null,\"is_otp_validated\":1,\"created_by\":null,\"updated_by\":null,\"created_at\":\"2023-09-27T15:55:31.000000Z\",\"updated_at\":\"2023-10-05T06:37:11.000000Z\",\"rolename\":\"\",\"hr_employee\":{\"id\":45,\"salutation\":\"Mr\",\"firstname\":\"Varananda\",\"middlename\":\"\",\"lastname\":\"B M\",\"gender\":\"Male\",\"dob\":\"1994-04-16\",\"profile_pic\":\"\\/storage\\/userprofiles\\/f89c9dbd-b518-40d0-9f50-5cb26ff99a9d.png\",\"mimetype\":null,\"filename\":null,\"empno\":\"AG121\",\"title\":null,\"personal_email\":\"surya26494@gmail.com\",\"phone\":\"7259237952\",\"father_name\":null,\"org_id\":1,\"working_days\":\"[\\\"Monday\\\",\\\"Tuesday\\\",\\\"Wednesday\\\",\\\"Thursday\\\",\\\"Friday\\\"]\",\"designation_id\":28,\"department_id\":45,\"nationality_id\":83,\"religion_id\":85,\"caste\":null,\"caste_id\":null,\"region\":null,\"maritalstatus_id\":192,\"blood_group\":121,\"height\":\"180\",\"weight\":\"65\",\"identity_mark\":\"Mark on Forehead\",\"disability\":null,\"passport_status\":null,\"driver_status\":\"Y\",\"travel_status\":null,\"office_ref_num\":null,\"modifiable\":null,\"deleted\":null,\"attribute1\":null,\"attribute2\":null,\"attribute3\":null,\"attribute4\":null,\"attribute5\":null,\"source\":null,\"emp_type\":1,\"status_date\":null,\"Joining_date\":\"2020-10-27\",\"relieving_date\":null,\"emp_no_gen_type\":null,\"division_id\":null,\"effective_date\":null,\"emp_status\":92,\"date_of_confirmation\":\"2023-09-27 10:27:07\",\"is_permanent\":1,\"social_id\":\"279657703929\",\"role_id\":null,\"user_level\":null,\"professional_summary\":null,\"end_of_probation\":null,\"level_id\":12,\"new_user_flag\":null,\"leave_calc_year_flag\":null,\"date_of_resignation\":null,\"date_of_exit_interview\":null,\"date_of_exit_int_flag\":null,\"exit_int_remarks\":null,\"date_of_settlement\":null,\"mode_of_transfer\":null,\"transfer_reference\":null,\"settlement_amount\":null,\"settlement_doc\":null,\"settlement_mimetype\":null,\"settlement_filename\":null,\"resigning_reason\":null,\"enable_exit_interview_flag\":null,\"relieve_earned_leave_no\":null,\"site_id\":1,\"unique_account_no\":null,\"provident_fund\":null,\"enable_exit_button\":null,\"esic\":null,\"update_empno\":null,\"old_empno\":null,\"noc_comments\":null,\"slug\":\"varananda-b-m\",\"api_token\":null,\"status\":1,\"device_token\":\"eRhOOta49qBu3xZEAYs44G:APA91bG42iXdQVCB4QbSSYV89vjvza69JNrkBFd7IiK0YcC32nnmxm8Opsi9Ne6MMfrlrZWSZB2gXxBKF80om0WUDWPwI1MhxWELa6kDuXxJz-WuVRrwkvc_kaR9EzZwR3BvuSBzVnO1\",\"created_by\":null,\"updated_by\":null,\"created_at\":\"2023-09-27T15:53:47.000000Z\",\"updated_at\":\"2023-10-05T06:37:11.000000Z\",\"emprole_name\":[\"Employee\"],\"Full_Code\":\"Varananda  B M (AG121)\",\"full_name\":\"Varananda  B M\",\"fulllocation\":{\"id\":6,\"emp_id\":45,\"address_type\":\"Permanent\",\"address\":\"Bypapura Village dodda Hobli Hassan talak And District Hassan\",\"county\":\"Bengaluru\",\"state\":1,\"country\":1,\"postcode\":\"573118\",\"status\":1,\"modifiable\":null,\"deleted\":null,\"created_by\":null,\"updated_by\":null,\"created_at\":\"2023-09-27T15:58:57.000000Z\",\"updated_at\":\"2023-09-27T15:58:57.000000Z\",\"country_name\":{\"id\":1,\"name\":\"India\",\"status\":1,\"slug\":\"india\",\"created_by\":null,\"updated_by\":null,\"created_at\":\"2023-03-28T16:50:37.000000Z\",\"updated_at\":\"2023-03-28T16:50:37.000000Z\"},\"state_name\":{\"id\":1,\"name\":\"Karnataka\",\"country_id\":1,\"status\":1,\"slug\":\"karnataka\",\"created_by\":null,\"updated_by\":null,\"created_at\":\"2023-03-28T16:50:37.000000Z\",\"updated_at\":\"2023-03-28T16:50:37.000000Z\"}},\"fulladdress\":\"Bypapura Village dodda Hobli Hassan talak And District Hassan , Bengaluru-573118\",\"org_name\":null,\"full_details\":\"Varananda  B M (varananda.bm@agileidc.com)\",\"min_education\":{\"id\":18,\"emp_id\":45,\"type_id\":118,\"institute_name\":\"PES COLLEGE\",\"university_name\":\"Visvesvarya Techonological University\",\"program\":112,\"subject_major\":\"BE\",\"enrolment_no\":\"4PS12CS419\",\"doct_type\":null,\"start_date\":null,\"end_date\":null,\"year_of_enrolment\":\"May-2013\",\"year_of_passing\":\"Jun-2016\",\"class_obtained\":\"FC\",\"grade\":null,\"comments\":null,\"modifiable\":null,\"deleted\":null,\"source\":null,\"attribute1\":null,\"attribute2\":null,\"attribute3\":null,\"attribute4\":null,\"attribute5\":null,\"status\":null,\"created_by\":null,\"updated_by\":7,\"created_at\":\"2023-09-27T15:57:07.000000Z\",\"updated_at\":\"2023-09-27T16:06:21.000000Z\"},\"employee_type\":\"Full Time\",\"employee_status\":{\"longname\":\"Permanent\"},\"designation\":{\"designation\":\"Technical Consultant\"},\"user_email\":\"varananda.bm@agileidc.com\",\"department\":\"Development\",\"user_org\":{\"id\":1,\"shortname\":\"Agilets Private Limited\",\"description\":null,\"status\":1,\"working_days\":\"[\\\"Monday\\\", \\\"Tuesday\\\", \\\"Wednesday\\\", \\\"Thursday\\\", \\\"Friday\\\"]\",\"leave_calculation_year\":\"Calender Year\",\"established_date\":\"2010-05-05\",\"tan_no\":null,\"pan_no\":\"AAKCA0862B\",\"pt_reg_no\":null,\"epfo_reg_no\":null,\"esic_reg_no\":null,\"cov_under_graduity\":\"Yes\",\"establishment_type\":\"Private Limited Company\",\"website\":\"http:\\/\\/www.agiledc.com\",\"modifiable\":null,\"deleted\":null,\"attribute1\":null,\"attribute2\":null,\"attribute3\":null,\"attribute4\":null,\"attribute5\":null,\"fnd_org_type_id\":null,\"currency_id\":null,\"franchisee\":null,\"parent_id\":null,\"logo\":\"\\/storage\\/OrganisationImage\\/fe78565d-dfb0-4f85-b376-a342584aa7e6.png\",\"mime_type\":null,\"file_name\":null,\"slug\":\"agile\",\"tax_number\":null,\"tax_type\":null,\"created_by\":1,\"updated_by\":7,\"created_at\":\"2023-03-28T16:53:00.000000Z\",\"updated_at\":\"2023-07-31T12:33:18.000000Z\",\"site_id\":[1]}}}}",
-        "_responseType": "",
-        "_sent": true,
-        "_subscriptions": [],
-        "_timedOut": false,
-        "_trackingName": "unknown",
-        "_url": "http://192.168.2.126:8000/api/login",
-        "readyState": 4,
-        "responseHeaders": {
-            "Cache-Control": "no-cache, private",
-            "Connection": "close",
-            "Content-Type": "application/json",
-            "Date": "Tue, 10 Oct 2023 07:16:33 GMT, Tue, 10 Oct 2023 07:16:33 GMT",
-            "Host": "192.168.2.126:8000",
-            "X-Powered-By": "PHP/7.4.30",
-            "X-RateLimit-Limit": "200",
-            "X-RateLimit-Remaining": "199"
-        },
-        "responseURL": "http://192.168.2.126:8000/api/login",
-        "status": 200,
-        "timeout": 0,
-        "upload": {},
-        "withCredentials": true
+        "categories_id": 15,
+        "created_at": "2023-09-15T13:06:17.000000Z",
+        "created_by": null,
+        "emp_id": 8,
+        "id": 29,
+        "json_image": null,
+        "org_id": 1,
+        "site_id": 1,
+        "slug": "700",
+        "transaction_date": "2023-09-15",
+        "transactions_description": "Movie ticket",
+        "transactions_image": "/storage/ExpenseBills/4286430b-ed92-4036-9401-72e4b7bf6da9.png",
+        "updated_at": "2023-09-20T18:40:59.000000Z",
+        "updated_by": null
     },
-    "status": 200,
-    "statusText": undefined
-}
-
-
-======================================================================================
-
-{
-    "config": {
-        "adapter": "xhr",
-        "data": "{\"auto_gen_emp_id\":\"djdg\",\"password\":\"ghtbjjg\"}",
-        "env": {
-            "Blob": [Function Blob
-            ],
-            "FormData": [Function FormData
-            ]
+    {
+        "amount": 8000,
+        "categories_datails": {
+            "created_at": null,
+            "created_by": null,
+            "icon_name": "calculate",
+            "id": 5,
+            "is_default": 0,
+            "longname": "Emi",
+            "org_id": null,
+            "shortname": "Emi",
+            "site_id": null,
+            "slug": "emi",
+            "status": 1,
+            "updated_at": null,
+            "updated_by": null
         },
-        "headers": [Object
-        ],
-        "maxBodyLength": -1,
-        "maxContentLength": -1,
-        "method": "post",
-        "timeout": 0,
-        "transformRequest": [
-            [Function transformRequest
-            ]
-        ],
-        "transformResponse": [
-            [Function transformResponse
-            ]
-        ],
-        "transitional": {
-            "clarifyTimeoutError": false,
-            "forcedJSONParsing": true,
-            "silentJSONParsing": true
-        },
-        "url": "http://192.168.2.126:8000/api/login",
-        "validateStatus": [Function validateStatus
-        ],
-        "xsrfCookieName": "XSRF-TOKEN",
-        "xsrfHeaderName": "X-XSRF-TOKEN"
+        "categories_id": 5,
+        "created_at": "2023-09-21T13:15:28.000000Z",
+        "created_by": null,
+        "emp_id": 8,
+        "id": 34,
+        "json_image": "[{\"id\":\"0\",\"image_storage_path\":\"\\/storage\\/ExpenseBills\\/1700131108762.jpg\"},{\"id\":\"1\",\"image_storage_path\":\"\\/storage\\/ExpenseBills\\/1700131108783.jpg\"},{\"id\":\"2\",\"image_storage_path\":\"\\/storage\\/ExpenseBills\\/1700131108800.jpg\"},{\"id\":\"3\",\"image_storage_path\":\"\\/storage\\/ExpenseBills\\/1700131108812.jpg\"}]",
+        "org_id": 1,
+        "site_id": 1,
+        "slug": "8000",
+        "transaction_date": "2023-09-21",
+        "transactions_description": "Pl paid",
+        "transactions_image": "/storage/ExpenseBills/36bbe1c9-b65c-41c5-a67d-869cc9aec657.png",
+        "updated_at": "2023-11-16T10:38:52.000000Z",
+        "updated_by": null
     },
-    "data": {
-        "error": "These credentials do not match our records.",
-        "message": "These credentials do not match our records.",
-        "status": "E"
+    {
+        "amount": 650,
+        "categories_datails": {
+            "created_at": null,
+            "created_by": null,
+            "icon_name": "health-and-safety",
+            "id": 9,
+            "is_default": 0,
+            "longname": "Health",
+            "org_id": null,
+            "shortname": "Health",
+            "site_id": null,
+            "slug": "health",
+            "status": 1,
+            "updated_at": null,
+            "updated_by": null
+        },
+        "categories_id": 9,
+        "created_at": "2023-10-04T12:06:12.000000Z",
+        "created_by": null,
+        "emp_id": 8,
+        "id": 38,
+        "json_image": "null",
+        "org_id": 1,
+        "site_id": 1,
+        "slug": "650",
+        "transaction_date": "2023-10-04",
+        "transactions_description": "Health insurance premium",
+        "transactions_image": "/storage/ExpenseBills/94ce5f1e-fe71-435e-9ff3-c341f6baf071.png",
+        "updated_at": "2023-10-04T16:19:14.000000Z",
+        "updated_by": null
     },
-    "headers": {
-        "cache-control": "no-cache, private",
-        "connection": "close",
-        "content-type": "application/json",
-        "date": "Tue, 10 Oct 2023 07:33:59 GMT, Tue, 10 Oct 2023 07:33:59 GMT",
-        "host": "192.168.2.126:8000",
-        "x-powered-by": "PHP/7.4.30",
-        "x-ratelimit-limit": "200",
-        "x-ratelimit-remaining": "199"
+    {
+        "amount": 650,
+        "categories_datails": {
+            "created_at": null,
+            "created_by": null,
+            "icon_name": "gamepad",
+            "id": 13,
+            "is_default": 0,
+            "longname": "Gadgets",
+            "org_id": null,
+            "shortname": "Gadgets",
+            "site_id": null,
+            "slug": "gadgets",
+            "status": 1,
+            "updated_at": "2023-09-12T11:56:40.000000Z",
+            "updated_by": null
+        },
+        "categories_id": 13,
+        "created_at": "2023-10-31T06:11:31.000000Z",
+        "created_by": null,
+        "emp_id": 8,
+        "id": 39,
+        "json_image": "[{\"id\":\"0\",\"image_storage_path\":\"\\/storage\\/ExpenseBills\\/1700131211330.jpg\"},{\"id\":\"1\",\"image_storage_path\":\"\\/storage\\/ExpenseBills\\/1700131211342.jpg\"},{\"id\":\"2\",\"image_storage_path\":\"\\/storage\\/ExpenseBills\\/1700131211359.jpg\"}]",
+        "org_id": 1,
+        "site_id": 1,
+        "slug": "650-2",
+        "transaction_date": "2023-10-31",
+        "transactions_description": "Tpys",
+        "transactions_image": "/storage/ExpenseBills/e2406895-6ec8-4f02-8afa-f4dd11b9569e.png",
+        "updated_at": "2023-11-16T10:41:42.000000Z",
+        "updated_by": null
     },
-    "request": {
-        "DONE": 4,
-        "HEADERS_RECEIVED": 2,
-        "LOADING": 3,
-        "OPENED": 1,
-        "UNSENT": 0,
-        "_aborted": false,
-        "_cachedResponse": undefined,
-        "_hasError": false,
-        "_headers": {
-            "accept": "application/json, text/plain, */*",
-            "content-type": "application/json"
+    {
+        "amount": 65000,
+        "categories_datails": {
+            "created_at": null,
+            "created_by": null,
+            "icon_name": "calendar-month",
+            "id": 8,
+            "is_default": 0,
+            "longname": "Loans",
+            "org_id": null,
+            "shortname": "Loans",
+            "site_id": null,
+            "slug": "loans",
+            "status": 1,
+            "updated_at": null,
+            "updated_by": null
         },
-        "_incrementalEvents": false,
-        "_lowerCaseResponseHeaders": {
-            "cache-control": "no-cache, private",
-            "connection": "close",
-            "content-type": "application/json",
-            "date": "Tue, 10 Oct 2023 07:33:59 GMT, Tue, 10 Oct 2023 07:33:59 GMT",
-            "host": "192.168.2.126:8000",
-            "x-powered-by": "PHP/7.4.30",
-            "x-ratelimit-limit": "200",
-            "x-ratelimit-remaining": "199"
-        },
-        "_method": "POST",
-        "_perfKey": "network_XMLHttpRequest_http://192.168.2.126:8000/api/login",
-        "_performanceLogger": {
-            "_closed": false,
-            "_extras": [Object
-            ],
-            "_isLoggingForWebPerformance": false,
-            "_pointExtras": [Object
-            ],
-            "_points": [Object
-            ],
-            "_timespans": [Object
-            ]
-        },
-        "_requestId": null,
-        "_response": "{\"status\":\"E\",\"error\":\"These credentials do not match our records.\",\"message\":\"These credentials do not match our records.\"}",
-        "_responseType": "",
-        "_sent": true,
-        "_subscriptions": [],
-        "_timedOut": false,
-        "_trackingName": "unknown",
-        "_url": "http://192.168.2.126:8000/api/login",
-        "readyState": 4,
-        "responseHeaders": {
-            "Cache-Control": "no-cache, private",
-            "Connection": "close",
-            "Content-Type": "application/json",
-            "Date": "Tue, 10 Oct 2023 07:33:59 GMT, Tue, 10 Oct 2023 07:33:59 GMT",
-            "Host": "192.168.2.126:8000",
-            "X-Powered-By": "PHP/7.4.30",
-            "X-RateLimit-Limit": "200",
-            "X-RateLimit-Remaining": "199"
-        },
-        "responseURL": "http://192.168.2.126:8000/api/login",
-        "status": 401,
-        "timeout": 0,
-        "upload": {},
-        "withCredentials": true
+        "categories_id": 8,
+        "created_at": "2023-10-31T06:12:12.000000Z",
+        "created_by": null,
+        "emp_id": 8,
+        "id": 40,
+        "json_image": "null",
+        "org_id": 1,
+        "site_id": 1,
+        "slug": "65000",
+        "transaction_date": "2023-10-31",
+        "transactions_description": "Loan",
+        "transactions_image": null,
+        "updated_at": "2023-10-31T06:12:12.000000Z",
+        "updated_by": null
     },
-    "status": 401,
-    "statusText": undefined
-}
-
-=========================================================================================
-
-{
-    "data": {
-        "message": "Unauthenticated."
+    {
+        "amount": 50000,
+        "categories_datails": {
+            "created_at": null,
+            "created_by": null,
+            "icon_name": "directions-bus",
+            "id": 2,
+            "is_default": 0,
+            "longname": "Travel",
+            "org_id": null,
+            "shortname": "Travel",
+            "site_id": null,
+            "slug": "travel",
+            "status": 1,
+            "updated_at": null,
+            "updated_by": null
+        },
+        "categories_id": 2,
+        "created_at": "2023-10-31T06:12:47.000000Z",
+        "created_by": null,
+        "emp_id": 8,
+        "id": 41,
+        "json_image": "null",
+        "org_id": 1,
+        "site_id": 1,
+        "slug": "50000",
+        "transaction_date": "2023-10-31",
+        "transactions_description": "Travelling to hometown",
+        "transactions_image": null,
+        "updated_at": "2023-10-31T06:12:47.000000Z",
+        "updated_by": null
     },
-    "status": 401,
-    "headers": {
-        "cache-control": "no-cache, private",
-        "connection": "close",
-        "content-type": "application/json",
-        "date": "Tue, 10 Oct 2023 07:59:30 GMT, Tue, 10 Oct 2023 07:59:30 GMT",
-        "host": "192.168.2.126:8000",
-        "x-powered-by": "PHP/7.4.30"
+    {
+        "amount": 10,
+        "categories_datails": {
+            "created_at": null,
+            "created_by": null,
+            "icon_name": "local-gas-station",
+            "id": 6,
+            "is_default": 0,
+            "longname": "Fuel",
+            "org_id": null,
+            "shortname": "Fuel",
+            "site_id": null,
+            "slug": "fuel",
+            "status": 1,
+            "updated_at": null,
+            "updated_by": null
+        },
+        "categories_id": 6,
+        "created_at": "2023-11-14T11:32:16.000000Z",
+        "created_by": null,
+        "emp_id": 8,
+        "id": 43,
+        "json_image": "[{\"id\":\"0\",\"image_storage_path\":\"\\/storage\\/ExpenseBills\\/1699961504664.jpg\"}]",
+        "org_id": 1,
+        "site_id": 1,
+        "slug": "10",
+        "transaction_date": "2023-11-14",
+        "transactions_description": "Description fuel",
+        "transactions_image": "/storage/ExpenseBills/ea9ca389-3437-457d-80c6-8c14ca2e84c5.png",
+        "updated_at": "2023-11-14T11:32:16.000000Z",
+        "updated_by": null
     },
-    "config": {
-        "transitional": {
-            "silentJSONParsing": true,
-            "forcedJSONParsing": true,
-            "clarifyTimeoutError": false
+    {
+        "amount": 55,
+        "categories_datails": {
+            "created_at": null,
+            "created_by": null,
+            "icon_name": "directions-bus",
+            "id": 2,
+            "is_default": 0,
+            "longname": "Travel",
+            "org_id": null,
+            "shortname": "Travel",
+            "site_id": null,
+            "slug": "travel",
+            "status": 1,
+            "updated_at": null,
+            "updated_by": null
         },
-        "adapter": "xhr",
-        "transformRequest": [
-            null
-        ],
-        "transformResponse": [
-            null
-        ],
-        "timeout": 0,
-        "xsrfCookieName": "XSRF-TOKEN",
-        "xsrfHeaderName": "X-XSRF-TOKEN",
-        "maxContentLength": -1,
-        "maxBodyLength": -1,
-        "env": {},
-        "headers": {
-            "Accept": "application/json, text/plain, */*",
-            "Content-Type": "application/json"
-        },
-        "method": "post",
-        "url": "http://192.168.2.126:8000/api/delete_transaction?id=41",
-        "data": "{\"headers\":{\"Authorization\":\"Bearer 
-        eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiJ9.eyJhdWQiOiIzIiwianRpIjoiMjFkMWFlZjM5MmEzMWI1Yzc4ZGMxYzc5MzliZDk2YmVhNmViMjA5Y2MzNDFjODAxMGFhZDEzNGNhZjc4M2YxNTNkZGRmNDIxNjE4ODRiYjgiLCJpYXQiOjE2OTY5MjQxOTYuNzU1NjEyLCJuYmYiOjE2OTY5MjQxOTYuNzU1NjE2LCJleHAiOjE3Mjg1NDY1OTYuNjgwNDEsInN1YiI6IjQ1Iiwic2NvcGVzIjpbXX0.vEATxVCf1n22oKQFq0dRKx6mie-AkTryeeVnDO8vJFKtPrqmkuAc0XozqdU6_Pe9bzbzJlpGcyIdpZhS7JcMuG8jDFRX1c1Xgt8PmzN4K1wKKJBXMRJxaVQQ7YJ98-PD62RIPJJppDQP-JXpx33o8MOwqk8O4WPTQ28uvSSmt8IfiyV_9xJGKOdiPx0X7h_Zi_586F7wJWAoXDWeXBz4r1SOAvSeBKMrxbkiwVawf19GmrtqsTvsi7ed7Lc4OgS33PCUkaxyUZNEexlcKFWVtR-4wMHpC6yFionuV0gVWe7FMhzaqE71k3ZXqrqHms280jFSTrBf859_qsTQjtRpJpiEMcrBnBFYIh4Khcp2Z9CGDqg8iqguKq0GNRSuZSOuBY8pIMQVdZuDTLDOBGCEzW-g8Z6Mipy7zvcBN029hm89y24heUu4cA4Vyo96z-RHKSQSZ9Da6iURtPYrQb-T60tWhsAj8Pd-FzCvkZ8pg0fikqLAqdd8n6OX809YeU79ZLlLMRy8HzrcU1YT97xvd9vRTfudwMyBMzLj7HLyG0JPsm337C-jP6VVeZYCsd0hPVmvHtDCByWZxcxmijUMKR0K5IY5ud6YP0THv5ZgeLMHSpiF5ZCDKS_5S4ffEW8PN9FMncQZr22e6PKKGavUJVtbLZXbzREGIzcqr6yUinE\",\"Content-Type\":\"application/json\"}}"
-    },
-    "request": {
-        "UNSENT": 0,
-        "OPENED": 1,
-        "HEADERS_RECEIVED": 2,
-        "LOADING": 3,
-        "DONE": 4,
-        "readyState": 4,
-        "status": 401,
-        "timeout": 0,
-        "withCredentials": true,
-        "upload": {},
-        "_aborted": false,
-        "_hasError": false,
-        "_method": "POST",
-        "_perfKey": "network_XMLHttpRequest_http://192.168.2.126:8000/api/delete_transaction?id=41",
-        "_response": "{\"message\":\"Unauthenticated.\"}",
-        "_url": "http://192.168.2.126:8000/api/delete_transaction?id=41",
-        "_timedOut": false,
-        "_trackingName": "unknown",
-        "_incrementalEvents": false,
-        "_performanceLogger": {
-            "_timespans": {
-                "network_XMLHttpRequest_http://192.168.2.126:8000/api/fetch_all_categories_employee": {
-                    "startTime": 1203129797.611142,
-                    "endTime": 1203130466.265308,
-                    "totalTime": 668.6541659832001
-                },
-                "network_XMLHttpRequest_http://192.168.2.126:8000/api/fetch_transaction_data": {
-                    "startTime": 1203129799.383642,
-                    "endTime": 1203130982.904579,
-                    "totalTime": 1183.5209369659424
-                },
-                "network_XMLHttpRequest_http://192.168.2.126:8000/api/delete_transaction?id=41": {
-                    "startTime": 1203137009.062649,
-                    "endTime": 1203137352.234941,
-                    "totalTime": 343.17229199409485
-                }
-            },
-            "_extras": {},
-            "_points": {
-                "initializeCore_start": 1203124109.407081,
-                "initializeCore_end": 1203124375.620467
-            },
-            "_pointExtras": {},
-            "_closed": false,
-            "_isLoggingForWebPerformance": false
-        },
-        "responseHeaders": {
-            "Connection": "close",
-            "X-Powered-By": "PHP/7.4.30",
-            "Content-Type": "application/json",
-            "Host": "192.168.2.126:8000",
-            "Date": "Tue, 10 Oct 2023 07:59:30 GMT, Tue, 10 Oct 2023 07:59:30 GMT",
-            "Cache-Control": "no-cache, private"
-        },
-        "_requestId": null,
-        "_headers": {
-            "accept": "application/json, text/plain, */*",
-            "content-type": "application/json"
-        },
-        "_responseType": "",
-        "_sent": true,
-        "_lowerCaseResponseHeaders": {
-            "connection": "close",
-            "x-powered-by": "PHP/7.4.30",
-            "content-type": "application/json",
-            "host": "192.168.2.126:8000",
-            "date": "Tue, 10 Oct 2023 07:59:30 GMT, Tue, 10 Oct 2023 07:59:30 GMT",
-            "cache-control": "no-cache, private"
-        },
-        "_subscriptions": [],
-        "responseURL": "http://192.168.2.126:8000/api/delete_transaction?id=41"
+        "categories_id": 2,
+        "created_at": "2023-11-23T12:50:49.000000Z",
+        "created_by": null,
+        "emp_id": 8,
+        "id": 44,
+        "json_image": "null",
+        "org_id": 1,
+        "site_id": 1,
+        "slug": "55",
+        "transaction_date": "2023-11-23",
+        "transactions_description": "Bus ticket",
+        "transactions_image": null,
+        "updated_at": "2023-11-23T12:50:49.000000Z",
+        "updated_by": null
     }
-}
-
-
-============================================================================
-
-eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiJ9.eyJhdWQiOiIzIiwianRpIjoiYTE2Nzc3MjZiYzYxMWU2ODdmNTcwZDUwMGJjMGFjNWYyZGFjYjNiYWY0YzM4ZDFiMTU3NGYwNTRkYTM0N2E3NGU1ZWI1Nzg4M2QxNzMxMTciLCJpYXQiOjE2OTY5MjUwNzIuMjc3Mjc4LCJuYmYiOjE2OTY5MjUwNzIuMjc3Mjg0LCJleHAiOjE3Mjg1NDc0NzIuMjY3MjY0LCJzdWIiOiI0NSIsInNjb3BlcyI6W119.O_4URbYYm9DQwhZ-HJSZG63kr9ujHXGNNFQ9TZdU2uFuU7vRw0Wgv7QXu4VxU4JNQ-HDiWwO23KxHcC_vEsjBJScERNWvBoRYnrmqXOz0K7mFYHKghSdTHBez9EytJL2NfjhtktpZH4aNiyYNc-j29p-l7XeotmG-YOSUxc1x4csXRapXUaBap42zWukaZJSM6UzEzvQ_BYlV5mO7bRikQOLoig02Ftruv9kfeK8PxrgpG_EJ7iAM8FGCieGQdeSdcBNaFi3V_Wa869z51FHBdUN-Gz6qldFeGAkMPs7xVTaexMTbv1dldzRS9rDiaFvcPcEiCdWLrF8KiUh9gTyp1vikXHyXWxZr6QCNdrh9EDHEyNXiBiIICf7_TyqBYgxr1mlk6cDquG5fAiykQ379GjxL2S_F3RzZgfQpazmw_j1F0SpBjGQvDnu74cwUloiOeYF7ttP-n4_Q1WfFWDQjbQs-eTmzyBdIkZrdhDzCZH_l2BaKiuS0PH5g4x8UlNkMIMLQM7gqlTv6QTsPv1Rn5xkU8DIBVmsL2Ftjas30FwPN9DqrpMHwij6WCbn_ZlujMgeeFU2jeoxc9s9J2rxdJo-SVk_Tcdqc5JYufhP7ofPU4Ayj1CAfHozTTne5hdc7YRBAZ6vmYWx2FU-mom2jGAl-XrW61dyj06-yK9H0K0
-
-===============================================================================
-eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiJ9.eyJhdWQiOiIzIiwianRpIjoiYTE2Nzc3MjZiYzYxMWU2ODdmNTcwZDUwMGJjMGFjNWYyZGFjYjNiYWY0YzM4ZDFiMTU3NGYwNTRkYTM0N2E3NGU1ZWI1Nzg4M2QxNzMxMTciLCJpYXQiOjE2OTY5MjUwNzIuMjc3Mjc4LCJuYmYiOjE2OTY5MjUwNzIuMjc3Mjg0LCJleHAiOjE3Mjg1NDc0NzIuMjY3MjY0LCJzdWIiOiI0NSIsInNjb3BlcyI6W119.O_4URbYYm9DQwhZ-HJSZG63kr9ujHXGNNFQ9TZdU2uFuU7vRw0Wgv7QXu4VxU4JNQ-HDiWwO23KxHcC_vEsjBJScERNWvBoRYnrmqXOz0K7mFYHKghSdTHBez9EytJL2NfjhtktpZH4aNiyYNc-j29p-l7XeotmG-YOSUxc1x4csXRapXUaBap42zWukaZJSM6UzEzvQ_BYlV5mO7bRikQOLoig02Ftruv9kfeK8PxrgpG_EJ7iAM8FGCieGQdeSdcBNaFi3V_Wa869z51FHBdUN-Gz6qldFeGAkMPs7xVTaexMTbv1dldzRS9rDiaFvcPcEiCdWLrF8KiUh9gTyp1vikXHyXWxZr6QCNdrh9EDHEyNXiBiIICf7_TyqBYgxr1mlk6cDquG5fAiykQ379GjxL2S_F3RzZgfQpazmw_j1F0SpBjGQvDnu74cwUloiOeYF7ttP-n4_Q1WfFWDQjbQs-eTmzyBdIkZrdhDzCZH_l2BaKiuS0PH5g4x8UlNkMIMLQM7gqlTv6QTsPv1Rn5xkU8DIBVmsL2Ftjas30FwPN9DqrpMHwij6WCbn_ZlujMgeeFU2jeoxc9s9J2rxdJo-SVk_Tcdqc5JYufhP7ofPU4Ayj1CAfHozTTne5hdc7YRBAZ6vmYWx2FU-mom2jGAl-XrW61dyj06-yK9H0K0
-
-
-=============================
-
-{
-    "config": {
-        "adapter": "xhr",
-        "data": "{\"id\":41}",
-        "env": {
-            "Blob": [Function Blob
-            ],
-            "FormData": [Function FormData
-            ]
-        },
-        "headers": [Object
-        ],
-        "maxBodyLength": -1,
-        "maxContentLength": -1,
-        "method": "post",
-        "timeout": 0,
-        "transformRequest": [
-            [Function transformRequest
-            ]
-        ],
-        "transformResponse": [
-            [Function transformResponse
-            ]
-        ],
-        "transitional": {
-            "clarifyTimeoutError": false,
-            "forcedJSONParsing": true,
-            "silentJSONParsing": true
-        },
-        "url": "http://192.168.2.126:8000/api/delete_transaction",
-        "validateStatus": [Function validateStatus
-        ],
-        "xsrfCookieName": "XSRF-TOKEN",
-        "xsrfHeaderName": "X-XSRF-TOKEN"
-    },
-    "data": {
-        "$transaction_delete_data": 1,
-        "message": "Deleted Successfully",
-        "status": "S"
-    },
-    "headers": {
-        "cache-control": "no-cache, private",
-        "connection": "close",
-        "content-type": "application/json",
-        "date": "Wed, 11 Oct 2023 06:57:02 GMT, Wed, 11 Oct 2023 06:57:02 GMT",
-        "host": "192.168.2.126:8000",
-        "x-powered-by": "PHP/7.4.30",
-        "x-ratelimit-limit": "200",
-        "x-ratelimit-remaining": "79"
-    },
-    "request": {
-        "DONE": 4,
-        "HEADERS_RECEIVED": 2,
-        "LOADING": 3,
-        "OPENED": 1,
-        "UNSENT": 0,
-        "_aborted": false,
-        "_cachedResponse": undefined,
-        "_hasError": false,
-        "_headers": {
-            "accept": "application/json",
-            "authorization": "Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiJ9.eyJhdWQiOiIzIiwianRpIjoiNDMzZjE4Yzk0YjU4Njk2M2M0NjUyMTc2ZmIwYzdlZWFmN2M2NWVmY2ZjM2FhYjAzZWYzYjc1YWJiMGVhNTQ1N2VmMTdiMDE0N2VjZTcyYTciLCJpYXQiOjE2OTY5NDQyNDEuNjg2NjI4LCJuYmYiOjE2OTY5NDQyNDEuNjg2NjMyLCJleHAiOjE3Mjg1NjY2NDEuNjgwMDg1LCJzdWIiOiI0NSIsInNjb3BlcyI6W119.mpVSIxwQprH8qJRwBTKXqfno1AbGH4_i_TkuUlORBhbTXUjMdEztLtUdAmJkhsXdxeqjVK-csO9uyo6juGaKlpq23Ncsl3-B0hH187Uk2qorTykly6CQJIzyn20j__F74as1SVW_oy8rkdTRuSut0ddvr1shopl_bpXuEzMn1pAw2QucydvjSZS7oXEiQxkoBrGBC6df0w4Tj-IHnI2bOKNcrHmhpQMlqcHIE5PPyFBI8J_bbJvk-JAP0DH-oiWQtuFBGRXg4Ht-R_XGh_vrOWNA-BYcIeHBgFbAP8bksePN6Hj1W0Ri_US9qRlSaX2stZY_AQem-17WFx9B5mo29pCN3g6-5u9-iI9Tm21RQaSDI2mDhkLZbnjTmhNwI2Xnj94E67qGbKu3z6EI4UKSZafBZxMRYy029bs_uhqYbyurfR4B831Ddo1QB3ExTp7sbsfpI1No1nkcwMcIsKDZU5JJ7EfxBY15BXw23HSphzgqWlIoJjmPDira_KaMKAy4J9zZsP-AqOlJp4DJxVpoldjuPPc9dqoya7jzXoqZ4NfkYrHR3Z61l6TM0_g02J7XQn_sn6-Pzpm4x3xPKoY77_JcxxFrVUThLL9osTqvwDl7Izi5x1aDvmPI31WAp5mhVVMT-DE_iHGOCR1p8Joj1WgzEDkl9W04wfew6krKE3c",
-            "content-type": "application/json"
-        },
-        "_incrementalEvents": false,
-        "_lowerCaseResponseHeaders": {
-            "cache-control": "no-cache, private",
-            "connection": "close",
-            "content-type": "application/json",
-            "date": "Wed, 11 Oct 2023 06:57:02 GMT, Wed, 11 Oct 2023 06:57:02 GMT",
-            "host": "192.168.2.126:8000",
-            "x-powered-by": "PHP/7.4.30",
-            "x-ratelimit-limit": "200",
-            "x-ratelimit-remaining": "79"
-        },
-        "_method": "POST",
-        "_perfKey": "network_XMLHttpRequest_http://192.168.2.126:8000/api/delete_transaction",
-        "_performanceLogger": {
-            "_closed": false,
-            "_extras": [Object
-            ],
-            "_isLoggingForWebPerformance": false,
-            "_pointExtras": [Object
-            ],
-            "_points": [Object
-            ],
-            "_timespans": [Object
-            ]
-        },
-        "_requestId": null,
-        "_response": "{\"status\":\"S\",\"message\":\"Deleted Successfully\",\"$transaction_delete_data\":1}",
-        "_responseType": "",
-        "_sent": true,
-        "_subscriptions": [],
-        "_timedOut": false,
-        "_trackingName": "unknown",
-        "_url": "http://192.168.2.126:8000/api/delete_transaction",
-        "readyState": 4,
-        "responseHeaders": {
-            "Cache-Control": "no-cache, private",
-            "Connection": "close",
-            "Content-Type": "application/json",
-            "Date": "Wed, 11 Oct 2023 06:57:02 GMT, Wed, 11 Oct 2023 06:57:02 GMT",
-            "Host": "192.168.2.126:8000",
-            "X-Powered-By": "PHP/7.4.30",
-            "X-RateLimit-Limit": "200",
-            "X-RateLimit-Remaining": "79"
-        },
-        "responseURL": "http://192.168.2.126:8000/api/delete_transaction",
-        "status": 200,
-        "timeout": 0,
-        "upload": {},
-        "withCredentials": true
-    },
-    "status": 200,
-    "statusText": undefined
-}
+]

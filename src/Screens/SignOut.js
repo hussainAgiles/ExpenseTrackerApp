@@ -4,22 +4,20 @@ import {useNavigation} from '@react-navigation/native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import {screenNames} from '../Constants/constant';
 
-const SignOut = ({}) => {
+const SignOut = ({isVisible,onClose}) => {
   const navigation = useNavigation();
-  useEffect(() => {
-    setLogoutModalVisible(true);
-  }, []);
+  // useEffect(() => {
+  //   setLogoutModalVisible(true);
+  // }, []);
 
-  const [isLogoutModalVisible, setLogoutModalVisible] = useState(false);
+  // const [isLogoutModalVisible, setLogoutModalVisible] = useState(false);
 
   const onLogout = async() => {
     // Implement your logout logic here
     // For example, clear user session, remove tokens, etc.
-    AsyncStorage.removeItem('User_Token');
-    AsyncStorage.removeItem('userId');
-    setLogoutModalVisible(false);
+    await AsyncStorage.removeItem('User_Token');
+    await AsyncStorage.removeItem('userId');
     navigation.replace(screenNames.Login);
-    // console.log("Fetching Token after logout", await AsyncStorage.getItem('User_Token'))
   };
 
   
@@ -28,7 +26,7 @@ const SignOut = ({}) => {
     <Modal
       animationType="slide"
       transparent={true}
-      visible={isLogoutModalVisible}>
+      visible={isVisible}>
       <View style={styles.centeredView}>
         <View style={styles.modalView}>
           <Text
@@ -54,10 +52,7 @@ const SignOut = ({}) => {
             </View>
             <View>
               <TouchableOpacity
-                onPress={() => {
-                  setLogoutModalVisible(false);
-                  navigation.navigate(screenNames.Home)
-                }}>
+                onPress={onClose}>
                 <Text style={[styles.textStyle,{color:"#C70039"}]}>Cancel</Text>
               </TouchableOpacity>
             </View>

@@ -34,8 +34,8 @@ const LineCharts = ({categories}) => {
     backgroundColor: '#C5CAE9',
     backgroundGradientFrom: '#B2EBF2',
     backgroundGradientTo: '#A7FFEB',
-    decimalPlaces: 1, // optional, defaults to 2dp
-    color: (opacity = 1) => `rgba(128,0,0, ${opacity})`,
+    decimalPlaces: 2, // optional, defaults to 2dp
+    color: (opacity = 2) => `rgba(128,0,0, ${opacity})`,
     labelColor: (opacity = 1) => `rgba(54, 69, 79, ${opacity})`,
     strokeWidth: '2',
     barPercentage: 0.5,
@@ -55,7 +55,7 @@ const LineCharts = ({categories}) => {
       <LineChart
         data={data}
         width={screenWidth}
-        height={240}
+        height={260}
         yAxisLabel={rupeesSymbol}
         chartConfig={chartConfig}
         verticalLabelRotation={15}

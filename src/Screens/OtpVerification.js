@@ -47,6 +47,11 @@ export default function OtpVerificationScreen({route}) {
 
   // handling Change Password
   const handleVerifyOTP = async () => {
+    if (data.password.length !== 6 || data.confirm_password.length !== 6) {
+      toast.show('Password and Confirm Password must be 6 digits long', toast.CENTER);
+      return;
+    }
+    
     const request = {
       email: route.params.email,
       otp: value,
@@ -61,6 +66,8 @@ export default function OtpVerificationScreen({route}) {
       } else {
         toast.show('Something went wrong, Please try again!', toast.CENTER);
       }
+    }else {
+      toast.show('Password and Confirm Password do not match', toast.CENTER);
     }
   };
 
@@ -144,8 +151,9 @@ export default function OtpVerificationScreen({route}) {
         <CustTextInput
           placeholderText="New-Password"
           iconType="lock"
+          maxLength={6}
           onChangeText={text => handleTextChange('password', text)}
-          autoCapitalize="none"
+          keyboardType="number-pad"
           rightIcon={secureText ? 'visibility-off' : 'visibility'}
           rightIconOnPress={handleSecureText}
           secureTextEntry={secureText}
@@ -154,7 +162,9 @@ export default function OtpVerificationScreen({route}) {
         <CustTextInput
           placeholderText="Confirm-Password"
           iconType="lock"
+          maxLength={6}
           secureTextEntry={secureText}
+          keyboardType="number-pad"
           onChangeText={text => handleTextChange('confirm_password', text)}
           autoCapitalize="none"
         />

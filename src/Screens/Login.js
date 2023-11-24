@@ -32,6 +32,7 @@ export default function Login() {
   const passRef = React.useRef(null);
   const [secureText, setSecureText] = useState(true);
   const [disable, setDisable] = useState(false);
+  
 
   // handling the text change on TextInput
   const handleTextChange = async (key, value) => {
@@ -54,6 +55,7 @@ export default function Login() {
       const response = await handleLogin(request);
       if (response.request.status === 200) {
         AsyncStorage.setItem('User_Token', response.data.access_token);
+        AsyncStorage.setItem('User_Data', JSON.stringify(response.data.userdata));
         navigation.replace(screenNames.DashBoard);
       } else {
         toast.show(response.data.message, toast.LONG);
@@ -91,7 +93,7 @@ export default function Login() {
             onFocus={() => {
               setErrMsg('');
             }}
-            autoCapitalize="none"
+            autoCapitalize="characters"
           />
           <CustTextInput
             autoCapitalize="none"

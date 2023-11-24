@@ -1,5 +1,5 @@
 import moment from 'moment';
-import React, {useLayoutEffect, useState} from 'react';
+import React, { useLayoutEffect, useState,useEffect } from 'react';
 import {
   FlatList,
   Image,
@@ -16,9 +16,9 @@ import uuid from 'react-native-uuid';
 import FontAwesome from 'react-native-vector-icons/FontAwesome';
 import DatePicker from '../Components/DatePicker';
 import Loader from '../Components/Loader';
-import {globalStyle, screenNames} from '../Constants/constant';
-import {primaryColor, secondaryColor, textColor} from '../Utils/CustomColors';
-import {handleCategories} from '../Utils/TransactionUpdates';
+import { globalStyle, screenNames } from '../Constants/constant';
+import { primaryColor, secondaryColor, textColor } from '../Utils/CustomColors';
+import { handleCategories } from '../Utils/TransactionUpdates';
 import * as ImagePicker from 'react-native-image-picker';
 import GalleryPicker from 'react-native-image-crop-picker';
 import {
@@ -27,15 +27,20 @@ import {
   imageUpload,
   multiImageUpload,
 } from '../Helpers/helpers';
-import {imageBaseUrl} from '../API/Endpoints';
+import { imageBaseUrl } from '../API/Endpoints';
+import AddTranxnSkeleton from '../Skeleton/AddTranxnSkeleton';
 
-export default function AddTransaction({route, navigation}) {
+
+export default function AddTransaction({ route, navigation }) {
   const oldTransaction = route.params.payload;
   // console.log("transacion received",oldTransaction)
-  useLayoutEffect(() => {
+  useEffect(() => {
+    setisLoading(true)
     let isMounted = true;
     if (isMounted) {
-      fetchAllCategories();
+      setTimeout(() => {
+        fetchAllCategories();
+      }, 2000);
     }
     return () => {
       isMounted = false;
@@ -87,19 +92,22 @@ export default function AddTransaction({route, navigation}) {
   const [loaderValue, setLoaderValue] = useState(false);
   const [multiImageModal, setMultiImageModal] = useState();
 
+
   // Fetching all the categories to display for addding transaction.
   const fetchAllCategories = async () => {
     const response = await fetchCategories();
-    const sortedData = response.data.categories.sort((a, b) =>
+    let filteredData = response.data.categories.filter(item => item.longname !== "All");
+    const sortedData = filteredData.sort((a, b) =>
       a.longname.localeCompare(b.longname),
     );
     const finalCat = handleCategories(sortedData);
     setCategory(finalCat);
+    setisLoading(false)
   };
 
   // handling change of textInput
   const handleChange = (key, value) => {
-    setPayload({...payload, [key]: value});
+    setPayload({ ...payload, [key]: value });
   };
 
   const dateToString = date => {
@@ -149,7 +157,7 @@ export default function AddTransaction({route, navigation}) {
       return;
     }
 
-    let payloadToSend = {...payload};
+    let payloadToSend = { ...payload };
     let payloadToUpadte = {
       ...payload,
     };
@@ -160,11 +168,11 @@ export default function AddTransaction({route, navigation}) {
     } else {
       isSuccessful = await addTransaction();
     }
-    if (isSuccessful) {
-      setCategoryId(null);
-      setPayload(initialState);
-      setErrMsg('');
-    }
+    // if (isSuccessful) {
+    //   setCategoryId(null);
+    //   setPayload(initialState);
+    //   setErrMsg('');
+    // }
   };
 
   const uId = uuid.v4();
@@ -195,7 +203,9 @@ export default function AddTransaction({route, navigation}) {
 
   useLayoutEffect(() => {
     // setisLoading(true)
-    if (oldTransaction !== undefined) prepopulateDataForUpdate();
+    if (oldTransaction !== undefined) {
+      prepopulateDataForUpdate();
+    }
   }, []);
 
   const openCamera = () => {
@@ -206,6 +216,10 @@ export default function AddTransaction({route, navigation}) {
         includeBase64: true,
       },
       async response => {
+        if (response.didCancel) {
+          setLoaderValue(false); // Set loader to false when the camera is closed
+          return;
+        }
         const payloadRequest = {
           image: response.assets[0],
         };
@@ -216,7 +230,6 @@ export default function AddTransaction({route, navigation}) {
           ...payload,
           transactions_image: responseData.filepath,
         });
-
         setLoaderValue(false);
       },
     );
@@ -228,6 +241,10 @@ export default function AddTransaction({route, navigation}) {
       multiple: true,
       mediaType: 'photo',
     }).then(async imageData => {
+      if (!imageData) {
+        setLoaderValue(false); // Set loader to false when the gallery is closed
+        return;
+      }
       var selectedImages = [];
       for (let i = 0; i < imageData.length; i++) {
         // console.log('Image ==== ', imageData[i].path); //image[i].data=>base64 string
@@ -267,11 +284,11 @@ export default function AddTransaction({route, navigation}) {
   return (
     <>
       {isLoading ? (
-        <View style={{flex: 1}}>
-          <Loader />
+        <View style={{ flex: 1 }}>
+          <AddTranxnSkeleton/>
         </View>
       ) : (
-        <View style={{padding: 15}}>
+        <View style={{ padding: 15 }}>
           <FlatList
             ListHeaderComponent={
               <>
@@ -293,16 +310,16 @@ export default function AddTransaction({route, navigation}) {
             numColumns={4}
             data={category}
             keyExtractor={item => item.id}
-            columnWrapperStyle={{flex: 1, justifyContent: 'space-evenly'}}
-            renderItem={({item, index}) => (
+            columnWrapperStyle={{ flex: 1, justifyContent: 'space-evenly' }}
+            renderItem={({ item, index }) => (
               <TouchableOpacity
                 onPress={() => {
                   setCategoryId(item.id);
-                  setPayload({...payload, categories_id: item.id});
+                  setPayload({ ...payload, categories_id: item.id });
                 }}
                 style={[
                   styles.categoryBox,
-                  categoryId === item.id && {backgroundColor: secondaryColor},
+                  categoryId === item.id && { backgroundColor: secondaryColor },
                 ]}>
                 {item.longname.length > 10 ? (
                   <Text style={styles.categoryText}>
@@ -315,7 +332,7 @@ export default function AddTransaction({route, navigation}) {
             )}
             ListFooterComponent={
               <>
-                <View style={{marginVertical: 10}}>
+                <View style={{ marginVertical: 10 }}>
                   <Text
                     style={[
                       styles.heading,
@@ -331,16 +348,16 @@ export default function AddTransaction({route, navigation}) {
                     <View
                       style={[
                         styles.dateBoxes,
-                        {paddingLeft: 10, paddingRight: 10},
+                        { paddingLeft: 10, paddingRight: 10 },
                       ]}>
                       {showFutureDates ? (
                         <TouchableOpacity
                           onPress={() => handleSelectDate(tomorrow)}
                           style={[
                             styles.dateBox,
-                            {marginRight: 30},
+                            { marginRight: 30 },
                             selectedDate.toLocaleDateString() ===
-                              tomorrow.toLocaleDateString() && {
+                            tomorrow.toLocaleDateString() && {
                               backgroundColor: secondaryColor,
                             },
                           ]}>
@@ -348,14 +365,14 @@ export default function AddTransaction({route, navigation}) {
                             <Text
                               style={[
                                 styles.dateText,
-                                {fontFamily: 'EduSABeginner-SemiBold'},
+                                { fontFamily: 'EduSABeginner-SemiBold' },
                               ]}>
                               {dateToString(tomorrow)}
                             </Text>
                             <Text
                               style={[
                                 styles.dateText,
-                                {fontFamily: 'EduSABeginner-Regular'},
+                                { fontFamily: 'EduSABeginner-Regular' },
                               ]}>
                               Tomorrow
                             </Text>
@@ -367,21 +384,21 @@ export default function AddTransaction({route, navigation}) {
                             <TouchableOpacity
                               style={[
                                 styles.dateBox,
-                                {marginRight: 10},
-                                {backgroundColor: secondaryColor},
+                                { marginRight: 10 },
+                                { backgroundColor: secondaryColor },
                               ]}>
                               <View style={styles.textContainer}>
                                 <Text
                                   style={[
                                     styles.dateText,
-                                    {fontFamily: 'EduSABeginner-SemiBold'},
+                                    { fontFamily: 'EduSABeginner-SemiBold' },
                                   ]}>
                                   {dateToString(selectedDate)}
                                 </Text>
                                 <Text
                                   style={[
                                     styles.dateText,
-                                    {fontFamily: 'EduSABeginner-Regualr'},
+                                    { fontFamily: 'EduSABeginner-Regualr' },
                                   ]}>
                                   Selected
                                 </Text>
@@ -393,7 +410,7 @@ export default function AddTransaction({route, navigation}) {
                             style={[
                               styles.dateBox,
                               selectedDate.toLocaleDateString() ===
-                                yesterday.toLocaleDateString() && {
+                              yesterday.toLocaleDateString() && {
                                 backgroundColor: secondaryColor,
                               },
                             ]}>
@@ -401,14 +418,14 @@ export default function AddTransaction({route, navigation}) {
                               <Text
                                 style={[
                                   styles.dateText,
-                                  {fontFamily: 'EduSABeginner-SemiBold'},
+                                  { fontFamily: 'EduSABeginner-SemiBold' },
                                 ]}>
                                 {dateToString(yesterday)}
                               </Text>
                               <Text
                                 style={[
                                   styles.dateText,
-                                  {fontFamily: 'EduSABeginner-Regular'},
+                                  { fontFamily: 'EduSABeginner-Regular' },
                                 ]}>
                                 Yesterday
                               </Text>
@@ -418,9 +435,9 @@ export default function AddTransaction({route, navigation}) {
                             onPress={() => handleSelectDate(today)}
                             style={[
                               styles.dateBox,
-                              {marginHorizontal: 10},
+                              { marginHorizontal: 10 },
                               selectedDate.toLocaleDateString() ===
-                                today.toLocaleDateString() && {
+                              today.toLocaleDateString() && {
                                 backgroundColor: secondaryColor,
                               },
                             ]}>
@@ -428,14 +445,14 @@ export default function AddTransaction({route, navigation}) {
                               <Text
                                 style={[
                                   styles.dateText,
-                                  {fontFamily: 'EduSABeginner-SemiBold'},
+                                  { fontFamily: 'EduSABeginner-SemiBold' },
                                 ]}>
                                 {dateToString(today)}
                               </Text>
                               <Text
                                 style={[
                                   styles.dateText,
-                                  {fontFamily: 'EduSABeginner-Regular'},
+                                  { fontFamily: 'EduSABeginner-Regular' },
                                 ]}>
                                 Today
                               </Text>
@@ -463,11 +480,11 @@ export default function AddTransaction({route, navigation}) {
                     />
                   )}
                 </View>
-                <View style={{marginVertical: 10, paddingHorizontal: 10}}>
+                <View style={{ marginVertical: 10, paddingHorizontal: 10 }}>
                   <Text
                     style={[
                       styles.heading,
-                      {fontFamily: 'EduSABeginner-SemiBold'},
+                      { fontFamily: 'EduSABeginner-SemiBold' },
                     ]}>
                     Description
                   </Text>
@@ -497,7 +514,6 @@ export default function AddTransaction({route, navigation}) {
                   <TextInput
                     value={payload.amount.toString()}
                     style={styles.note}
-                    autoFocus={true}
                     placeholder="INR"
                     placeholderTextColor={textColor}
                     keyboardType="numeric"
@@ -525,13 +541,13 @@ export default function AddTransaction({route, navigation}) {
                     Add Image
                   </Text>
                   <View
-                    style={{flexDirection: 'row', justifyContent: 'center'}}>
+                    style={{ flexDirection: 'row', justifyContent: 'center' }}>
                     <TouchableOpacity
                       onPress={() => {
                         setLoaderValue(true);
                         openCamera();
                       }}
-                      style={{paddingHorizontal: 10}}>
+                      style={{ paddingHorizontal: 10 }}>
                       <FontAwesome
                         name="camera"
                         size={25}
@@ -550,36 +566,38 @@ export default function AddTransaction({route, navigation}) {
                     </TouchableOpacity>
                   </View>
 
-                  <View style={{flexDirection: 'row'}}>
+                  <View style={{ flexDirection: 'row' }}>
                     {loaderValue && (
                       <ActivityIndicator
                         style={{
                           position: 'absolute',
                           top: 0,
                           bottom: 0,
-                          left: 0,
+                          left: 20,
                           right: 0,
                         }}
                         size="large"
                       />
                     )}
-                    {imageUri && (
+                    {imageUri ? (
                       <TouchableOpacity
                         onPress={() => {
-                          handleSingleImageModal(imageUri)
+                          handleSingleImageModal(imageUri);
                         }}>
                         <Image
-                          source={{uri: imageUri}}
-                          style={{width: 70, height: 70, marginLeft: 5}}
+                          source={{ uri: imageUri }}
+                          style={{ width: 70, height: 70, marginLeft: 5 }}
                         />
                       </TouchableOpacity>
-                    )}
+                    ):<></>}
                     {multipleImages && (
                       <FlatList
                         data={multipleImages}
-                        horizontal
-                        renderItem={({item}) => (
-                          <View>
+                        showsHorizontalScrollIndicator={false}
+                        numColumns={2}
+                        keyExtractor={(item) => item.id}
+                        renderItem={({ item }) => (
+                          <View style={{paddingHorizontal:5}}>
                             <TouchableOpacity
                               onPress={() => {
                                 handleMultiImageModal(item.image_storage_path);
@@ -591,7 +609,6 @@ export default function AddTransaction({route, navigation}) {
                                 style={{
                                   width: 60,
                                   height: 70,
-                                  marginHorizontal: 5,
                                 }}
                               />
                             </TouchableOpacity>
@@ -604,10 +621,10 @@ export default function AddTransaction({route, navigation}) {
                   {/* modal appears when image is clicked for preiew */}
                   <Modal visible={modalVisible} animationType="fade">
                     <View style={styles.modalContent}>
-                        <Image
-                          source={{uri: multiImageModal }}
-                          style={styles.modalImage}
-                        />
+                      <Image
+                        source={{ uri: multiImageModal }}
+                        style={styles.modalImage}
+                      />
                       <TouchableOpacity onPress={() => setModalVisible(false)}>
                         <Text style={styles.closeButton}>Close</Text>
                       </TouchableOpacity>

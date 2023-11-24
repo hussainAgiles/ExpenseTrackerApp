@@ -41,13 +41,11 @@ export default function BottomNavigation() {
             height: Platform.OS === 'ios' ? 70 : 66,
           },
           headerShown: false,
-          tabBarShowLabel: false,
-          unmountOnBlur:true
+          tabBarShowLabel: false
         };
       }}>
       <Tab.Screen name={screenNames.Home} component={Home} options={() => {
             return {
-              unmountOnBlur: true,
               tabBarIcon: ({focused}) => {
                 return (
                   <View
@@ -79,22 +77,11 @@ export default function BottomNavigation() {
                   </View>
                 );
               },
-              // tabBarBadge: 3,
             };
           }}
-          // listeners={() => ({
-          //   // Onpress Update....
-          //   tabPress: () => {
-          //     Animated.spring(tabOffsetValue, {
-          //       toValue: 0,
-          //       useNativeDriver: true,
-          //     }).start();
-          //   },
-          // })}
            />
       <Tab.Screen name={screenNames.Categories} component={Categories} options={() => {
             return {
-              unmountOnBlur: true,
               tabBarIcon: ({focused}) => {
                 return (
                   <View
@@ -126,22 +113,11 @@ export default function BottomNavigation() {
                   </View>
                 );
               },
-              // tabBarBadge: 3,
             };
           }}
-          // listeners={() => ({
-          //   // Onpress Update....
-          //   tabPress: () => {
-          //     Animated.spring(tabOffsetValue, {
-          //       toValue: getWidth() * 1.4,
-          //       useNativeDriver: true,
-          //     }).start();
-          //   },
-          // })}
           />
       <Tab.Screen name={screenNames.Transaction} component={Transaction} options={() => {
             return {
-              unmountOnBlur: true,
               headerShown:true,
               headerTitleAlign:"center",
               headerTitleStyle:{fontFamily:"EduSABeginner-SemiBold"},
@@ -177,22 +153,16 @@ export default function BottomNavigation() {
                   </View>
                 );
               },
-              // tabBarBadge: 3,
             };
           }}
-          // listeners={() => ({
-          //   // Onpress Update....
-          //   tabPress: () => {
-          //     Animated.spring(tabOffsetValue, {
-          //       toValue: getWidth() * 2.8,
-          //       useNativeDriver: true,
-          //     }).start();
-          //   },
-          // })}
           />
-      <Tab.Screen name={screenNames.Logout} component={SignOut} options={() => {
+      <Tab.Screen name={screenNames.Profile} component={Profile} options={() => {
             return {
-              unmountOnBlur: true,
+             
+              headerShown:false,
+              headerTitleAlign:"center",
+              headerTitleStyle:{fontFamily:"EduSABeginner-SemiBold"},
+              headerStyle:{borderBottomWidth:1},
               tabBarIcon: ({focused}) => {
                 return (
                   <View
@@ -204,7 +174,7 @@ export default function BottomNavigation() {
                       marginBottom: Platform.OS === 'android' ? 15 : 0,
                     }}>
                     <Icon
-                      name="logout"
+                      name="account-circle-outline"
                       size={Sizes.h3}
                       color={
                         focused ?primaryColor : '#757575'
@@ -219,7 +189,7 @@ export default function BottomNavigation() {
                         fontSize: 15,
                         fontFamily:'EduSABeginner-SemiBold'
                       }}>
-                      Sign Out
+                      Profile
                     </Text>
                   </View>
                 );

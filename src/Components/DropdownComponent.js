@@ -39,11 +39,19 @@ const DropdownComponent = ({onResponse}) => {
     return newItem;
   });
 
-  const handleFilter = async filterValue => {
-    const fetcheddata = await fetchTransactionHistory();
-    const recentTransactions=fetcheddata.filter(transaction => transaction.categories_id === filterValue);
-      onResponse(recentTransactions);
-    
+  // console.log(modifiedData)
+
+  const handleFilter = async (filterValue) => {
+    if (filterValue ==='All' ){
+      const fetcheddata = await fetchTransactionHistory();
+      fetcheddata.sort((a, b) => b.id - a.id)
+      const filteredTransaction=fetcheddata.slice(0,5);
+      onResponse(filteredTransaction);
+    }else{
+      const fetcheddata = await fetchTransactionHistory();
+      const recentTransactions=fetcheddata.filter(transaction => transaction.categories_datails.longname === filterValue);
+        onResponse(recentTransactions);
+    }    
   };
 
   return (
@@ -60,7 +68,7 @@ const DropdownComponent = ({onResponse}) => {
       showsVerticalScrollIndicator={false}
       onChange={item => {
         setValue(item.value);
-        handleFilter(item.value);
+        handleFilter(item.label);
       }}
       dropdownPosition="auto"
     />

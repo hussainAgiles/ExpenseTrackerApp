@@ -1,36 +1,122 @@
-import AsyncStorage from '@react-native-async-storage/async-storage';
-import { useDeviceOrientation } from '@react-native-community/hooks';
-import fireStore from '@react-native-firebase/firestore';
 import { useNavigation } from '@react-navigation/native';
 import React, { useEffect, useState } from 'react';
 import {
   ActivityIndicator,
   Dimensions,
   FlatList,
-  RefreshControl,
-  ScrollView,
   StyleSheet,
   Text,
   TouchableOpacity,
   View,
+  useWindowDimensions
 } from 'react-native';
 import BarCharts from '../Components/BarCharts';
 import BeizerLineChart from '../Components/BeizerLineChart';
 import DateTypeSelection from '../Components/DateTypeSelection';
 import DropdownComponent from '../Components/DropdownComponent';
 import LineCharts from '../Components/LineCharts';
-import Loader from '../Components/Loader';
 import PieCharts from '../Components/PieCharts';
 import { screenNames } from '../Constants/constant';
-import { textColor } from '../Utils/CustomColors';
 import { fetchTransactionHistory } from '../Helpers/helpers';
-// import * as ImagePicker from 'react-native-image-picker';
-// import  storage  from '@react-native-firebase/storage';
+import HomeSkeleton from '../Skeleton/HomeSkeleton';
+import { textColor } from '../Utils/CustomColors';
+
 
 
 const screenWidth = Dimensions.get('window').width - 90;
 
+function userStyles (){
+  const {width,height} = useWindowDimensions()
+  return StyleSheet.create ({
+    container: {
+      flex: 1,
+      flexDirection:'column'
+    },
+    regularText: {
+      fontSize: 18,
+      marginLeft: 10,
+      fontFamily: 'EduSABeginner-Regular',
+      borderBottomColor: '#616161',
+    },
+    amtText:{
+      fontSize: 15,
+      fontFamily: 'EduSABeginner-Bold',
+    },
+    dateContainer: {
+      backgroundColor: '#fff',
+      marginTop: 5,
+      paddingHorizontal: 10,
+      justifyContent: 'center'
+    },
+    chartAndButton: {
+      flex:1,
+      justifyContent: 'space-between',
+      backgroundColor: '#fff',
+      marginTop: '2%',
+      flexDirection: 'column',
+      paddingBottom: 10,
+      borderWidth:1,
+      borderColor:'#03707a',
+      
+    },
+    cardContent: {
+      flexDirection: 'row',
+      justifyContent: 'space-around',
+    },
+    CategoryText: {
+      fontSize: 16,
+      color: '#000000',
+      fontFamily: 'EduSABeginner-SemiBold',
+    },
+    descText: {
+      paddingTop: 5,
+      fontSize: 14,
+      color: '#000000',
+      fontFamily: 'EduSABeginner-Regular',
+    },
+    card: {
+      flex:0.5,
+      marginVertical: 5,
+      backgroundColor: '#fff',
+      shadowOffset: { width: 1, height: 1 },
+      shadowOpacity: 0.5,
+      shadowRadius: 2,
+      shadowColor: 'black',
+      padding: 10,
+    },
+    bottomCardContent: {
+      flexDirection: 'row',
+      justifyContent: 'space-between',
+      paddingLeft: 10,
+      paddingRight: 10,
+      paddingBottom: 10,
+    },
+    leftContent: {
+      flexDirection: 'column',
+      marginTop: 10,
+    },
+    navigationButtons: {
+      color: textColor,
+      paddingHorizontal: 10,
+      fontSize: 18,
+    },
+    addBtnView: {
+      width: '90%',
+      backgroundColor: '#03707a',
+      borderRadius: 20,
+      height: 40,
+      marginLeft: '5%',
+      justifyContent: 'center',
+      alignItems: 'center',
+      paddingTop: 10
+    }
+  })
+}
+
 export default function Home() {
+
+  // User defined styles
+  const styles = userStyles();
 
   useEffect(() => {
     let isMounted = true;
@@ -52,7 +138,6 @@ export default function Home() {
   const [transaction, setTransaction] = useState([]);
   const [categoryWiseTrxn, setCategoryWiseTrxn] = useState();
   const [total, setTotal] = useState(0);
-  const { portrait } = useDeviceOrientation();
   const [disable, setDisable] = useState(false);
 
   const capitalize = str => {
@@ -101,7 +186,6 @@ export default function Home() {
     });
     return total;
   };
-
 
   const fetchTransactionCategryBased = async () => {
     setLoading(true);
@@ -191,7 +275,7 @@ export default function Home() {
       'PieChart',
       'BeizerLineChart',
       'BarCharts',
-      'LineCharts',
+      'LineCharts'
     ];
 
     // Get the current chart type index
@@ -221,31 +305,18 @@ export default function Home() {
     setRecentTransaction(response);
   };
 
-  // Refresh Page
-
-  const [refreshing, setRefreshing] = React.useState(false);
-
-  // const onRefresh = React.useCallback(() => {
-  //   setRefreshing(true);
-  //   setTimeout(() => {
-  //     setRefreshing(false);
-  //   }, 2000);
-  // }, []);
-
-  // refreshControl={
-  //   <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
-  // }
-
+  
   return (
     <>
       {isLoading ? (
-        <Loader message="Please wait..." />
+        // <Loader message="Please wait..." />
+        <HomeSkeleton/>
       ) : (
         <View
           style={styles.container}
         >
           {/* <Header /> */}
-          <View style={[styles.dateContainer]}>
+          <View style={[styles.dateContainer,]}>
             <DateTypeSelection date={date} sendDateToHome={handleDateFilter} />
           </View>
 
@@ -264,6 +335,7 @@ export default function Home() {
                 <>
                   <View
                     style={{
+                      flex:1,
                       justifyContent: 'center',
                       alignItems: 'center',
                       marginTop: '3%',
@@ -356,6 +428,7 @@ export default function Home() {
               ) : (
                 <FlatList
                   data={recentTransaction}
+                  key={item => item.index}
                   renderItem={({ item }) => (
                     <View key={item.id} style={styles.bottomCardContent}>
                       <View style={styles.leftContent}>
@@ -392,84 +465,3 @@ export default function Home() {
   );
 }
 
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-  },
-  regularText: {
-    fontSize: 18,
-    marginLeft: 10,
-    fontFamily: 'EduSABeginner-Regular',
-    borderBottomColor: '#616161',
-  },
-  amtText:{
-    fontSize: 15,
-    fontFamily: 'EduSABeginner-Bold',
-  },
-  dateContainer: {
-    flex: 1.5,
-    backgroundColor: '#fff',
-    marginTop: 5,
-    paddingHorizontal: 10,
-    justifyContent: 'center',
-  },
-  chartAndButton: {
-    flex: 6,
-    justifyContent: 'space-between',
-    backgroundColor: '#fff',
-    marginTop: '2%',
-    flexDirection: 'column',
-    paddingBottom: 10,
-  },
-  cardContent: {
-    flexDirection: 'row',
-    justifyContent: 'space-around',
-  },
-  CategoryText: {
-    fontSize: 16,
-    color: '#000000',
-    fontFamily: 'EduSABeginner-SemiBold',
-  },
-  descText: {
-    paddingTop: 5,
-    fontSize: 14,
-    color: '#000000',
-    fontFamily: 'EduSABeginner-Regular',
-  },
-  card: {
-    flex: 4,
-    marginVertical: 5,
-    backgroundColor: '#fff',
-    shadowOffset: { width: 1, height: 1 },
-    shadowOpacity: 0.5,
-    shadowRadius: 2,
-    shadowColor: 'black',
-    padding: 10,
-  },
-  bottomCardContent: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    paddingLeft: 10,
-    paddingRight: 10,
-    paddingBottom: 10,
-  },
-  leftContent: {
-    flexDirection: 'column',
-    marginTop: 10,
-  },
-  navigationButtons: {
-    color: textColor,
-    paddingHorizontal: 10,
-    fontSize: 18,
-  },
-  addBtnView: {
-    width: '90%',
-    backgroundColor: '#03707a',
-    borderRadius: 20,
-    height: 40,
-    marginLeft: '5%',
-    justifyContent: 'center',
-    alignItems: 'center',
-    paddingTop: 10
-  }
-});

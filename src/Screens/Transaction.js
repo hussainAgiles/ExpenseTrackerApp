@@ -9,7 +9,6 @@ import {
   Text,
   TouchableOpacity,
   View,
-  ActivityIndicator,
 } from 'react-native';
 
 import moment from 'moment';
@@ -24,13 +23,12 @@ import Loader from '../Components/Loader';
 import {screenNames} from '../Constants/constant';
 import {
   UpdateTransaction,
-  deleteTransaction,
   downloadExcelSheet,
   fetchTransactionHistory,
   handleDelete,
 } from '../Helpers/helpers';
 import {primaryColor} from '../Utils/CustomColors';
-import Lottie from 'lottie-react-native';
+import TransactionSkeleton from '../Skeleton/TransactionSkeleton';
 
 const screenWidth = Dimensions.get('window').width - 90;
 
@@ -38,7 +36,7 @@ export default function Transaction() {
   const [data, setData] = useState([]);
   const navigation = useNavigation();
 
-  const [isLoading, setIsLoading] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
 
   const [open, setOpen] = useState(false);
   const [endDateOpen, setEndDateOpen] = useState(false);
@@ -50,15 +48,14 @@ export default function Transaction() {
   const [showPicker, setShowPicker] = useState(false);
 
   useEffect(() => {
-    setIsLoading(true);
     fetchtransaction();
-    setIsLoading(false);
-  }, [data]);
+  }, []);
 
   // Fetch all the transaction
   const fetchtransaction = async () => {
     const response = await fetchTransactionHistory();
     setData(response);
+    setIsLoading(false);
   };
 
   // Deleting transaction
@@ -155,246 +152,262 @@ export default function Transaction() {
     <>
       {isLoading ? (
         <View style={{flex: 1, justifyContent: 'center', alignItems: 'center'}}>
-          <Loader message="Please wait ..." />
+          <TransactionSkeleton />
         </View>
       ) : (
-        <View style={{marginBottom: '27%', backgroundColor: '#fff'}}>
-          {/* Download Excel Sheet */}
-          <View
-            style={{
-              flexDirection: 'row',
-              justifyContent: 'space-between',
-              borderBottomWidth: 0.5,
-            }}>
-            <View
-              style={styles.dateContainer}>
+        <View style={{flex:1,backgroundColor: '#fff'}}>
+          {data.length === 0 ? (
+            <View style={{flex:1,justifyContent:'center',alignItems:'center'}}>
+            <Text
+              style={{
+                textAlign: 'center',
+                margin: 20,
+                fontSize: 18,
+                fontFamily: 'EduSABeginner-Bold',
+              }}>
+              No data available.
+            </Text>
+            </View>
+          ) : (
+            <>
+              {/* Download Excel Sheet */}
               <View
                 style={{
                   flexDirection: 'row',
-                  alignItems: 'center',
-                  justifyContent: 'center',
+                  justifyContent: 'space-between',
+                  borderBottomWidth: 0.5,
                 }}>
-                <Text
-                  style={{fontFamily: 'EduSABeginner-SemiBold', fontSize: 16}}>
-                  Start Date :{' '}
-                </Text>
-                <TouchableOpacity
-                  onPress={() => {
-                    setOpen(true), setShowDatePicker(true);
-                  }}
-                  style={{flexDirection: 'row'}}>
-                  <Text
-                    style={styles.dateText}>
-                    {Moment(startDate).format('DD-MMM-YYYY')}
-                  </Text>
-
-                  <FontAwesome
-                    name="calendar"
-                    size={25}
-                    color={primaryColor}
-                    style={{marginLeft: 10}}
-                  />
-                </TouchableOpacity>
-                {showDatePicker && (
-                  <DatePicker
-                    modal
-                    mode="date"
-                    title="Start Date"
-                    open={open}
-                    date={startDate}
-                    onConfirm={date => {
-                      setOpen(false);
-                      setStartDate(date);
-                    }}
-                    onCancel={() => {
-                      setOpen(false);
-                    }}
-                    theme="auto"
-                  />
-                )}
-              </View>
-
-              <View
-                style={{
-                  flexDirection: 'row',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  marginVertical: 10,
-                }}>
-                <Text
-                  style={{fontFamily: 'EduSABeginner-SemiBold', fontSize: 16}}>
-                  End Date : {'   '}
-                </Text>
-                <TouchableOpacity
-                  onPress={() => {
-                    setEndDateOpen(true);
-                    setShowDatePicker(true);
-                  }}
-                  style={{flexDirection: 'row'}}>
-                  <Text
-                    style={styles.dateText}>
-                    {Moment(endDate).format('DD-MMM YYYY')}
-                  </Text>
-
-                  <FontAwesome
-                    name="calendar"
-                    size={25}
-                    color={primaryColor}
-                    style={{marginLeft: 10}}
-                  />
-                </TouchableOpacity>
-                {showDatePicker && (
-                  <DatePicker
-                    modal
-                    mode="date"
-                    title="End Date"
-                    open={endDateOpen}
-                    date={endDate}
-                    onConfirm={date => {
-                      setEndDateOpen(false);
-                      setEndDate(date);
-                    }}
-                    onCancel={() => {
-                      setEndDateOpen(false);
-                    }}
-                    theme="auto"
-                  />
-                )}
-              </View>
-            </View>
-            <View
-              style={styles.exportView}>
-              <TouchableOpacity
-                onPress={() => handleClick()}
-                style={{flexDirection: 'row', alignItems: 'center'}}
-                onFocus={() => {
-                  backgroundColor: '#80CBC4';
-                }}
-                onBlur={() => {
-                  backgroundColor: '#DCEDC8';
-                }}>
-                <Text
-                  style={styles.exportText}>
-                  Export
-                </Text>
-                <Icon name="file-excel" size={25} color={primaryColor} />
-              </TouchableOpacity>
-            </View>
-          </View>
-
-          <FlatList
-            showsVerticalScrollIndicator={false}
-            data={data}
-            renderItem={({item}) => (
-              <View style={styles.card}>
-                <View style={[styles.content]}>
-                  {/* Category Image and name */}
+                <View style={styles.dateContainer}>
                   <View
                     style={{
-                      width: '20%',
-                      height: 35,
+                      flexDirection: 'row',
+                      alignItems: 'center',
                       justifyContent: 'center',
-                      alignItems: 'flex-start',
                     }}>
-                    <Icons
-                      size={30}
-                      color={primaryColor}
-                      name={item.categories_datails.icon_name}
-                    />
                     <Text
                       style={{
-                        fontSize: 14,
                         fontFamily: 'EduSABeginner-SemiBold',
+                        fontSize: 16,
                       }}>
-                      {item.categories_datails.shortname}
+                      Start Date :{' '}
                     </Text>
-                  </View>
-                  {/* description and date */}
-                  <View
-                    style={{
-                      width: 250,
-                      flexDirection: 'row',
-                      justifyContent: 'space-between',
-                    }}>
-                    <View
-                      style={{
-                        flexDirection: 'column',
-                        justifyContent: 'space-between',
-                      }}>
-                      <Text
-                        style={[
-                          styles.text,
-                          {
-                            maxWidth: 200,
-                            fontFamily: 'EduSABeginner-SemiBold',
-                            fontSize: 17,
-                          },
-                        ]}>
-                        {item.transactions_description}
+                    <TouchableOpacity
+                      onPress={() => {
+                        setOpen(true), setShowDatePicker(true);
+                      }}
+                      style={{flexDirection: 'row'}}>
+                      <Text style={styles.dateText}>
+                        {Moment(startDate).format('DD-MMM-YYYY')}
                       </Text>
-                      <Text
-                        style={[
-                          styles.text,
-                          {
-                            maxWidth: 200,
-                            fontSize: 15,
-                            paddingTop: 5,
-                            fontFamily: 'EduSABeginner-Regular',
-                          },
-                        ]}>
-                        {Moment(item.transaction_date).format('ddd')},
-                        <Text
-                          style={{
-                            fontFamily: 'EduSABeginner-SemiBold',
-                            fontSize: 12,
-                          }}>
-                          {' '}
-                          {Moment(item.transaction_date).format('DD MMM YYYY')}
-                        </Text>
-                      </Text>
-                    </View>
-                    <View>
-                      <Text
-                        style={[
-                          styles.text,
-                          {fontFamily: 'EduSABeginner-Bold', fontSize: 17},
-                        ]}>
-                        <Text style={styles.rupeeText}>{'\u20B9'}</Text>{' '}
-                        {item.amount}
-                      </Text>
-                    </View>
-                  </View>
-                  {/* Edit and Delete */}
-                  <View style={styles.iconsContainer}>
-                    <View
-                      style={{
-                        alignItems: 'flex-end',
-                        marginBottom: 15,
-                      }}>
-                      <Icon
+
+                      <FontAwesome
+                        name="calendar"
                         size={25}
                         color={primaryColor}
-                        name="square-edit-outline"
-                        onPress={() => handleUpdate(item)}
+                        style={{marginLeft: 10}}
                       />
-                    </View>
-                    <View
+                    </TouchableOpacity>
+                    {showDatePicker && (
+                      <DatePicker
+                        modal
+                        mode="date"
+                        title="Start Date"
+                        open={open}
+                        date={startDate}
+                        onConfirm={date => {
+                          setOpen(false);
+                          setStartDate(date);
+                        }}
+                        onCancel={() => {
+                          setOpen(false);
+                        }}
+                        theme="auto"
+                      />
+                    )}
+                  </View>
+
+                  <View
+                    style={{
+                      flexDirection: 'row',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      marginVertical: 10,
+                    }}>
+                    <Text
                       style={{
-                        alignItems: 'flex-end',
-                        marginTop: 15,
+                        fontFamily: 'EduSABeginner-SemiBold',
+                        fontSize: 16,
                       }}>
-                      <Icon
+                      End Date : {'   '}
+                    </Text>
+                    <TouchableOpacity
+                      onPress={() => {
+                        setEndDateOpen(true);
+                        setShowDatePicker(true);
+                      }}
+                      style={{flexDirection: 'row'}}>
+                      <Text style={styles.dateText}>
+                        {Moment(endDate).format('DD-MMM YYYY')}
+                      </Text>
+
+                      <FontAwesome
+                        name="calendar"
                         size={25}
-                        color="#D11A2A"
-                        name="delete"
-                        onPress={() => deleteTrxn(item)}
+                        color={primaryColor}
+                        style={{marginLeft: 10}}
                       />
-                    </View>
+                    </TouchableOpacity>
+                    {showDatePicker && (
+                      <DatePicker
+                        modal
+                        mode="date"
+                        title="End Date"
+                        open={endDateOpen}
+                        date={endDate}
+                        onConfirm={date => {
+                          setEndDateOpen(false);
+                          setEndDate(date);
+                        }}
+                        onCancel={() => {
+                          setEndDateOpen(false);
+                        }}
+                        theme="auto"
+                      />
+                    )}
                   </View>
                 </View>
+                <View style={styles.exportView}>
+                  <TouchableOpacity
+                    onPress={() => handleClick()}
+                    style={{flexDirection: 'row', alignItems: 'center'}}
+                    onFocus={() => {
+                      backgroundColor: '#80CBC4';
+                    }}
+                    onBlur={() => {
+                      backgroundColor: '#DCEDC8';
+                    }}>
+                    <Text style={styles.exportText}>Export</Text>
+                    <Icon name="file-excel" size={25} color={primaryColor} />
+                  </TouchableOpacity>
+                </View>
               </View>
-            )}
-          />
+              <FlatList
+                showsVerticalScrollIndicator={false}
+                data={data}
+                renderItem={({item}) => (
+                  <View style={styles.card}>
+                    <View style={[styles.content]}>
+                      {/* Category Image and name */}
+                      <View
+                        style={{
+                          width: '20%',
+                          height: 35,
+                          justifyContent: 'center',
+                          alignItems: 'flex-start',
+                        }}>
+                        <Icons
+                          size={30}
+                          color={primaryColor}
+                          name={item.categories_datails.icon_name}
+                        />
+                        <Text
+                          style={{
+                            fontSize: 14,
+                            fontFamily: 'EduSABeginner-SemiBold',
+                          }}>
+                          {item.categories_datails.shortname}
+                        </Text>
+                      </View>
+                      {/* description and date */}
+                      <View
+                        style={{
+                          width: 250,
+                          flexDirection: 'row',
+                          justifyContent: 'space-between',
+                        }}>
+                        <View
+                          style={{
+                            flexDirection: 'column',
+                            justifyContent: 'space-between',
+                          }}>
+                          <Text
+                            style={[
+                              styles.text,
+                              {
+                                maxWidth: 200,
+                                fontFamily: 'EduSABeginner-SemiBold',
+                                fontSize: 17,
+                              },
+                            ]}>
+                            {item.transactions_description}
+                          </Text>
+                          <Text
+                            style={[
+                              styles.text,
+                              {
+                                maxWidth: 200,
+                                fontSize: 15,
+                                paddingTop: 5,
+                                fontFamily: 'EduSABeginner-Regular',
+                              },
+                            ]}>
+                            {Moment(item.transaction_date).format('ddd')},
+                            <Text
+                              style={{
+                                fontFamily: 'EduSABeginner-SemiBold',
+                                fontSize: 12,
+                              }}>
+                              {' '}
+                              {Moment(item.transaction_date).format(
+                                'DD MMM YYYY',
+                              )}
+                            </Text>
+                          </Text>
+                        </View>
+                        <View>
+                          <Text
+                            style={[
+                              styles.text,
+                              {fontFamily: 'EduSABeginner-Bold', fontSize: 17},
+                            ]}>
+                            <Text style={styles.rupeeText}>{'\u20B9'}</Text>{' '}
+                            {item.amount}
+                          </Text>
+                        </View>
+                      </View>
+                      {/* Edit and Delete */}
+                      <View style={styles.iconsContainer}>
+                        <View
+                          style={{
+                            alignItems: 'flex-end',
+                            marginBottom: 15,
+                          }}>
+                          <Icon
+                            size={25}
+                            color={primaryColor}
+                            name="square-edit-outline"
+                            onPress={() => handleUpdate(item)}
+                          />
+                        </View>
+                        <View
+                          style={{
+                            alignItems: 'flex-end',
+                            marginTop: 15,
+                          }}>
+                          <Icon
+                            size={25}
+                            color="#D11A2A"
+                            name="delete"
+                            onPress={() => deleteTrxn(item)}
+                          />
+                        </View>
+                      </View>
+                    </View>
+                  </View>
+                )}
+              />
+            </>
+          )}
         </View>
       )}
     </>

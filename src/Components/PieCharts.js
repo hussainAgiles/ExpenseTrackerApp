@@ -2,12 +2,15 @@ import React from 'react';
 import {Dimensions, FlatList, StyleSheet, Text, View} from 'react-native';
 import {PieChart} from 'react-native-gifted-charts';
 import {textColor} from '../Utils/CustomColors';
-import { categoryColors } from '../Constants/constant';
+import { categoryColors, screenNames } from '../Constants/constant';
+import { useNavigation } from '@react-navigation/native';
 
 const screenWidth = Dimensions.get('window').width - 10;
 
 const PieCharts = ({categories, total}) => {
   // console.log('Categories in pie chart === ', categories);
+
+  const navigation = useNavigation();
   const rupeesSymbol = '\u20B9';
   const gaugeText = `${rupeesSymbol} ${total}`;
   // const [peiData, setPieData] = useState([]);
@@ -24,7 +27,6 @@ const PieCharts = ({categories, total}) => {
     });
   }
 
-  // console.log('dstttttttt ==', data);
   const modifiedData = data?.map(item => {
     const newItem = {};
     Object.keys(item).forEach(key => {
@@ -37,7 +39,7 @@ const PieCharts = ({categories, total}) => {
 
   const renderLengend = ({item,index}) => {
     return (
-      <View style={{flexDirection:"row",justifyContent:"flex-start",alignItems:"center"}}>
+      <View key={index} style={{flexDirection:"row",justifyContent:"flex-start",alignItems:"center"}}>
         <View style={[styles.color, {backgroundColor: item.color}]} />
         <Text>{item.text}</Text>
       </View>
@@ -45,7 +47,8 @@ const PieCharts = ({categories, total}) => {
   };
 
   const handlePieSelect = (item) =>{
-    console.log("Items ===== ",item)
+    // console.log("Items ===== ",item)
+    navigation.navigate(screenNames.Details,{Details:item})
   }
 
   return (
@@ -60,14 +63,13 @@ const PieCharts = ({categories, total}) => {
             <PieChart
               data={modifiedData}
               donut={true}
-              textSize={8}
-              textColor="#fff"
+              textSize={10}
+              textColor="black"
               focusOnPress={true}
               showValuesAsLabels={true}
               labelsPosition="outward"
               innerCircleColor="lightblue"
               onPress={item=>{handlePieSelect(item)}}
-              // showText={true}
             />
             <View style={styles.gauge}>
               <Text style={styles.gaugeText}>{gaugeText} </Text>
@@ -77,8 +79,8 @@ const PieCharts = ({categories, total}) => {
           <FlatList
             data={data}
             renderItem={renderLengend}
-            keyExtractor={item => item.index}
-            contentContainerStyle={{padding:'15%'}}
+            key={item => item.index}
+            contentContainerStyle={{padding:'10%'}}
             
           />
         </View>

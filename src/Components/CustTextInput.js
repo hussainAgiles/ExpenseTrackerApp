@@ -23,6 +23,8 @@ export default function CustTextInput(
     rightIcon,
     rightIconOnPress,
     rightIconStyle,
+    onBlur,
+    maxLength
   },
   ref,
 ) {
@@ -47,6 +49,8 @@ export default function CustTextInput(
           keyboardType={keyboardType}
           onSubmitEditing={onSubmitEditing}
           onFocus={onFocus}
+          onBlur={onBlur}
+          maxLength={maxLength}
         />
         {Boolean(rightIcon) && (
           <TouchableOpacity style={{...rightIconStyle}}>

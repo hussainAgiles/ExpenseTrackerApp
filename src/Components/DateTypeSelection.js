@@ -11,6 +11,7 @@ const DateTypeSelection = ({date,sendDateToHome}) => {
   const [selectedDate, setSelectedDate] = useState(date);
   const [showPicker, setShowPicker] = useState(false);
   const [selectedOption, setSelectedOption] = useState('Year');
+
   const [selectedValue, setSelectedValue] = useState(
     moment(date).format('MMMM, YYYY'),
   );
@@ -135,7 +136,6 @@ export default DateTypeSelection;
 const styles = StyleSheet.create({
   container: {
     flexGrow: 2,
-    paddingHorizontal: 10,
     paddingTop: 10,
     justifyContent: 'space-between',
   },

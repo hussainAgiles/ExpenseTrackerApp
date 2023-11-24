@@ -15,7 +15,9 @@ export const screenNames = {
   Otp_Verification :`Change Password`,
   Logout :`Log out`,
   Profile: `Profile`,
-  UpgradePlan:`Upgrade Plan`
+  UpgradePlan:`Upgrade Plan`,
+  Edit_Password:`Edit Password`,
+  Details : `Details `
 };
 
 export const globalStyle = StyleSheet.create({

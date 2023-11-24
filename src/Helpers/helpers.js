@@ -211,6 +211,16 @@ export const downloadExcelSheet = async request => {
   return false;
 };
 
+// edit password from profile page
+
+export const changePassword = async(request) =>{
+  // console.log("received === ",request)
+  const bearer_Token = await fetchBearerToken();
+  const response = await axios.post(URL_CONSTANTS.edit_password, request,bearer_Token);
+  // console.log("response",response)
+  return response;
+}
+
 // fetching token
 const fetchBearerToken = async () => {
   try {

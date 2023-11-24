@@ -1,11 +1,15 @@
 
 // export const baseUrl = `https://laravelservice.agileidc.com/api`;
-export const baseUrl = `http://192.168.2.126:8000/api`;
+// export const baseUrl = `http://192.168.2.126:8000/api`;
+
+export const baseUrl = `http://192.168.2.119:8000/api`;
 
 // This URL is used to append in images along with the path that we get in
 // export const imageBaseUrl = `https://laravelservice.agileidc.com`;
 
-export const imageBaseUrl = `http://192.168.2.126:8000`;
+// export const imageBaseUrl = `http://192.168.2.126:8000`;
+export const imageBaseUrl = `http://192.168.2.119:8000`;
+
 
 
 export const URL_CONSTANTS = {
@@ -13,6 +17,7 @@ export const URL_CONSTANTS = {
     login_URL :`${baseUrl}/login`,
     reset_Password :`${baseUrl}/reset_password`,
     change_password :`${baseUrl}/reset/password`,
+    edit_password : `${baseUrl}/resetuserpassword`,
 
     // Category CRUD
     fetch_Category : `${baseUrl}/fetch_all_categories_employee`,

@@ -12,6 +12,8 @@ import { fetchCategories,createCategory,fetchCategoryDetails } from '../Helpers/
 import { primaryColor, textColor } from '../Utils/CustomColors';
 import { deviceWidth } from '../Utils/Dimension';
 import { handleCategories } from '../Utils/TransactionUpdates';
+import CategorySkeleton from '../Skeleton/CategorySkeleton';
+
 
 const CategoryScreen = () => {
   const [categories, setCategories] = useState([]);
@@ -188,7 +190,8 @@ const CategoryScreen = () => {
     <>
       {isLoading ? (
         <View style={{flex: 1, justifyContent: 'center', alignItems: 'center'}}>
-          <Loader message="Please wait ..." />
+          {/* <Loader message="Please wait ..." /> */}
+          <CategorySkeleton/>
         </View>
       ) : (
         <>
