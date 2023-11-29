@@ -111,7 +111,7 @@ const Profile = () => {
           <View style={[styles.buttonContainer, {marginTop: 10}]}>
             <TouchableOpacity
               onPress={() => {
-                navigation.navigate('ComparisionScreen');
+                navigation.navigate(screenNames.ComparisionScreen);
               }}>
               <Text style={{color: '#fff'}}>Compare Transaction </Text>
             </TouchableOpacity>

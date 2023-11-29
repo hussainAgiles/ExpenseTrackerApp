@@ -113,6 +113,7 @@ export const fetchTransactionHistory = async () => {
 
 // delete transaction
 export const handleDelete = async (request) => {
+  console.log("delete === ",request)
   return new Promise(async (resolve, reject) => {
     const token = await AsyncStorage.getItem('User_Token');
     axios({

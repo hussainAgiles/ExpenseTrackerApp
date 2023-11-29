@@ -17,7 +17,8 @@ export const screenNames = {
   Profile: `Profile`,
   UpgradePlan:`Upgrade Plan`,
   Edit_Password:`Edit Password`,
-  Details : `Details `
+  Details : `Details `,
+  ComparisionScreen : `Compare Transactions`
 };
 
 export const globalStyle = StyleSheet.create({

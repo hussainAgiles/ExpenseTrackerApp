@@ -118,6 +118,7 @@ export default function BottomNavigation() {
           />
       <Tab.Screen name={screenNames.Transaction} component={Transaction} options={() => {
             return {
+              unmountOnBlur:true,
               headerShown:true,
               headerTitleAlign:"center",
               headerTitleStyle:{fontFamily:"EduSABeginner-SemiBold"},

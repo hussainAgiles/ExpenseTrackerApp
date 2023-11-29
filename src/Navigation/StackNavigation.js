@@ -82,7 +82,7 @@ export const StackNavigation = () => {
       />
       <Stack.Screen name={screenNames.Details} component={Details} />
 
-      <Stack.Screen name={'ComparisionScreen'} component={ComparisionScreen} />
+      <Stack.Screen name={screenNames.ComparisionScreen} component={ComparisionScreen} options={{headerShown: true, headerTitleAlign: 'center'}} />
     </Stack.Navigator>
   );
 };
